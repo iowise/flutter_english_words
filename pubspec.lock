@@ -62,11 +62,39 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_keyboard_visibility:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_typeahead:
+    dependency: "direct main"
+    description:
+      name: flutter_typeahead
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.8.7"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.12.2"
+  http_parser:
+    dependency: transitive
+    description:
+      name: http_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.4"
   matcher:
     dependency: transitive
     description:
@@ -88,6 +116,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  pedantic:
+    dependency: transitive
+    description:
+      name: pedantic
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.9.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -135,6 +170,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.17"
+  translator:
+    dependency: "direct main"
+    description:
+      name: translator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   typed_data:
     dependency: transitive
     description:
@@ -151,3 +193,4 @@ packages:
     version: "2.0.8"
 sdks:
   dart: ">=2.9.0-14.0.dev <3.0.0"
+  flutter: ">=1.12.13+hotfix.6 <2.0.0"

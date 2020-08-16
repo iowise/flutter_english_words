@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import '../components/TranslationTextInput.dart';
 
 class WordEntryForm extends StatefulWidget {
+
+  final WordEntryInput entry;
+
+  WordEntryForm({Key key, this.entry}) : super(key: key);
+
   @override
   _WordEntryFormState createState() => _WordEntryFormState();
 }
 
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
-
-  String word = '';
-  String translation = '';
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +31,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
+                      autofocus: true,
                       decoration: InputDecoration(
                         filled: true,
                         hintText: 'Enter a word...',
@@ -35,20 +39,21 @@ class _WordEntryFormState extends State<WordEntryForm> {
                       ),
                       onChanged: (value) {
                         setState(() {
-                          word = value;
+                          widget.entry.word = value;
                         });
                       },
                     ),
-                    TextFormField(
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: 'Enter a translation...',
-                          labelText: 'Translation',
-                        ),
-                        onChanged: (value) {
-                          translation = value;
-                        },
+                    TranslationTextInput(
+                      word: widget.entry.word,
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: 'Enter a translation...',
+                        labelText: 'Translation',
                       ),
+                      onChanged: (value) {
+                        widget.entry.translation = value;
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -59,3 +64,11 @@ class _WordEntryFormState extends State<WordEntryForm> {
     );
   }
  }
+
+
+class WordEntryInput {
+  String word;
+  String translation;
+
+  WordEntryInput(this.word, this.translation);
+}
