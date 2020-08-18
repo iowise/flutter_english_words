@@ -50,8 +50,9 @@ class _TrainState extends State<Train> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextFormField(
+                    textAlign: TextAlign.center,
                     enabled: !widget.isCheck,
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headline5,
                     decoration: InputDecoration(
                       filled: true,
                       hintText: widget.isCheck ? "" : 'Enter a word...',

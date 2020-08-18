@@ -61,7 +61,7 @@ class _WordsPageState extends State<WordsPage> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add a word',
         child: Icon(Icons.add),
-        onPressed: () => print("Add a word"),
+        onPressed: () => Navigator.pushNamed(context, '/word/create'),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

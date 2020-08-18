@@ -17,9 +17,13 @@ class _TrainPageState extends State<TrainPage> {
   bool isCheck = false;
 
   _checkTheWord() {
-    setState(() {
-      isCheck = true;
-    });
+    if (isCheck) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() {
+        isCheck = true;
+      });
+    }
   }
 
   @override
@@ -40,7 +44,7 @@ class _TrainPageState extends State<TrainPage> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Check',
-        child: Icon(Icons.check),
+        child: Icon(isCheck ? Icons.chevron_right : Icons.check),
         onPressed: _checkTheWord,
       ),
     );

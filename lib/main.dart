@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => TrainPage(title: 'Train a word'),
+        '/': (BuildContext context) => WordsPage(title: 'Words'),
         '/train': (BuildContext context) => TrainPage(title: 'Train a word'),
         '/words': (BuildContext context) => WordsPage(title: 'Words'),
         '/word/create': (BuildContext context) =>

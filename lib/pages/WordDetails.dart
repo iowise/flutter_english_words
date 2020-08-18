@@ -34,5 +34,6 @@ class _WordDetailsState extends State<WordDetails> {
 
   _onSave() {
     print(entry.word);
+    Navigator.pop(context);
   }
 }
