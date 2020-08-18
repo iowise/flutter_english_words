@@ -23,9 +23,8 @@ class _TrainState extends State<Train> {
         ? [
             Flexible(
                 flex: 1,
-                fit: FlexFit.tight,
                 child: _TrainResult(
-                    enteredWord: enteredWord, word: widget.entry.word))
+                    enteredWord: enteredWord, word: widget.entry.word)),
           ]
         : [];
     return Form(
@@ -89,22 +88,23 @@ class _TrainResult extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Column(children: [
-            Flexible(
-                flex: 1,
-                child: Text(correct ? "Correct" : "Wrong",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        .copyWith(color: Colors.white))),
-            Flexible(
-                flex: 1,
-                child: Text(word,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4
-                        .copyWith(color: Colors.white))),
-          ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                  child: Text(correct ? "Correct" : "Wrong",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(color: Colors.white))),
+              Flexible(
+                  child: Text(word,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(color: Colors.white))),
+            ],
+          ),
         ),
       ),
     );
