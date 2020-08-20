@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../components/WordList.dart';
+import '../models/WordEntryRepository.dart';
 import '../components/Train.dart';
 
 class TrainPage extends StatefulWidget {

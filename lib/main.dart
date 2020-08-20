@@ -3,8 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
 import './pages/WordTrain.dart';
+import './di.dart';
 
 void main() {
+  setup();
   runApp(MyApp());
 }
 

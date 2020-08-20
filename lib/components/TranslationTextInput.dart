@@ -36,6 +36,7 @@ class TranslationTextInput extends StatelessWidget {
       },
       onSuggestionSelected: (suggestion) {
         this._typeAheadController.text = suggestion.text;
+        this.onChanged(suggestion.text);
 
 //        Navigator.of(context).push(MaterialPageRoute(
 //            builder: (context) => ProductPage(product: suggestion)

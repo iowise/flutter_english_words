@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import '../models/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
 
 class WordDetails extends StatefulWidget {
@@ -12,7 +14,7 @@ class WordDetails extends StatefulWidget {
 
 class _WordDetailsState extends State<WordDetails> {
 
-  final WordEntryInput entry = WordEntryInput("", "");
+  final WordEntryInput entryInput = WordEntryInput("", "");
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +29,13 @@ class _WordDetailsState extends State<WordDetails> {
         ],
       ),
       body: Center(
-        child: WordEntryForm(entry: entry),
+        child: WordEntryForm(entry: entryInput),
       ),
     );
   }
 
-  _onSave() {
-    print(entry.word);
+  _onSave() async {
+    await GetIt.I.get<WordEntryRepository>().insert(entryInput.toEntry());
     Navigator.pop(context);
   }
 }

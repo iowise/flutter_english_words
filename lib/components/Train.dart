@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/WordList.dart';
+import '../models/WordEntryRepository.dart';
 
 class Train extends StatefulWidget {
   final WordEntry entry;

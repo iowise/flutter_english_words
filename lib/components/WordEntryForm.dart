@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
 
 class WordEntryForm extends StatefulWidget {
@@ -71,4 +72,7 @@ class WordEntryInput {
   String translation;
 
   WordEntryInput(this.word, this.translation);
+  toEntry() {
+    return WordEntry(this.word, this.translation);
+  }
 }
