@@ -32,6 +32,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
+                      initialValue: widget.entry.word,
                       autofocus: true,
                       decoration: InputDecoration(
                         filled: true,
@@ -45,6 +46,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                       },
                     ),
                     TranslationTextInput(
+                      initialValue: widget.entry.translation,
                       word: widget.entry.word,
                       decoration: InputDecoration(
                         filled: true,
@@ -68,11 +70,21 @@ class _WordEntryFormState extends State<WordEntryForm> {
 
 
 class WordEntryInput {
+  int id;
   String word;
   String translation;
+  WordEntry arg;
 
-  WordEntryInput(this.word, this.translation);
+  WordEntryInput(this.word, this.translation, { this.arg });
   toEntry() {
-    return WordEntry(this.word, this.translation);
+    var entry = WordEntry.copy(arg, word: word, translation: translation);
+    if (id != null) {
+      entry.id = id;
+    }
+    return entry;
+  }
+
+  static WordEntryInput fromWordEntry(WordEntry arg) {
+    return WordEntryInput(arg.word, arg.translation, arg: arg);
   }
 }

@@ -32,6 +32,8 @@ class MyApp extends StatelessWidget {
         '/words': (BuildContext context) => WordsPage(title: 'Words'),
         '/word/create': (BuildContext context) =>
             WordDetails(title: 'Enter word'),
+        '/word/edit': (BuildContext context) =>
+            WordDetails(title: 'Edit word'),
       },
     );
   }

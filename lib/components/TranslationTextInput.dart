@@ -3,19 +3,24 @@ import 'package:translator/translator.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class TranslationTextInput extends StatelessWidget {
-
   TranslationTextInput({
     Key key,
     this.onChanged,
     this.word,
     this.decoration,
-  }) : super(key: key);
+    this.initialValue,
+  }) : super(key: key) {
+    _typeAheadController = TextEditingController(text: initialValue);
+    _typeAheadController.addListener(() {
+      this.onChanged(_typeAheadController.text);
+    });
+  }
 
   final ValueChanged<String> onChanged;
   final String word;
+  final String initialValue;
   final InputDecoration decoration;
-  final TextEditingController _typeAheadController = TextEditingController();
-
+  TextEditingController _typeAheadController;
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +42,15 @@ class TranslationTextInput extends StatelessWidget {
       onSuggestionSelected: (suggestion) {
         this._typeAheadController.text = suggestion.text;
         this.onChanged(suggestion.text);
-
-//        Navigator.of(context).push(MaterialPageRoute(
-//            builder: (context) => ProductPage(product: suggestion)
-//        ));
       },
-    )
-    ;
+    );
   }
 }
 
 class DictionaryItem {
   final String text;
   final IconData icon;
+
   DictionaryItem(this.text, this.icon);
 }
 

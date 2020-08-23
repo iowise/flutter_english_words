@@ -6,11 +6,17 @@ class WordList extends StatelessWidget {
 
   final List<WordEntry> words;
 
-  Widget _buildRow(WordEntry row) {
+  Widget _buildRow(WordEntry row, BuildContext context) {
     return ListTile(
       title: Text(row.word),
       subtitle: Text(row.translation),
-//      onTap: () => this._showDetails(row),
+      trailing: GestureDetector(
+        child: new Icon(
+          Icons.edit,
+          color: Colors.black,
+        ),
+      ),
+      onTap: () => this._showDetails(row, context),
     );
   }
 
@@ -26,9 +32,13 @@ class WordList extends StatelessWidget {
         if (i.isOdd) return Divider();
 
         final index = i ~/ 2;
-        return _buildRow(words[index]);
+        return _buildRow(words[index], context);
       },
       itemCount: words.length * 2 - 1,
     );
+  }
+
+  _showDetails(WordEntry row, context) {
+    Navigator.pushNamed(context, "/word/edit", arguments: row);
   }
 }

@@ -12,7 +12,7 @@ class TrainPage extends StatefulWidget {
 }
 
 class _TrainPageState extends State<TrainPage> {
-  final WordEntry entry = WordEntry("go", "идти");
+  final WordEntry entry = WordEntry.create("go", "идти");
 
   bool isCheck = false;
 

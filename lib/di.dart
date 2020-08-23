@@ -8,8 +8,8 @@ void setup() {
     var databasesPath = await getDatabasesPath();
     String path = p.join(databasesPath, 'words.db');
 
-    final configService = WordEntryRepository();
-    await configService.open(path);
-    return configService;
+    final repository = WordEntryRepository();
+    await repository.open(path);
+    return repository;
   });
 }

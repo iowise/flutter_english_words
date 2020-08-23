@@ -5,6 +5,8 @@ final String _table = '_word_entry';
 final String _columnId = '_id';
 final String _columnWord = 'word';
 final String _columnTranslation = 'translation';
+final String _columnCreatedAt = '_created_at';
+final String _columnTrainedAt = '_trained_at';
 
 class WordEntry {
   int id;
@@ -12,23 +14,41 @@ class WordEntry {
   String word;
   String translation;
 
+  DateTime createdAt;
+  DateTime trainedAt;
+
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       _columnWord: word,
       _columnTranslation: translation,
+      _columnCreatedAt: createdAt.toIso8601String(),
     };
     if (id != null) {
       map[_columnId] = id;
     }
+    if (trainedAt != null) {
+      map[_columnTrainedAt] = trainedAt;
+    }
     return map;
   }
 
-  WordEntry(this.word, this.translation);
+  WordEntry.create(this.word, this.translation) {
+    createdAt = DateTime.now().toUtc();
+  }
+  WordEntry.copy(WordEntry other, {final String word, final String translation}) {
+    this.id = other.id;
+    this.createdAt = other.createdAt;
+    this.trainedAt = other.trainedAt;
+    this.word = word != null ? word : other.word;
+    this.translation = translation != null ? translation: other.translation;
+  }
 
   WordEntry.fromMap(Map<String, dynamic> map) {
     id = map[_columnId];
     word = map[_columnWord];
     translation = map[_columnTranslation];
+    createdAt = map[_columnCreatedAt];
+    trainedAt = map[_columnTrainedAt];
   }
 }
 
@@ -40,18 +60,21 @@ class WordEntryRepository extends ChangeNotifier {
         onCreate: (Database db, int version) async {
       await db.execute('''
 create table $_table ( 
-  $_columnId integer primary key autoincrement, 
   $_columnWord text not null,
-  $_columnTranslation text not null)
+  $_columnTranslation text not null,
+  $_columnCreatedAt datatime not null,
+  $_columnTrainedAt datatime,
+  $_columnId integer primary key autoincrement 
+)
 ''');
     });
     db.execute('PRAGMA encoding="UTF-8"');
   }
 
-  Future<WordEntry> insert(WordEntry todo) async {
-    todo.id = await db.insert(_table, todo.toMap());
+  Future<WordEntry> insert(WordEntry entry) async {
+    entry.id = await db.insert(_table, entry.toMap());
     notifyListeners();
-    return todo;
+    return entry;
   }
 
   Future<WordEntry> getWordEntry(int id) async {
@@ -77,12 +100,27 @@ create table $_table (
     return deleted;
   }
 
-  Future<int> update(WordEntry todo) async {
-    var updated = await db.update(_table, todo.toMap(),
-        where: '$_columnId = ?', whereArgs: [todo.id]);
+  Future<int> update(WordEntry entry) async {
+    var updated = await db.update(_table, entry.toMap(),
+        where: '$_columnId = ?', whereArgs: [entry.id]);
     notifyListeners();
     return updated;
   }
 
   Future close() async => db.close();
+  Future reset() async {
+    var path = db.path;
+    await close();
+    await deleteDatabase(path);
+    await open(path);
+    notifyListeners();
+  }
+
+  Future save(WordEntry entry) {
+    if (entry.id == null) {
+      return insert(entry);
+    } else {
+      return update(entry);
+    }
+  }
 }
