@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+
 import './WordEntryRepository.dart';
 import './TrainLogRepository.dart';
 
-class TrainService {
+class TrainService extends ChangeNotifier {
   WordEntryRepository wordEntryRepository;
   TrainLogRepository trainLogRepository;
 
@@ -30,6 +32,7 @@ class TrainService {
     await wordEntryRepository.update(word);
 
     await trainLogRepository.insert(TrainLog(word.id, score));
+    notifyListeners();
   }
 }
 

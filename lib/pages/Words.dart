@@ -88,14 +88,21 @@ class _WordsPageState extends State<WordsPage> {
   }
 
   Widget _buildReviewButton() {
-    return FutureBuilder(
-      future: trainRepository.getToReviewToday(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          return ReviewButton(wordsToReview: snapshot.data);
-        }
-        return ReviewButton();
-      },
+    return ChangeNotifierProvider(
+      create: (context) => trainRepository,
+      child: Consumer<TrainService>(
+        builder: (context, trainRepository, child) {
+          return FutureBuilder(
+            future: trainRepository.getToReviewToday(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return ReviewButton(wordsToReview: snapshot.data);
+              }
+              return ReviewButton();
+            },
+          );
+        },
+      ),
     );
   }
 }
