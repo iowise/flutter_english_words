@@ -1,0 +1,84 @@
+import 'dart:math';
+
+import './WordEntryRepository.dart';
+import './TrainLogRepository.dart';
+
+class TrainService {
+  WordEntryRepository wordEntryRepository;
+  TrainLogRepository trainLogRepository;
+
+  TrainService(this.wordEntryRepository, this.trainLogRepository);
+
+  Future<List<WordEntry>> getToReviewToday() async {
+    final now = DateTime.now();
+    final forLearn = await wordEntryRepository.query(
+      where: "$columnDueToLearnAfter is null or $columnDueToLearnAfter < ?",
+      whereArgs: [now.toUtc().toIso8601String()],
+    );
+    return makeListToLearn(forLearn);
+  }
+
+  Future trainWord(WordEntry word, isCorrent) async {
+    final score = isCorrent ? 4 : 0;
+    final history = await trainLogRepository.getLogs(word.id);
+    final historyScore = history.map((e) => e.score);
+    final waitInDays = daysTillNextTestAlgorithm(score, historyScore);
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    word.dueToLearnAfter = today.add(Duration(days: waitInDays));
+    await wordEntryRepository.update(word);
+
+    await trainLogRepository.insert(TrainLog(word.id, score));
+  }
+}
+
+/**
+ * Returns the number of days to delay the next review of an item by, fractionally, based on the history of answers x to
+ * a given question, where
+ * x == 0: Incorrect, Hardest
+ * x == 1: Incorrect, Hard
+ * x == 2: Incorrect, Medium
+ * x == 3: Correct, Medium
+ * x == 4: Correct, Easy
+ * x == 5: Correct, Easiest
+ * @param x The history of answers in the above scoring.
+ * @param theta When larger, the delays for correct answers will increase.
+ * Based on [a gist](https://gist.github.com/doctorpangloss/13ab29abd087dc1927475e560f876797)
+ */
+int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
+    {a: 6.0, b: -0.8, c: 0.28, d: 0.02, theta: 0.2}) {
+  if (recent < 4) {
+    return 1;
+  }
+
+  var history = [recent, ...x];
+
+  // Calculate latest correctness streak
+  var streak = 0;
+  for (var i = 0; i < history.length; i++) {
+    if (history[i] > 3) {
+      streak += 1;
+    } else {
+      break;
+    }
+  }
+
+  // Sum up the history
+  var historySum = history.fold(
+    0.0,
+    (prev, val) => prev + (b + (c * val) + (d * val * val)),
+  );
+
+  return (a * pow(max(1.3, 2.5 + historySum), theta * streak)).round();
+}
+
+const MAX_TO_LEARN = 10;
+
+List<T> makeListToLearn<T>(List<T> list) {
+  final now = DateTime.now().microsecondsSinceEpoch / 1000;
+  final daysSinceEpoch = (now / 3600 / 24).toInt();
+  list = List.from(list == null ? [] : list);
+  list.shuffle(Random(daysSinceEpoch));
+  return List.from(list.getRange(0, min(MAX_TO_LEARN, list.length)));
+}

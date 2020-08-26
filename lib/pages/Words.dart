@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/SpaceRepetitionScheduler.dart';
 import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -16,13 +17,15 @@ class WordsPage extends StatefulWidget {
 
 class _WordsPageState extends State<WordsPage> {
   WordEntryRepository repository;
+  TrainService trainRepository;
 
   @override
   void initState() {
     super.initState();
-    GetIt.I.getAsync<WordEntryRepository>().then((value) {
+    GetIt.I.allReady().then((value) {
       setState(() {
-        repository = value;
+        repository = GetIt.I.get<WordEntryRepository>();
+        trainRepository = GetIt.I.get<TrainService>();
       });
       setState(() {});
     });
@@ -35,12 +38,6 @@ class _WordsPageState extends State<WordsPage> {
         title: Text(widget.title),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.delete_forever),
-            onPressed: () {
-              repository.reset();
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
               print('search');
@@ -49,15 +46,7 @@ class _WordsPageState extends State<WordsPage> {
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ReviewButton(),
-            Expanded(
-              child: _buildList(),
-            ),
-          ],
-        ),
+        child: _buildList(),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add a word',
@@ -68,25 +57,45 @@ class _WordsPageState extends State<WordsPage> {
   }
 
   Widget _buildList() {
-    if (repository == null) {
+    if (repository == null || trainRepository == null) {
       return CircularProgressIndicator();
     }
     return ChangeNotifierProvider(
       create: (context) => repository,
       child: Consumer<WordEntryRepository>(
         builder: (context, wordEntryRepository, child) {
-          return FutureBuilder(
-            future: wordEntryRepository.getWordEntries(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (!snapshot.hasData) {
-                return CircularProgressIndicator();
-              }
-              var words = snapshot.data;
-              return WordList(words: words);
-            },
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildReviewButton(),
+              Expanded(
+                child: FutureBuilder(
+                  future: wordEntryRepository.getWordEntries(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return CircularProgressIndicator();
+                    }
+                    var words = snapshot.data;
+                    return WordList(words: words);
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
+    );
+  }
+
+  Widget _buildReviewButton() {
+    return FutureBuilder(
+      future: trainRepository.getToReviewToday(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          return ReviewButton(wordsToReview: snapshot.data);
+        }
+        return ReviewButton();
+      },
     );
   }
 }

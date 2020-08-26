@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ReviewButton extends StatelessWidget {
+  final wordsToReview;
+
+  const ReviewButton({Key key, this.wordsToReview}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
-      child: Text("10 words to review"),
-      onPressed: () => Navigator.pushNamed(context, '/train'),
+      child: Text("${wordsToReview?.length} words to review"),
+      onPressed: () =>
+          Navigator.pushNamed(context, '/train', arguments: wordsToReview),
     );
   }
 }

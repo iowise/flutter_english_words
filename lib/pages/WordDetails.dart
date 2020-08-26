@@ -37,7 +37,6 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   @override
   void initState() {
     entryInput = widget.entryInput;
-    print("${entryInput.word}");
     super.initState();
   }
 

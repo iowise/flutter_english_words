@@ -10,12 +10,6 @@ class WordList extends StatelessWidget {
     return ListTile(
       title: Text(row.word),
       subtitle: Text(row.translation),
-      trailing: GestureDetector(
-        child: new Icon(
-          Icons.edit,
-          color: Colors.black,
-        ),
-      ),
       onTap: () => this._showDetails(row, context),
     );
   }

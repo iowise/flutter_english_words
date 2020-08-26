@@ -77,11 +77,10 @@ class WordEntryInput {
 
   WordEntryInput(this.word, this.translation, { this.arg });
   toEntry() {
-    var entry = WordEntry.copy(arg, word: word, translation: translation);
-    if (id != null) {
-      entry.id = id;
+    if (arg != null) {
+      return WordEntry.copy(arg, word: word, translation: translation);
     }
-    return entry;
+    return WordEntry.create(word, translation);
   }
 
   static WordEntryInput fromWordEntry(WordEntry arg) {

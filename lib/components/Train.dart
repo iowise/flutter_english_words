@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/WordEntryRepository.dart';
 
+typedef ResultCallback = void Function(bool isCorrect);
+
 class Train extends StatefulWidget {
   final WordEntry entry;
   final bool isCheck;
-  final Function onSubmit;
+  final ResultCallback onSubmit;
 
   Train({Key key, this.entry, this.isCheck, this.onSubmit}) : super(key: key);
 
@@ -17,14 +19,20 @@ class _TrainState extends State<Train> {
 
   String enteredWord;
 
+  bool get isCorrect => widget.entry.word == enteredWord;
+
   @override
   Widget build(BuildContext context) {
     final results = widget.isCheck
         ? [
             Flexible(
-                flex: 1,
-                child: _TrainResult(
-                    enteredWord: enteredWord, word: widget.entry.word)),
+              flex: 1,
+              child: _TrainResult(
+                enteredWord: enteredWord,
+                word: widget.entry.word,
+                isCorrect: isCorrect,
+              ),
+            ),
           ]
         : [];
     return Form(
@@ -50,6 +58,8 @@ class _TrainState extends State<Train> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextFormField(
                     textAlign: TextAlign.center,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     enabled: !widget.isCheck,
                     style: Theme.of(context).textTheme.headline5,
                     decoration: InputDecoration(
@@ -57,7 +67,7 @@ class _TrainState extends State<Train> {
                       hintText: widget.isCheck ? "" : 'Enter a word...',
                     ),
                     onFieldSubmitted: (_) {
-                      widget.onSubmit();
+                      widget.onSubmit(isCorrect);
                     },
                     onChanged: (value) {
                       enteredWord = value;
@@ -77,14 +87,15 @@ class _TrainState extends State<Train> {
 class _TrainResult extends StatelessWidget {
   final String word;
   final String enteredWord;
+  final bool isCorrect;
 
-  const _TrainResult({Key key, this.word, this.enteredWord}) : super(key: key);
+  const _TrainResult({Key key, this.word, this.enteredWord, this.isCorrect})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final correct = word == enteredWord;
     return Card(
-      color: correct ? Colors.green : Colors.red,
+      color: isCorrect ? Colors.green : Colors.red,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -92,7 +103,7 @@ class _TrainResult extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                  child: Text(correct ? "Correct" : "Wrong",
+                  child: Text(isCorrect ? "Correct" : "Wrong",
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1
