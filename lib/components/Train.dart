@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/WordEntryRepository.dart';
 
-typedef ResultCallback = void Function(bool isCorrect);
+typedef ResultCallback = void Function();
+
+class TrainController extends TextEditingController {
+
+  final WordEntry entry;
+
+  TrainController(this.entry);
+  bool get isCorrect => entry.word == text;
+}
 
 class Train extends StatefulWidget {
   final WordEntry entry;
   final bool isCheck;
   final ResultCallback onSubmit;
+  final TrainController enteredWordController;
 
-  Train({Key key, this.entry, this.isCheck, this.onSubmit}) : super(key: key);
+  Train({Key key, this.entry, this.isCheck, this.onSubmit, this.enteredWordController}) : super(key: key);
 
   @override
   _TrainState createState() => _TrainState();
@@ -20,8 +29,6 @@ class _TrainState extends State<Train> {
 
   String enteredWord;
 
-  bool get isCorrect => widget.entry.word == enteredWord;
-
   @override
   Widget build(BuildContext context) {
     final results = widget.isCheck
@@ -31,7 +38,7 @@ class _TrainState extends State<Train> {
               child: _TrainResult(
                 enteredWord: enteredWord,
                 word: widget.entry.word,
-                isCorrect: isCorrect,
+                isCorrect: widget.enteredWordController.isCorrect,
               ),
             ),
           ]
@@ -63,12 +70,13 @@ class _TrainState extends State<Train> {
                     enableSuggestions: false,
                     enabled: !widget.isCheck,
                     style: Theme.of(context).textTheme.headline5,
+                    controller: widget.enteredWordController,
                     decoration: InputDecoration(
                       filled: true,
                       hintText: widget.isCheck ? "" : 'Enter a word...',
                     ),
                     onFieldSubmitted: (_) {
-                      widget.onSubmit(isCorrect);
+                      widget.onSubmit();
                     },
                     onChanged: (value) {
                       enteredWord = value;

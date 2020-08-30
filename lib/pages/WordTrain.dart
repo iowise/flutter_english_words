@@ -11,10 +11,7 @@ class TrainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<WordEntry> arg = ModalRoute
-        .of(context)
-        .settings
-        .arguments;
+    final List<WordEntry> arg = ModalRoute.of(context).settings.arguments;
     return TrainWords(title: title, wordsToLearn: arg);
   }
 }
@@ -32,14 +29,19 @@ class TrainWords extends StatefulWidget {
 class _TrainWordsState extends State<TrainWords> {
   bool isCheck = false;
   var trainIndex = 0;
+  TrainController trainController;
 
   initState() {
     isCheck = false;
     trainIndex = 0;
+    trainController = createTrainController();
     super.initState();
   }
 
-  _checkTheWord([bool isCorrect = false]) {
+  TrainController createTrainController() =>
+      TrainController(widget.wordsToLearn[trainIndex]);
+
+  _checkTheWord() {
     if (isCheck) {
       var isEnd = trainIndex >= widget.wordsToLearn.length - 1;
       if (isEnd) {
@@ -49,12 +51,13 @@ class _TrainWordsState extends State<TrainWords> {
       setState(() {
         isCheck = false;
         trainIndex += 1;
+        trainController = createTrainController();
       });
     } else {
       setState(() {
         isCheck = true;
         final trainService = GetIt.I.get<TrainService>();
-        trainService.trainWord(wordToTrain, isCorrect);
+        trainService.trainWord(wordToTrain, trainController.isCorrect);
       });
     }
   }
@@ -75,6 +78,7 @@ class _TrainWordsState extends State<TrainWords> {
             entry: wordToTrain,
             isCheck: isCheck,
             onSubmit: _checkTheWord,
+            enteredWordController: trainController,
           ),
         ),
       ),
