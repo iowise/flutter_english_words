@@ -59,7 +59,7 @@ class _TrainState extends State<Train> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextFormField(
                     textAlign: TextAlign.center,
-                    autocorrect: false,
+                    keyboardType: TextInputType.visiblePassword,
                     enableSuggestions: false,
                     enabled: !widget.isCheck,
                     style: Theme.of(context).textTheme.headline5,
