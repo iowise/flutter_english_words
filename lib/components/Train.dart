@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../models/WordEntryRepository.dart';
 
 typedef ResultCallback = void Function(bool isCorrect);
@@ -94,30 +95,38 @@ class _TrainResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: isCorrect ? Colors.green : Colors.red,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                  child: Text(isCorrect ? "Correct" : "Wrong",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.white))),
-              Flexible(
-                  child: Text(word,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4
-                          .copyWith(color: Colors.white))),
-            ],
+    return GestureDetector(
+      onTap: () => _speak(),
+      child: Card(
+        color: isCorrect ? Colors.green : Colors.red,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                    child: Text(isCorrect ? "Correct" : "Wrong",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .copyWith(color: Colors.white))),
+                Flexible(
+                    child: Text(word,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .copyWith(color: Colors.white))),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future _speak() async {
+    FlutterTts flutterTts = FlutterTts();
+    var result = await flutterTts.speak(word);
   }
 }
