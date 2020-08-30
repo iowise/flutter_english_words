@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/TrainLogRepository.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
-
 
 class WordDetails extends StatelessWidget {
   WordDetails({Key key, this.title}) : super(key: key);
@@ -31,7 +32,6 @@ class WordCreateOrEdit extends StatefulWidget {
 }
 
 class _WordCreateOrEditState extends State<WordCreateOrEdit> {
-
   WordEntryInput entryInput;
 
   @override
@@ -42,6 +42,8 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
 
   @override
   Widget build(BuildContext context) {
+    final TrainLogRepository trainLog = GetIt.I.get<TrainLogRepository>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -52,9 +54,53 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
           ),
         ],
       ),
-      body: Center(
-        child: WordEntryForm(entry: entryInput),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          WordEntryForm(entry: entryInput),
+          ...buildWordDetails(context, trainLog),
+        ],
       ),
+    );
+  }
+
+  List<Widget> buildWordDetails(
+      BuildContext context, TrainLogRepository trainLog) {
+    if (entryInput.arg?.dueToLearnAfter == null) {
+      return [];
+    }
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final nextTrainDate = formatter.format(entryInput.arg.dueToLearnAfter);
+    return [
+    ListTile(
+        title: Text("Next train on: $nextTrainDate", style: Theme.of(context).textTheme.bodyText1)),
+      buildTrainLogs(trainLog),
+    ];
+  }
+
+  FutureBuilder<List<TrainLog>> buildTrainLogs(TrainLogRepository trainLog) {
+    final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
+    return FutureBuilder(
+      future: trainLog.getLogs(entryInput.arg.id),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          List<TrainLog> logs = snapshot.data;
+          return Expanded(
+            child: ListView(
+              children: <Widget>[
+                ...logs.map(
+                  (e) => ListTile(
+                    title: Text(
+                        "${formatterWithTime.format(e.trainedAt)} ${e.score}",
+                        style: Theme.of(context).textTheme.bodyText1),
+                  ),
+                )
+              ],
+            ),
+          );
+        }
+        return Text('Not ready');
+      },
     );
   }
 

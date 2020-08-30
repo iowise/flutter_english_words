@@ -56,6 +56,9 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
   }
 
   var history = [recent, ...x];
+  if (history.length == 1) {
+    return 1;
+  }
 
   // Calculate latest correctness streak
   var streak = 0;

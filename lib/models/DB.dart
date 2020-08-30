@@ -16,8 +16,6 @@ Future<Database> createDatabase() async {
       await db.execute(TrainLogRepository.createSqlScript);
     },
     onUpgrade: (Database db, oldVersion, newVersion) async {
-      await db.execute('PRAGMA foreign_keys = ON');
-      await db.execute(TrainLogRepository.createSqlScript);
     },
   );
 

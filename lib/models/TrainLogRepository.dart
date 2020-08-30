@@ -39,7 +39,9 @@ class TrainLog {
     id = map[_columnId];
     wordId = map[_columnWordId];
     score = map[_columnScore];
-    trainedAt = map[_columnTrainedAt];
+    trainedAt = map[_columnTrainedAt] != null
+        ? DateTime.parse(map[_columnTrainedAt])
+        : null;
   }
 }
 
@@ -67,6 +69,7 @@ create table $_table (
   }
 
   Future<List<TrainLog>> getLogs(int wordId) async {
+
     List<Map> maps = await db.query(_table,
         where: '$_columnWordId = ?',
         whereArgs: [wordId]);
