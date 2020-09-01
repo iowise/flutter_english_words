@@ -14,7 +14,7 @@ class TrainService extends ChangeNotifier {
   Future<List<WordEntry>> getToReviewToday() async {
     final now = DateTime.now();
     final forLearn = await wordEntryRepository.query(
-      where: "$columnDueToLearnAfter is null or $columnDueToLearnAfter < ?",
+      where: "$columnDueToLearnAfter is null or $columnDueToLearnAfter <= ?",
       whereArgs: [now.toUtc().toIso8601String()],
     );
     return makeListToLearn(forLearn);
