@@ -39,7 +39,7 @@ class WordEntry {
   }
 
   WordEntry.create(this.word, this.translation) {
-    createdAt = DateTime.now().toUtc();
+    createdAt = DateTime.now();
   }
 
   WordEntry.copy(WordEntry other,
