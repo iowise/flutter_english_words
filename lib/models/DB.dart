@@ -10,16 +10,18 @@ Future<Database> createDatabase() async {
   final db = await openDatabase(
     path,
     version: 3,
+    onConfigure: _onConfigure,
     onCreate: (Database db, int version) async {
-      await db.execute('PRAGMA foreign_keys = ON');
       await db.execute(WordEntryRepository.createSqlScript);
       await db.execute(TrainLogRepository.createSqlScript);
     },
-    onUpgrade: (Database db, oldVersion, newVersion) async {
-    },
+    onUpgrade: (Database db, oldVersion, newVersion) async {},
   );
 
-  await db.execute('PRAGMA foreign_keys = ON');
-  await db.execute('PRAGMA encoding="UTF-8"');
   return db;
+}
+
+_onConfigure(Database db) async {
+  await db.execute("PRAGMA foreign_keys = ON");
+  await db.execute('PRAGMA encoding="UTF-8"');
 }
