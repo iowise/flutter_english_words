@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "801468521928",
+    "firebase_url": "https://word-trainer-96b92.firebaseio.com",
+    "project_id": "word-trainer-96b92",
+    "storage_bucket": "word-trainer-96b92.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801468521928:android:737f343d18ac992d98f4fd",
+        "android_client_info": {
+          "package_name": "com.iowise.app.wordtrainer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801468521928-dqsatll1bsvspoaudv8gpll51nk18f80.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iowise.app.wordtrainer",
+            "certificate_hash": "e5161982032e60c21eb61363da953491aeec801e"
+          }
+        },
+        {
+          "client_id": "801468521928-mvt2n5tmdvp6fdh75h1bln7mnekks5i6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0erLblGh42qJCo3YY0vdqZ4PQ4slvH78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801468521928-mvt2n5tmdvp6fdh75h1bln7mnekks5i6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

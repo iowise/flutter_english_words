@@ -5,9 +5,11 @@ import './models/WordEntryRepository.dart';
 import './models/SpaceRepetitionScheduler.dart';
 import './models/TrainLogRepository.dart';
 import './models/DB.dart';
+import './models/Notification.dart';
 
 void setup() {
   GetIt.I.registerSingletonAsync<Database>(() async {
+    await showNotification();
     return await createDatabase();
   });
   GetIt.I.registerSingletonAsync<WordEntryRepository>(() async {
