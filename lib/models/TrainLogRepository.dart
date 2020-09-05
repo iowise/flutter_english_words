@@ -69,10 +69,14 @@ create table $_table (
   }
 
   Future<List<TrainLog>> getLogs(int wordId) async {
-
     List<Map> maps = await db.query(_table,
         where: '$_columnWordId = ?',
         whereArgs: [wordId]);
+    return [for (var map in maps) TrainLog.fromMap(map)];
+  }
+
+  Future<List<TrainLog>> dumpLogs() async {
+    List<Map> maps = await db.query(_table);
     return [for (var map in maps) TrainLog.fromMap(map)];
   }
 
