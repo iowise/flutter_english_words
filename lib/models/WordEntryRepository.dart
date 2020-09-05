@@ -99,13 +99,23 @@ create table $WORDS_TABLE (
     return null;
   }
 
+  Future<WordEntry> findCopy(String word) async {
+    List<Map> maps =
+        await db.query(WORDS_TABLE, where: '$_columnWord = ?', whereArgs: [word]);
+    if (maps.length > 0) {
+      return WordEntry.fromMap(maps.first);
+    }
+    return null;
+  }
+
   Future<List<WordEntry>> getWordEntries() async {
     List<Map> maps = await db.query(WORDS_TABLE);
     return [for (var map in maps) WordEntry.fromMap(map)];
   }
 
   Future<List<WordEntry>> query({final where, final whereArgs}) async {
-    List<Map> maps = await db.query(WORDS_TABLE, where: where, whereArgs: whereArgs);
+    List<Map> maps =
+        await db.query(WORDS_TABLE, where: where, whereArgs: whereArgs);
     return [for (var map in maps) WordEntry.fromMap(map)];
   }
 

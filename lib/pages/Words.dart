@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/SpaceRepetitionScheduler.dart';
-import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../components/Drawer.dart';
+import '../models/SpaceRepetitionScheduler.dart';
+import '../models/WordEntryRepository.dart';
 import '../components/ReviewButton.dart';
 import '../components/WordList.dart';
 
@@ -45,6 +46,7 @@ class _WordsPageState extends State<WordsPage> {
           ),
         ],
       ),
+      drawer: AppDrawer(),
       body: Center(
         child: _buildList(),
       ),
