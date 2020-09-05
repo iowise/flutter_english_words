@@ -29,6 +29,11 @@ dependencies:
   get_it: ^4.0.4
   provider: ^3.0.0
   flutter_tts: ^1.2.6
+  google_sign_in: "^4.5.1"
+  firebase_auth: ^0.18.0+1
+  firebase_core: "^0.5.0"
+  cloud_firestore: "^0.14.0+2"
+
   flutter_local_notifications: ^1.4.4+4
   file_picker: ^1.13.3
   permission_handler: ^5.0.1+1

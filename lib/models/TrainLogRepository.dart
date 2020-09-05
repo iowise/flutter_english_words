@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'WordEntryRepository.dart';
 
@@ -12,9 +12,9 @@ final String _columnScore = 'score';
 final String _columnTrainedAt = '_trained_at';
 
 class TrainLog {
-  int id;
+  String id;
 
-  int wordId;
+  String wordId;
   int score;
 
   DateTime trainedAt;
@@ -46,10 +46,10 @@ class TrainLog {
 }
 
 class TrainLogRepository extends ChangeNotifier {
-  Database db;
+  CollectionReference logs;
 
-  TrainLogRepository(this.db) {
-    assert(db.isOpen, 'The DB must be open');
+  TrainLogRepository() {
+    logs = FirebaseFirestore.instance.collection('trainLog');
   }
 
   static String get createSqlScript => '''
@@ -63,28 +63,30 @@ create table $_table (
 ''';
 
   Future<TrainLog> insert(TrainLog log) async {
-    log.id = await db.insert(_table, log.toMap());
+    final reference = await logs.add(log.toMap());
+    log.id = reference.id;
     notifyListeners();
     return log;
   }
 
-  Future<List<TrainLog>> getLogs(int wordId) async {
-    List<Map> maps = await db
-        .query(_table, where: '$_columnWordId = ?', whereArgs: [wordId]);
-    return [for (var map in maps) TrainLog.fromMap(map)];
+  Future<List<TrainLog>> getLogs(String wordId) async {
+    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    return [for (final doc in snapshot.docs) TrainLog.fromMap(doc.data())];
   }
 
   Future<List<TrainLog>> dumpLogs() async {
-    List<Map> maps = await db.query(_table);
-    return [for (var map in maps) TrainLog.fromMap(map)];
+    final snapshot = await logs.get();
+    return [for (final doc in snapshot.docs) TrainLog.fromMap(doc.data())];
   }
 
-  Future<int> deleteLogsForWord(int wordId) async {
-    var deleted = await db
-        .delete(_table, where: '$_columnWordId = ?', whereArgs: [wordId]);
+  Future deleteLogsForWord(String wordId) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    for (final element in snapshot.docs) {
+      batch.delete(element.reference);
+    }
+    await batch.commit();
     notifyListeners();
-    return deleted;
   }
-
-  Future close() async => db.close();
 }

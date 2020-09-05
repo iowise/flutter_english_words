@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_app/models/TrainLogRepository.dart';
+import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
-import './TrainLogRepository.dart';
-import './WordEntryRepository.dart';
 
 Future<Database> createDatabase() async {
   var databasesPath = await getDatabasesPath();
@@ -46,7 +45,7 @@ exportDB(WordEntryRepository wordEntryRepository,
   final words = List.of(
       [for (var i in await wordEntryRepository.getWordEntries()) i.toMap()]);
   Map<String, dynamic> exportMaps = {'words': words, 'logs': logs};
-  file.writeAsString(json.encode(exportMaps));
+  file.writeAsString(jsonEncode(exportMaps));
 
   await FlutterShare.shareFile(
     title: 'Example share',
