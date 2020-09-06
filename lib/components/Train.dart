@@ -9,7 +9,9 @@ class TrainController extends TextEditingController {
 
   TrainController(this.entry);
 
-  bool get isCorrect => entry.word.trim() == text.trim();
+  bool get isCorrect => _clean(entry.word) == _clean(text);
+
+  _clean(final str) => str.trim().toLowerCase();
 }
 
 class Train extends StatefulWidget {
