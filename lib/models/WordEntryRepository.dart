@@ -6,6 +6,7 @@ final String WORDS_TABLE = '_word_entry';
 final String _columnId = '_id';
 final String _columnWord = 'word';
 final String _columnTranslation = 'translation';
+final String _columnContext = 'context';
 final String _columnCreatedAt = '_created_at';
 final String _columnTrainedAt = '_trained_at';
 final String columnDueToLearnAfter = '_due_to_learn_after';
@@ -15,6 +16,7 @@ class WordEntry {
 
   String word;
   String translation;
+  String context;
 
   DateTime createdAt;
   DateTime trainedAt;
@@ -24,6 +26,7 @@ class WordEntry {
     var map = <String, dynamic>{
       _columnWord: word,
       _columnTranslation: translation,
+      _columnContext: context,
       _columnCreatedAt: createdAt.toIso8601String(),
     };
     if (id != null) {
@@ -38,25 +41,29 @@ class WordEntry {
     return map;
   }
 
-  WordEntry.create(this.word, this.translation) {
+  WordEntry.create(this.word, this.translation, this.context) {
     createdAt = DateTime.now();
   }
 
   WordEntry.copy(WordEntry other,
-      {final String word, final String translation}) {
+      {final String word, final String translation, final String context}) {
     this.id = other.id;
     this.createdAt = other.createdAt;
     this.trainedAt = other.trainedAt;
     this.dueToLearnAfter = other.dueToLearnAfter;
+
     this.word = word != null ? word : other.word;
     this.translation = translation != null ? translation : other.translation;
+    this.context = context != null ? context : other.context;
   }
 
   WordEntry.fromMap(Map<String, dynamic> map) {
     id = map[_columnId];
     word = map[_columnWord];
     translation = map[_columnTranslation];
+    context = map[_columnContext];
     createdAt = DateTime.parse(map[_columnCreatedAt]);
+
     trainedAt = map[_columnTrainedAt] != null
         ? DateTime.parse(map[_columnTrainedAt])
         : null;
@@ -77,11 +84,17 @@ class WordEntryRepository extends ChangeNotifier {
 create table $WORDS_TABLE (
   $_columnWord text not null,
   $_columnTranslation text not null,
+  $_columnContext text not null,
   $_columnCreatedAt datatime not null,
   $_columnTrainedAt datatime,
   $columnDueToLearnAfter datatime,
   $_columnId integer primary key autoincrement
 )
+''';
+
+  static String get migrateAddContextColumn => '''
+alter table $WORDS_TABLE
+add $_columnContext text not null
 ''';
 
   Future<WordEntry> insert(WordEntry entry) async {
@@ -100,8 +113,8 @@ create table $WORDS_TABLE (
   }
 
   Future<WordEntry> findCopy(String word) async {
-    List<Map> maps =
-        await db.query(WORDS_TABLE, where: '$_columnWord = ?', whereArgs: [word]);
+    List<Map> maps = await db
+        .query(WORDS_TABLE, where: '$_columnWord = ?', whereArgs: [word]);
     if (maps.length > 0) {
       return WordEntry.fromMap(maps.first);
     }

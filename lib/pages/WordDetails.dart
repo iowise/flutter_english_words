@@ -13,7 +13,7 @@ class WordDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final WordEntry arg = ModalRoute.of(context).settings.arguments;
-    var entryInput = WordEntryInput("", "");
+    var entryInput = WordEntryInput.empty();
     if (arg != null) {
       entryInput = WordEntryInput.fromWordEntry(arg);
     }

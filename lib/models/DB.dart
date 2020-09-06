@@ -16,13 +16,17 @@ Future<Database> createDatabase() async {
 
   final db = await openDatabase(
     path,
-    version: 3,
+    version: 4,
     onConfigure: _onConfigure,
     onCreate: (Database db, int version) async {
       await db.execute(WordEntryRepository.createSqlScript);
       await db.execute(TrainLogRepository.createSqlScript);
     },
-    onUpgrade: (Database db, oldVersion, newVersion) async {},
+    onUpgrade: (Database db, oldVersion, newVersion) async {
+      if (oldVersion == 3) {
+        await db.execute(WordEntryRepository.migrateAddContextColumn);
+      }
+    },
   );
 
   return db;

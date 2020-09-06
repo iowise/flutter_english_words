@@ -39,14 +39,20 @@ class _TrainState extends State<Train> {
   Widget build(BuildContext context) {
     final results = widget.isCheck
         ? [
-            // Expanded(
-            //   child:
             _TrainResult(
               enteredWord: enteredWord,
               word: widget.entry.word,
               isCorrect: widget.enteredWordController.isCorrect,
             ),
-            // ),
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text(widget.entry.context,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .apply(fontStyle: FontStyle.italic)),
+            ),
           ]
         : [];
     return Form(
