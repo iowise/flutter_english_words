@@ -121,9 +121,10 @@ add $_columnContext text
   }
 
   Future<List<WordEntry>> getWordEntries() async {
-    final snapshot =
-        await words.orderBy(_columnCreatedAt, descending: true).get();
-    return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
+    final snapshot = await words.get();
+    final entries = [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
+    entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return entries;
   }
 
   Stream<WordEntry> query({

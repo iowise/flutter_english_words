@@ -80,11 +80,10 @@ create table $_table (
   }
 
   Future<List<TrainLog>> getLogs(String wordId) async {
-    final snapshot = await logs
-        .where(_columnWordId, isEqualTo: wordId)
-        .orderBy(_columnTrainedAt, descending: true)
-        .get();
-    return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
+    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    final entries = [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
+    entries.sort((a, b) => b.trainedAt.compareTo(a.trainedAt));
+    return entries;
   }
 
   Future<List<TrainLog>> dumpLogs() async {
