@@ -49,7 +49,7 @@ class TrainLogRepository extends ChangeNotifier {
   Database db;
 
   TrainLogRepository(this.db) {
-    assert (db.isOpen, 'The DB must be open');
+    assert(db.isOpen, 'The DB must be open');
   }
 
   static String get createSqlScript => '''
@@ -69,15 +69,21 @@ create table $_table (
   }
 
   Future<List<TrainLog>> getLogs(int wordId) async {
-    List<Map> maps = await db.query(_table,
-        where: '$_columnWordId = ?',
-        whereArgs: [wordId]);
+    List<Map> maps = await db
+        .query(_table, where: '$_columnWordId = ?', whereArgs: [wordId]);
     return [for (var map in maps) TrainLog.fromMap(map)];
   }
 
   Future<List<TrainLog>> dumpLogs() async {
     List<Map> maps = await db.query(_table);
     return [for (var map in maps) TrainLog.fromMap(map)];
+  }
+
+  Future<int> deleteLogsForWord(int wordId) async {
+    var deleted = await db
+        .delete(_table, where: '$_columnWordId = ?', whereArgs: [wordId]);
+    notifyListeners();
+    return deleted;
   }
 
   Future close() async => db.close();

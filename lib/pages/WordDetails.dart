@@ -47,12 +47,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: this._onSave,
-          ),
-        ],
+        actions: entryInput.arg == null
+            ? []
+            : <Widget>[
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: _onDelete,
+                ),
+              ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,6 +62,11 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
           WordEntryForm(entry: entryInput),
           ...buildWordDetails(context, trainLog),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Save',
+        child: Icon(Icons.save),
+        onPressed: _onSave,
       ),
     );
   }
@@ -72,13 +79,15 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final nextTrainDate = formatter.format(entryInput.arg.dueToLearnAfter);
     return [
-    ListTile(
-        title: Text("Next train on: $nextTrainDate", style: Theme.of(context).textTheme.bodyText1)),
+      ListTile(
+        title: Text("Next train on: $nextTrainDate",
+            style: Theme.of(context).textTheme.bodyText1),
+      ),
       buildTrainLogs(trainLog),
     ];
   }
 
-  FutureBuilder<List<TrainLog>> buildTrainLogs(TrainLogRepository trainLog) {
+  Widget buildTrainLogs(TrainLogRepository trainLog) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
     return FutureBuilder(
       future: trainLog.getLogs(entryInput.arg.id),
@@ -107,5 +116,12 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   _onSave() async {
     await GetIt.I.get<WordEntryRepository>().save(entryInput.toEntry());
     Navigator.pop(context);
+  }
+
+  _onDelete() async {
+    final wordId = entryInput.arg.id;
+    await GetIt.I.get<TrainLogRepository>().deleteLogsForWord(wordId);
+    await GetIt.I.get<WordEntryRepository>().delete(wordId);
+    Navigator.of(context).pop();
   }
 }
