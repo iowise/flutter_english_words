@@ -9,7 +9,7 @@ class TrainController extends TextEditingController {
 
   TrainController(this.entry);
 
-  bool get isCorrect => entry.word == text;
+  bool get isCorrect => entry.word.trim() == text.trim();
 }
 
 class Train extends StatefulWidget {

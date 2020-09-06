@@ -78,9 +78,9 @@ class WordEntryInput {
   WordEntryInput(this.word, this.translation, { this.arg });
   toEntry() {
     if (arg != null) {
-      return WordEntry.copy(arg, word: word, translation: translation);
+      return WordEntry.copy(arg, word: word.trim(), translation: translation.trim());
     }
-    return WordEntry.create(word, translation);
+    return WordEntry.create(word.trim(), translation.trim());
   }
 
   static WordEntryInput fromWordEntry(WordEntry arg) {
