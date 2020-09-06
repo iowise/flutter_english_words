@@ -4,6 +4,7 @@ import 'package:flutter_app/models/TrainLogRepository.dart';
 import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../models/auth.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -21,12 +22,20 @@ class AppDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
             ),
-            child: ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Sign in'),
-              onTap: () {
-                // signIn();
-              },
+            child: ChangeNotifierProvider(
+              create: (context) => UserChanged(),
+              child: ListTile(
+                leading: Icon(Icons.account_circle),
+                title: Consumer<UserChanged>(
+                  builder: (context, userChanged, child) {
+                    final user = userChanged.user;
+                    return user == null ? Text('Sign in') : Text(user.email);
+                  },
+                ),
+                onTap: () {
+                  signIn();
+                },
+              ),
             ),
           ),
           ListTile(

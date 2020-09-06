@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -12,7 +14,7 @@ final String _columnTrainedAt = '_trained_at';
 final String columnDueToLearnAfter = '_due_to_learn_after';
 
 class WordEntry {
-  int id;
+  String id;
 
   String word;
   String translation;
@@ -71,13 +73,21 @@ class WordEntry {
         ? DateTime.parse(map[columnDueToLearnAfter])
         : null;
   }
+  factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
+    final entry =  WordEntry.fromMap(snapshot.data());
+    entry.id = snapshot.reference.id;
+    return entry;
+  }
 }
 
 class WordEntryRepository extends ChangeNotifier {
-  Database db;
+  CollectionReference words;
 
-  WordEntryRepository(this.db) {
-    assert(db.isOpen, 'The DB must be open');
+  WordEntryRepository() {
+    words = FirebaseFirestore.instance
+        .collection('words')
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .collection('list');
   }
 
   static String get createSqlScript => '''
@@ -98,55 +108,43 @@ add $_columnContext text
 ''';
 
   Future<WordEntry> insert(WordEntry entry) async {
-    entry.id = await db.insert(WORDS_TABLE, entry.toMap());
+    final reference = await words.add(entry.toMap());
+    entry.id = reference.id;
     notifyListeners();
     return entry;
   }
 
-  Future<WordEntry> getWordEntry(int id) async {
-    List<Map> maps =
-        await db.query(WORDS_TABLE, where: '$_columnId = ?', whereArgs: [id]);
-    if (maps.length > 0) {
-      return WordEntry.fromMap(maps.first);
-    }
-    return null;
-  }
-
-  Future<WordEntry> findCopy(String word) async {
-    List<Map> maps = await db
-        .query(WORDS_TABLE, where: '$_columnWord = ?', whereArgs: [word]);
-    if (maps.length > 0) {
-      return WordEntry.fromMap(maps.first);
-    }
-    return null;
+  Future<WordEntry> getWordEntry(String id) async {
+    final snapshot = await words.doc(id).get();
+    return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
   Future<List<WordEntry>> getWordEntries() async {
-    List<Map> maps = await db.query(WORDS_TABLE);
-    return [for (var map in maps) WordEntry.fromMap(map)];
+    final snapshot = await words.get();
+    return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
-  Future<List<WordEntry>> query({final where, final whereArgs}) async {
-    List<Map> maps =
-        await db.query(WORDS_TABLE, where: where, whereArgs: whereArgs);
-    return [for (var map in maps) WordEntry.fromMap(map)];
+  Stream<WordEntry> query({
+    bool Function(WordEntry word) where,
+  }) async* {
+    final snapshot = await words.get();
+    for (final doc in snapshot.docs) {
+      final word = WordEntry.fromDocument(doc);
+      if (where(word)) {
+        yield word;
+      }
+    }
   }
 
-  Future<int> delete(int id) async {
-    var deleted =
-        await db.delete(WORDS_TABLE, where: '$_columnId = ?', whereArgs: [id]);
+  Future delete(String id) async {
+    await words.doc(id).delete();
     notifyListeners();
-    return deleted;
   }
 
-  Future<int> update(WordEntry entry) async {
-    var updated = await db.update(WORDS_TABLE, entry.toMap(),
-        where: '$_columnId = ?', whereArgs: [entry.id]);
+  Future update(WordEntry entry) async {
+    await words.doc(entry.id).update(entry.toMap());
     notifyListeners();
-    return updated;
   }
-
-  Future close() async => db.close();
 
   Future save(WordEntry entry) {
     if (entry.id == null) {
@@ -154,5 +152,13 @@ add $_columnContext text
     } else {
       return update(entry);
     }
+  }
+
+  Future<WordEntry> findCopy(String word) async {
+    final snapshot = await words.where(_columnWord, isEqualTo: word).get();
+
+    return snapshot.docs.isNotEmpty
+        ? WordEntry.fromDocument(snapshot.docs[0])
+        : null;
   }
 }

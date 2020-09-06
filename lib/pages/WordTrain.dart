@@ -54,10 +54,11 @@ class _TrainWordsState extends State<TrainWords> {
         trainController = createTrainController();
       });
     } else {
+      final trainService = GetIt.I.get<TrainService>();
+      trainService.trainWord(wordToTrain, trainController.isCorrect);
+      speak(wordToTrain.word);
       setState(() {
         isCheck = true;
-        final trainService = GetIt.I.get<TrainService>();
-        trainService.trainWord(wordToTrain, trainController.isCorrect);
       });
     }
   }

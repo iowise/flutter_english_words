@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_app/models/TrainLogRepository.dart';
+import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
-import './TrainLogRepository.dart';
-import './WordEntryRepository.dart';
 
 Future<Database> createDatabase() async {
   var databasesPath = await getDatabasesPath();
@@ -46,7 +45,7 @@ exportDB(WordEntryRepository wordEntryRepository,
   final words = List.of(
       [for (var i in await wordEntryRepository.getWordEntries()) i.toMap()]);
   Map<String, dynamic> exportMaps = {'words': words, 'logs': logs};
-  file.writeAsString(json.encode(exportMaps));
+  file.writeAsString(jsonEncode(exportMaps));
 
   await FlutterShare.shareFile(
     title: 'Example share',
@@ -64,13 +63,15 @@ importDB(WordEntryRepository wordEntryRepository,
   final wordsMap = {};
 
   for (final i in words) {
-    if (wordEntryRepository.findCopy(i['word']) != null) {
+    final copy = await wordEntryRepository.findCopy(i['word']);
+    if (copy != null) {
       continue;
     }
+    final _id = i['_id'];
+    i['_id'] = null;
     final entry = WordEntry.fromMap(i);
-    entry.id = null;
     await wordEntryRepository.insert(entry);
-    wordsMap[i['_id']] = entry;
+    wordsMap[_id] = entry;
   }
 
   final logs = json['logs'];
@@ -78,8 +79,9 @@ importDB(WordEntryRepository wordEntryRepository,
     if (wordsMap[i['word_id']] == null) {
       continue;
     }
+    i['_id'] = null;
+    i['word_id'] = wordsMap[i['word_id']].id;
     final log = TrainLog.fromMap(i);
-    log.wordId = wordsMap[i['word_id']].id;
     await trainLogRepository.insert(log);
   }
 }

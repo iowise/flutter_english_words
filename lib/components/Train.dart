@@ -112,7 +112,7 @@ class _TrainResult extends StatelessWidget {
     return Card(
       color: isCorrect ? Colors.green : Colors.red,
       child: InkWell(
-        onTap: () => _speak(),
+        onTap: () => speak(word),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
@@ -143,8 +143,8 @@ class _TrainResult extends StatelessWidget {
     );
   }
 
-  Future _speak() async {
-    FlutterTts flutterTts = FlutterTts();
-    var result = await flutterTts.speak(word);
-  }
+}
+Future speak(word) async {
+  FlutterTts flutterTts = FlutterTts();
+  await flutterTts.speak(word);
 }
