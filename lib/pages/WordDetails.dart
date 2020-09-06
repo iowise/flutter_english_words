@@ -101,7 +101,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                   (e) => ListTile(
                     title: Text(
                         "${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                        style: Theme.of(context).textTheme.bodyText1),
+                        style: Theme.of(context).textTheme.bodyText2),
                   ),
                 )
               ],

@@ -73,8 +73,9 @@ class WordEntry {
         ? DateTime.parse(map[columnDueToLearnAfter])
         : null;
   }
+
   factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
-    final entry =  WordEntry.fromMap(snapshot.data());
+    final entry = WordEntry.fromMap(snapshot.data());
     entry.id = snapshot.reference.id;
     return entry;
   }
@@ -120,7 +121,8 @@ add $_columnContext text
   }
 
   Future<List<WordEntry>> getWordEntries() async {
-    final snapshot = await words.get();
+    final snapshot =
+        await words.orderBy(_columnCreatedAt, descending: true).get();
     return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 

@@ -24,18 +24,17 @@ class MyApp extends StatelessWidget {
                 headline1: TextStyle(fontSize: 72.0),
                 headline4: TextStyle(fontSize: 36.0),
                 bodyText1: TextStyle(fontSize: 20.0),
+                bodyText2: TextStyle(fontSize: 16.0),
               ),
         ),
       ),
-
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => WordsPage(title: 'Words'),
         '/train': (BuildContext context) => TrainPage(title: 'Train a word'),
         '/words': (BuildContext context) => WordsPage(title: 'Words'),
         '/word/create': (BuildContext context) =>
             WordDetails(title: 'Enter word'),
-        '/word/edit': (BuildContext context) =>
-            WordDetails(title: 'Edit word'),
+        '/word/edit': (BuildContext context) => WordDetails(title: 'Edit word'),
       },
     );
   }
