@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as p;
 import './models/WordEntryRepository.dart';
 import './models/SpaceRepetitionScheduler.dart';
 import './models/TrainLogRepository.dart';

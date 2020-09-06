@@ -73,6 +73,11 @@ class WordEntry {
         ? DateTime.parse(map[columnDueToLearnAfter])
         : null;
   }
+  factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
+    final entry =  WordEntry.fromMap(snapshot.data());
+    entry.id = snapshot.reference.id;
+    return entry;
+  }
 }
 
 class WordEntryRepository extends ChangeNotifier {
@@ -111,19 +116,24 @@ add $_columnContext text
 
   Future<WordEntry> getWordEntry(String id) async {
     final snapshot = await words.doc(id).get();
-    return snapshot.exists ? WordEntry.fromMap(snapshot.data()) : null;
+    return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
   Future<List<WordEntry>> getWordEntries() async {
     final snapshot = await words.get();
-    return [for (final doc in snapshot.docs) WordEntry.fromMap(doc.data())];
+    return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
-  Future<List<WordEntry>> query({
-    CollectionReference Function(CollectionReference collection) where,
-  }) async {
-    final snapshot = await where(words).get();
-    return [for (final doc in snapshot.docs) WordEntry.fromMap(doc.data())];
+  Stream<WordEntry> query({
+    bool Function(WordEntry word) where,
+  }) async* {
+    final snapshot = await words.get();
+    for (final doc in snapshot.docs) {
+      final word = WordEntry.fromDocument(doc);
+      if (where(word)) {
+        yield word;
+      }
+    }
   }
 
   Future delete(String id) async {
@@ -146,10 +156,9 @@ add $_columnContext text
 
   Future<WordEntry> findCopy(String word) async {
     final snapshot = await words.where(_columnWord, isEqualTo: word).get();
-    final entries = [
-      for (final doc in snapshot.docs) WordEntry.fromMap(doc.data())
-    ];
 
-    return entries.isNotEmpty ? entries[0] : null;
+    return snapshot.docs.isNotEmpty
+        ? WordEntry.fromDocument(snapshot.docs[0])
+        : null;
   }
 }

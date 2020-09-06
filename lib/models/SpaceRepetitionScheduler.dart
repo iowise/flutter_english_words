@@ -14,16 +14,8 @@ class TrainService extends ChangeNotifier {
   Future<List<WordEntry>> getToReviewToday() async {
     final now = DateTime.now();
     final forLearn = await wordEntryRepository.query(
-      where: (words) => words
-          .where(
-            columnDueToLearnAfter,
-            isNull: true,
-          )
-          .where(
-            columnDueToLearnAfter,
-            isLessThanOrEqualTo: now.toIso8601String(),
-          ),
-    );
+      where: (words) => words.dueToLearnAfter == null || words.dueToLearnAfter.isBefore(now)
+    ).toList();
     return makeListToLearn(forLearn);
   }
 

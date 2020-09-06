@@ -3,7 +3,6 @@ import 'package:flutter_app/models/DB.dart';
 import 'package:flutter_app/models/TrainLogRepository.dart';
 import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:get_it/get_it.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../models/auth.dart';
 

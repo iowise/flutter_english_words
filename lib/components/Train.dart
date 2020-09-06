@@ -145,6 +145,6 @@ class _TrainResult extends StatelessWidget {
 
   Future _speak() async {
     FlutterTts flutterTts = FlutterTts();
-    var result = await flutterTts.speak(word);
+    await flutterTts.speak(word);
   }
 }

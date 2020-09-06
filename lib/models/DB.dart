@@ -63,13 +63,15 @@ importDB(WordEntryRepository wordEntryRepository,
   final wordsMap = {};
 
   for (final i in words) {
-    if (wordEntryRepository.findCopy(i['word']) != null) {
+    final copy = await wordEntryRepository.findCopy(i['word']);
+    if (copy != null) {
       continue;
     }
+    final _id = i['_id'];
+    i['_id'] = null;
     final entry = WordEntry.fromMap(i);
-    entry.id = null;
     await wordEntryRepository.insert(entry);
-    wordsMap[i['_id']] = entry;
+    wordsMap[_id] = entry;
   }
 
   final logs = json['logs'];
@@ -77,8 +79,9 @@ importDB(WordEntryRepository wordEntryRepository,
     if (wordsMap[i['word_id']] == null) {
       continue;
     }
+    i['_id'] = null;
+    i['word_id'] = wordsMap[i['word_id']].id;
     final log = TrainLog.fromMap(i);
-    log.wordId = wordsMap[i['word_id']].id;
     await trainLogRepository.insert(log);
   }
 }

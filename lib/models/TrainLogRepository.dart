@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -43,13 +44,22 @@ class TrainLog {
         ? DateTime.parse(map[_columnTrainedAt])
         : null;
   }
+
+  factory TrainLog.fromDocument(DocumentSnapshot snapshot) {
+    final log = TrainLog.fromMap(snapshot.data());
+    log.id = snapshot.reference.id;
+    return log;
+  }
 }
 
 class TrainLogRepository extends ChangeNotifier {
   CollectionReference logs;
 
   TrainLogRepository() {
-    logs = FirebaseFirestore.instance.collection('trainLog');
+    logs = FirebaseFirestore.instance
+        .collection('trainLog')
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .collection('list');
   }
 
   static String get createSqlScript => '''
@@ -71,12 +81,12 @@ create table $_table (
 
   Future<List<TrainLog>> getLogs(String wordId) async {
     final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
-    return [for (final doc in snapshot.docs) TrainLog.fromMap(doc.data())];
+    return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
   }
 
   Future<List<TrainLog>> dumpLogs() async {
     final snapshot = await logs.get();
-    return [for (final doc in snapshot.docs) TrainLog.fromMap(doc.data())];
+    return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
   }
 
   Future deleteLogsForWord(String wordId) async {
