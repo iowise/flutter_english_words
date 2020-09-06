@@ -61,7 +61,7 @@ class WordEntry {
     id = map[_columnId];
     word = map[_columnWord];
     translation = map[_columnTranslation];
-    context = map[_columnContext];
+    context = map[_columnContext] ?? '';
     createdAt = DateTime.parse(map[_columnCreatedAt]);
 
     trainedAt = map[_columnTrainedAt] != null
@@ -84,7 +84,7 @@ class WordEntryRepository extends ChangeNotifier {
 create table $WORDS_TABLE (
   $_columnWord text not null,
   $_columnTranslation text not null,
-  $_columnContext text not null,
+  $_columnContext text,
   $_columnCreatedAt datatime not null,
   $_columnTrainedAt datatime,
   $columnDueToLearnAfter datatime,
@@ -94,7 +94,7 @@ create table $WORDS_TABLE (
 
   static String get migrateAddContextColumn => '''
 alter table $WORDS_TABLE
-add $_columnContext text not null
+add $_columnContext text
 ''';
 
   Future<WordEntry> insert(WordEntry entry) async {
