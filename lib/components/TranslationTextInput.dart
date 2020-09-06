@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/tranlsatorsAndDictionaries/reverso.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -61,5 +62,8 @@ Future<List<DictionaryItem>> _suggestions(String text) async {
   final russianTranslation = await text.translate(to: 'ru');
   return [
     DictionaryItem(russianTranslation.text, Icons.translate),
+    ...[
+      for (final i in await reverso(text)) DictionaryItem(i, Icons.sync),
+    ],
   ];
 }
