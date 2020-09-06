@@ -74,6 +74,7 @@ class _TrainState extends State<Train> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
+              autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.visiblePassword,
               enableSuggestions: false,
