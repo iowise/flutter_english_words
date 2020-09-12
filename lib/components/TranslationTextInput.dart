@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/tranlsatorsAndDictionaries/reverso.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import '../models/tranlsatorsAndDictionaries/reverso.dart';
 
 class TranslationTextInput extends StatelessWidget {
   TranslationTextInput({

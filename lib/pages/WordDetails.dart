@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/TrainLogRepository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import '../models/TrainLogRepository.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
 

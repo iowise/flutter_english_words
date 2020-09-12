@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_app/models/TrainLogRepository.dart';
-import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import './TrainLogRepository.dart';
+import './WordEntryRepository.dart';
 
 Future<Database> createDatabase() async {
   var databasesPath = await getDatabasesPath();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/DB.dart';
-import 'package:flutter_app/models/TrainLogRepository.dart';
-import 'package:flutter_app/models/WordEntryRepository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../models/auth.dart';
+import '../models/DB.dart';
+import '../models/TrainLogRepository.dart';
+import '../models/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
