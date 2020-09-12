@@ -59,7 +59,7 @@ Future<List<DictionaryItem>> _suggestions(String text) async {
   if (text.isEmpty) {
     return [];
   }
-  final russianTranslation = await text.translate(to: 'ru');
+  final russianTranslation = await text.translate(from: 'en', to: 'ru');
   return [
     DictionaryItem(russianTranslation.text, Icons.translate),
     ...[
