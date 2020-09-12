@@ -57,6 +57,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   ),
                   TextFormField(
                     initialValue: widget.entry.context,
+                    maxLines: null,
                     decoration: InputDecoration(
                       filled: true,
                       hintText: 'Enter a context...',
