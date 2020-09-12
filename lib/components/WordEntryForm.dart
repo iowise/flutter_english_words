@@ -69,6 +69,19 @@ class _WordEntryFormState extends State<WordEntryForm> {
                       });
                     },
                   ),
+                  TextFormField(
+                    initialValue: widget.entry.synonyms,
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: 'Enter a synonyms...',
+                      labelText: 'Synonyms',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        widget.entry.synonyms = value;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
@@ -84,9 +97,16 @@ class WordEntryInput {
   String word;
   String translation;
   String context;
+  String synonyms;
   WordEntry arg;
 
-  WordEntryInput({this.word, this.translation, this.context, this.arg});
+  WordEntryInput({
+    this.word,
+    this.translation,
+    this.context,
+    this.synonyms,
+    this.arg,
+  });
 
   toEntry() {
     if (arg != null) {
@@ -95,9 +115,15 @@ class WordEntryInput {
         word: word.trim(),
         translation: translation.trim(),
         context: context.trim(),
+        synonyms: synonyms.trim(),
       );
     }
-    return WordEntry.create(word.trim(), translation.trim(), context.trim());
+    return WordEntry.create(
+      word: word.trim(),
+      translation: translation.trim(),
+      context: context.trim(),
+      synonyms: synonyms.trim(),
+    );
   }
 
   static WordEntryInput fromWordEntry(WordEntry arg) {
@@ -105,11 +131,12 @@ class WordEntryInput {
       word: arg.word,
       translation: arg.translation,
       context: arg.context,
+      synonyms: arg.synonyms,
       arg: arg,
     );
   }
 
   static WordEntryInput empty() {
-    return WordEntryInput(word: "", translation: "", context: "");
+    return WordEntryInput(word: "", translation: "", context: "", synonyms: "");
   }
 }

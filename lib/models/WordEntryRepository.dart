@@ -9,6 +9,7 @@ final String _columnId = '_id';
 final String _columnWord = 'word';
 final String _columnTranslation = 'translation';
 final String _columnContext = 'context';
+final String _columnSynonyms = 'synonyms';
 final String _columnCreatedAt = '_created_at';
 final String _columnTrainedAt = '_trained_at';
 final String columnDueToLearnAfter = '_due_to_learn_after';
@@ -19,6 +20,7 @@ class WordEntry {
   String word;
   String translation;
   String context;
+  String synonyms;
 
   DateTime createdAt;
   DateTime trainedAt;
@@ -29,6 +31,7 @@ class WordEntry {
       _columnWord: word,
       _columnTranslation: translation,
       _columnContext: context,
+      _columnSynonyms: synonyms,
       _columnCreatedAt: createdAt.toIso8601String(),
     };
     if (id != null) {
@@ -43,12 +46,12 @@ class WordEntry {
     return map;
   }
 
-  WordEntry.create(this.word, this.translation, this.context) {
+  WordEntry.create({this.word, this.translation, this.context, this.synonyms}) {
     createdAt = DateTime.now();
   }
 
   WordEntry.copy(WordEntry other,
-      {final String word, final String translation, final String context}) {
+      {final String word, final String translation, final String context, final String synonyms}) {
     this.id = other.id;
     this.createdAt = other.createdAt;
     this.trainedAt = other.trainedAt;
@@ -57,6 +60,7 @@ class WordEntry {
     this.word = word != null ? word : other.word;
     this.translation = translation != null ? translation : other.translation;
     this.context = context != null ? context : other.context;
+    this.synonyms = synonyms != null ? synonyms : other.synonyms;
   }
 
   WordEntry.fromMap(Map<String, dynamic> map) {
@@ -64,6 +68,7 @@ class WordEntry {
     word = map[_columnWord];
     translation = map[_columnTranslation];
     context = map[_columnContext] ?? '';
+    synonyms = map[_columnSynonyms] ?? '';
     createdAt = DateTime.parse(map[_columnCreatedAt]);
 
     trainedAt = map[_columnTrainedAt] != null

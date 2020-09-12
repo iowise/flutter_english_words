@@ -64,10 +64,27 @@ class _TrainState extends State<Train> {
           Card(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
-              child: Text(
-                widget.entry.translation,
-                style: Theme.of(context).textTheme.bodyText1,
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    widget.entry.translation,
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
+                  ...(widget.entry.synonyms.isNotEmpty
+                      ? [
+                          Text(
+                            widget.entry.synonyms,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText2,
+                            textAlign: TextAlign.center,
+                          )
+                        ]
+                      : []),
+                ],
               ),
             ),
           ),
@@ -143,8 +160,8 @@ class _TrainResult extends StatelessWidget {
       ),
     );
   }
-
 }
+
 Future speak(word) async {
   FlutterTts flutterTts = FlutterTts();
   await flutterTts.speak(word);
