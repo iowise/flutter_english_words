@@ -70,17 +70,15 @@ class _WordsPageState extends State<WordsPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               _buildReviewButton(),
-              Expanded(
-                child: FutureBuilder(
-                  future: wordEntryRepository.getWordEntries(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
-                      return CircularProgressIndicator();
-                    }
-                    var words = snapshot.data;
-                    return WordList(words: words);
-                  },
-                ),
+              FutureBuilder(
+                future: wordEntryRepository.getWordEntries(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+                  var words = snapshot.data;
+                  return Expanded(child: WordList(words: words));
+                },
               ),
             ],
           );
