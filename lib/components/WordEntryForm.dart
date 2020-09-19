@@ -20,70 +20,68 @@ class _WordEntryFormState extends State<WordEntryForm> {
       key: _formKey,
       child: Align(
         alignment: Alignment.topCenter,
-        child: Card(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    initialValue: widget.entry.word,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: 'Enter a word...',
-                      labelText: 'Word',
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        widget.entry.word = value;
-                      });
-                    },
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextFormField(
+                  initialValue: widget.entry.word,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a word...',
+                    labelText: 'Word',
                   ),
-                  TranslationTextInput(
-                    initialValue: widget.entry.translation,
-                    word: widget.entry.word,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: 'Enter a translation...',
-                      labelText: 'Translation',
-                    ),
-                    onChanged: (value) {
-                      widget.entry.translation = value;
-                    },
+                  onChanged: (value) {
+                    setState(() {
+                      widget.entry.word = value;
+                    });
+                  },
+                ),
+                TranslationTextInput(
+                  initialValue: widget.entry.translation,
+                  word: widget.entry.word,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a translation...',
+                    labelText: 'Translation',
                   ),
-                  TextFormField(
-                    initialValue: widget.entry.context,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: 'Enter a context...',
-                      labelText: 'Context',
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        widget.entry.context = value;
-                      });
-                    },
+                  onChanged: (value) {
+                    widget.entry.translation = value;
+                  },
+                ),
+                TextFormField(
+                  initialValue: widget.entry.context,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a context...',
+                    labelText: 'Context',
                   ),
-                  TextFormField(
-                    initialValue: widget.entry.synonyms,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: 'Enter a synonyms...',
-                      labelText: 'Synonyms',
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        widget.entry.synonyms = value;
-                      });
-                    },
+                  onChanged: (value) {
+                    setState(() {
+                      widget.entry.context = value;
+                    });
+                  },
+                ),
+                TextFormField(
+                  initialValue: widget.entry.synonyms,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a synonyms...',
+                    labelText: 'Synonyms',
                   ),
-                ],
-              ),
+                  onChanged: (value) {
+                    setState(() {
+                      widget.entry.synonyms = value;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
         ),

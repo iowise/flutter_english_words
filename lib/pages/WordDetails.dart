@@ -56,13 +56,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                 ),
               ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          WordEntryForm(entry: entryInput),
-          ...buildWordDetails(context, trainLog),
-        ],
-      ),
+      body: buildBody(trainLog),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
         child: Icon(Icons.save),
@@ -71,46 +65,52 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  List<Widget> buildWordDetails(
-      BuildContext context, TrainLogRepository trainLog) {
-    if (entryInput.arg?.dueToLearnAfter == null) {
-      return [];
-    }
-    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    final nextTrainDate = formatter.format(entryInput.arg.dueToLearnAfter);
-    return [
-      ListTile(
-        title: Text("Next train on: $nextTrainDate",
-            style: Theme.of(context).textTheme.bodyText1),
-      ),
-      buildTrainLogs(trainLog),
-    ];
-  }
-
-  Widget buildTrainLogs(TrainLogRepository trainLog) {
-    final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
+  FutureBuilder<List<TrainLog>> buildBody(TrainLogRepository trainLog) {
     return FutureBuilder(
       future: trainLog.getLogs(entryInput.arg.id),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          List<TrainLog> logs = snapshot.data;
-          return Expanded(
-            child: ListView(
-              children: <Widget>[
-                ...logs.map(
-                  (e) => ListTile(
-                    title: Text(
-                        "${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                        style: Theme.of(context).textTheme.bodyText2),
-                  ),
-                )
-              ],
-            ),
-          );
+        List details;
+        if (entryInput.arg?.dueToLearnAfter == null) {
+          details = [];
+        } else {
+          details = [
+            buildWordDetails(context, trainLog),
+            ...buildTrainLogs(snapshot),
+          ];
         }
-        return Text('Not ready');
+        return ListView(
+          children: <Widget>[
+            WordEntryForm(entry: entryInput),
+            ...details,
+          ],
+        );
       },
     );
+  }
+
+  Widget buildWordDetails(BuildContext context, TrainLogRepository trainLog) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final nextTrainDate = formatter.format(entryInput.arg.dueToLearnAfter);
+    return ListTile(
+      title: Text("Next train on: $nextTrainDate",
+          style: Theme.of(context).textTheme.bodyText1),
+    );
+  }
+
+  List<Widget> buildTrainLogs(AsyncSnapshot<List<TrainLog>> snapshot) {
+    final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
+    if (snapshot.hasData) {
+      final logs = snapshot.data;
+      return logs
+          .map(
+            (e) => ListTile(
+              title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
+                  style: Theme.of(context).textTheme.bodyText2),
+            ),
+          )
+          .toList();
+    }
+    return [Center(child: CircularProgressIndicator())];
   }
 
   _onSave() async {
