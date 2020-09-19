@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/WordEntryRepository.dart';
 
@@ -48,12 +49,10 @@ class _TrainState extends State<Train> {
             ),
             Padding(
               padding: const EdgeInsets.all(32.0),
-              child: Text(widget.entry.context,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      .apply(fontStyle: FontStyle.italic)),
+              child: MarkdownBody(
+                shrinkWrap: false,
+                data: widget.entry.context,
+              ),
             ),
           ]
         : [];
@@ -77,9 +76,7 @@ class _TrainState extends State<Train> {
                       ? [
                           Text(
                             widget.entry.synonyms,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2,
+                            style: Theme.of(context).textTheme.bodyText2,
                             textAlign: TextAlign.center,
                           )
                         ]
