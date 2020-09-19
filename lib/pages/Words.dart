@@ -28,7 +28,6 @@ class _WordsPageState extends State<WordsPage> {
         repository = GetIt.I.get<WordEntryRepository>();
         trainRepository = GetIt.I.get<TrainService>();
       });
-      setState(() {});
     });
   }
 
@@ -41,7 +40,10 @@ class _WordsPageState extends State<WordsPage> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              print('search');
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(this.repository),
+              );
             },
           ),
         ],
@@ -104,5 +106,98 @@ class _WordsPageState extends State<WordsPage> {
         },
       ),
     );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate {
+  WordEntryBloc blocSearch;
+
+  final WordEntryRepository repository;
+
+  CustomSearchDelegate(this.repository) {
+    blocSearch = WordEntryBloc();
+    if (repository != null) blocSearch.listenRepository(repository);
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) {
+        blocSearch = WordEntryBloc();
+        if (repository != null) blocSearch.listenRepository(repository);
+        return blocSearch;
+      },
+      child: Consumer<WordEntryBloc>(
+        builder: (context, blocSearch, child) {
+          final List data = blocSearch._data;
+          final filtered =
+              data.where((element) => element.word.contains(query)).toList();
+          if (filtered.isEmpty) {
+            return Center(child: Text('Nothing is found'));
+          }
+          return WordList(words: filtered);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return buildResults(context);
+  }
+}
+
+class WordEntryBloc extends ChangeNotifier {
+  List<WordEntry> _data = [];
+
+  WordEntryRepository repository;
+
+  listenRepository(repository) async {
+    this.repository = repository;
+    _data = await this.repository.getWordEntries();
+    notifyListeners();
+    this.repository.editedWord.addListener(_editWord);
+    this.repository.deletedWordId.addListener(_removeWord);
+  }
+
+  @override
+  void dispose() {
+    this.repository.editedWord.removeListener(_editWord);
+    this.repository.deletedWordId.removeListener(_removeWord);
+    super.dispose();
+  }
+
+  void _editWord() {
+    final index = _data.indexWhere(
+        (element) => element.id == this.repository.editedWord.value.id);
+    _data.replaceRange(index, index, [this.repository.editedWord.value]);
+    notifyListeners();
+  }
+
+  void _removeWord() {
+    _data.removeWhere((i) => i.id == this.repository.deletedWordId.value);
+    notifyListeners();
   }
 }

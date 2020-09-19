@@ -88,6 +88,8 @@ class WordEntry {
 
 class WordEntryRepository extends ChangeNotifier {
   CollectionReference words;
+  final editedWord = ValueNotifier<WordEntry>(null);
+  final deletedWordId = ValueNotifier<String>(null);
 
   WordEntryRepository() {
     words = FirebaseFirestore.instance
@@ -146,11 +148,13 @@ add $_columnContext text
 
   Future delete(String id) async {
     await words.doc(id).delete();
+    deletedWordId.value = id;
     notifyListeners();
   }
 
   Future update(WordEntry entry) async {
     await words.doc(entry.id).update(entry.toMap());
+    editedWord.value = entry;
     notifyListeners();
   }
 
