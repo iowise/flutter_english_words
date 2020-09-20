@@ -45,7 +45,7 @@ class _TrainWordsState extends State<TrainWords> {
     if (isCheck) {
       var isEnd = trainIndex >= widget.wordsToLearn.length - 1;
       if (isEnd) {
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         return;
       }
       setState(() {

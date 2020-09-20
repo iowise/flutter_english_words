@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Word Trainer',
       debugShowCheckedModeBanner: false,
+      navigatorKey: GetIt.I.get(instanceName: 'Navigator'),
       theme: ThemeData(
         primarySwatch: Colors.amber,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -33,8 +35,8 @@ class MyApp extends StatelessWidget {
         '/train': (BuildContext context) => TrainPage(title: 'Train a word'),
         '/words': (BuildContext context) => WordsPage(title: 'Words'),
         '/word/create': (BuildContext context) =>
-            WordDetails(title: 'Enter word'),
-        '/word/edit': (BuildContext context) => WordDetails(title: 'Edit word'),
+            WordDetails(title: 'Enter a word'),
+        '/word/edit': (BuildContext context) => WordDetails(title: 'Edit a word'),
       },
     );
   }

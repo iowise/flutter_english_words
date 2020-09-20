@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:word_trainer/pages/WordDetails.dart';
 import '../models/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {
@@ -33,6 +34,7 @@ class WordList extends StatelessWidget {
   }
 
   _showDetails(WordEntry row, context) {
-    Navigator.pushNamed(context, "/word/edit", arguments: row);
+    Navigator.pushNamed(context, "/word/edit",
+        arguments: WordDetailsArguments(entry: row));
   }
 }

@@ -47,15 +47,6 @@ class AppDrawer extends StatelessWidget {
               await exportDB(wordEntryRepository, trainLogRepository);
             },
           ),
-          ListTile(
-            leading: Icon(Icons.file_download),
-            title: Text('Import'),
-            onTap: () async {
-              final wordEntryRepository = GetIt.I.get<WordEntryRepository>();
-              final trainLogRepository = GetIt.I.get<TrainLogRepository>();
-              await importDB(wordEntryRepository, trainLogRepository);
-            },
-          ),
         ],
       ),
     );

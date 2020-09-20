@@ -5,6 +5,13 @@ import '../models/TrainLogRepository.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
 
+class WordDetailsArguments {
+  final WordEntry entry;
+  final String word;
+
+  WordDetailsArguments({this.entry, this.word});
+}
+
 class WordDetails extends StatelessWidget {
   WordDetails({Key key, this.title}) : super(key: key);
 
@@ -12,10 +19,12 @@ class WordDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WordEntry arg = ModalRoute.of(context).settings.arguments;
-    var entryInput = WordEntryInput.empty();
-    if (arg != null) {
-      entryInput = WordEntryInput.fromWordEntry(arg);
+    final WordDetailsArguments arg = ModalRoute.of(context).settings.arguments;
+    final entryInput = arg?.entry == null
+        ? WordEntryInput.empty()
+        : WordEntryInput.fromWordEntry(arg.entry);
+    if (arg?.word != null) {
+      entryInput.word = arg.word;
     }
     return WordCreateOrEdit(title: title, entryInput: entryInput);
   }
@@ -129,6 +138,6 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     final wordId = entryInput.arg.id;
     await GetIt.I.get<TrainLogRepository>().deleteLogsForWord(wordId);
     await GetIt.I.get<WordEntryRepository>().delete(wordId);
-    Navigator.of(context).pop();
+    Navigator.pop(context);
   }
 }

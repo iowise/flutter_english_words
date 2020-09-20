@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../components/Drawer.dart';
+import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/ReviewButton.dart';
@@ -28,6 +29,7 @@ class _WordsPageState extends State<WordsPage> {
         repository = GetIt.I.get<WordEntryRepository>();
         trainRepository = GetIt.I.get<TrainService>();
       });
+      GetIt.I.get<SharedWordsService>().init();
     });
   }
 
