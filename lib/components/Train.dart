@@ -21,13 +21,13 @@ class Train extends StatefulWidget {
   final ResultCallback onSubmit;
   final TrainController enteredWordController;
 
-  Train(
-      {Key key,
-      this.entry,
-      this.isCheck,
-      this.onSubmit,
-      this.enteredWordController})
-      : super(key: key);
+  Train({
+    Key key,
+    @required this.entry,
+    @required this.isCheck,
+    @required this.onSubmit,
+    @required this.enteredWordController,
+  }) : super(key: key);
 
   @override
   _TrainState createState() => _TrainState();

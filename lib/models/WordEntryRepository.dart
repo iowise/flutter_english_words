@@ -46,12 +46,22 @@ class WordEntry {
     return map;
   }
 
-  WordEntry.create({this.word, this.translation, this.context, this.synonyms}) {
+  WordEntry.create({
+    @required this.word,
+    @required this.translation,
+    @required this.context,
+    @required this.synonyms,
+  }) {
     createdAt = DateTime.now();
   }
 
-  WordEntry.copy(WordEntry other,
-      {final String word, final String translation, final String context, final String synonyms}) {
+  WordEntry.copy(
+    WordEntry other, {
+    @required final String word,
+    @required final String translation,
+    @required final String context,
+    @required final String synonyms,
+  }) {
     this.id = other.id;
     this.createdAt = other.createdAt;
     this.trainedAt = other.trainedAt;
@@ -129,7 +139,9 @@ add $_columnContext text
 
   Future<List<WordEntry>> getWordEntries() async {
     final snapshot = await words.get();
-    final entries = [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
+    final entries = [
+      for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
+    ];
     entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return entries;
   }

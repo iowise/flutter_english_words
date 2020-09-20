@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
+import 'WordContextTextFormField.dart';
 
 class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;
@@ -54,14 +55,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     widget.entry.translation = value;
                   },
                 ),
-                TextFormField(
-                  initialValue: widget.entry.context,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Enter a context...',
-                    labelText: 'Context',
-                  ),
+                WordContextTextFormField(
+                  entry: widget.entry,
                   onChanged: (value) {
                     setState(() {
                       widget.entry.context = value;
@@ -90,21 +85,19 @@ class _WordEntryFormState extends State<WordEntryForm> {
   }
 }
 
-class WordEntryInput {
+class WordEntryInput extends WordContextInput{
   int id;
-  String word;
   String translation;
-  String context;
   String synonyms;
   WordEntry arg;
 
   WordEntryInput({
-    this.word,
-    this.translation,
-    this.context,
-    this.synonyms,
+    @required word,
+    @required context,
+    @required this.translation,
+    @required this.synonyms,
     this.arg,
-  });
+  }): super(word, context);
 
   toEntry() {
     if (arg != null) {

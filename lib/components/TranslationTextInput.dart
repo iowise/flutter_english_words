@@ -6,10 +6,10 @@ import '../models/tranlsatorsAndDictionaries/reverso.dart';
 class TranslationTextInput extends StatelessWidget {
   TranslationTextInput({
     Key key,
-    this.onChanged,
-    this.word,
-    this.decoration,
-    this.initialValue,
+    @required this.onChanged,
+    @required this.word,
+    @required this.decoration,
+    @required this.initialValue,
   }) : super(key: key) {
     _typeAheadController = TextEditingController(text: initialValue);
     _typeAheadController.addListener(() {
@@ -63,7 +63,8 @@ Future<List<DictionaryItem>> _suggestions(String text) async {
   return [
     DictionaryItem(russianTranslation.text, Icons.translate),
     ...[
-      for (final i in await reverso(text)) DictionaryItem(i, Icons.sync),
+      for (final i in await reversoTranslation(text))
+        DictionaryItem(i, Icons.sync),
     ],
   ];
 }

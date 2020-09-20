@@ -4,7 +4,7 @@ import '../models/WordEntryRepository.dart';
 class ReviewButton extends StatelessWidget {
   final List<WordEntry> wordsToReview;
 
-  const ReviewButton({Key key, this.wordsToReview}) : super(key: key);
+  const ReviewButton({Key key, @required this.wordsToReview}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ReviewButton extends StatelessWidget {
         if (wordsToReview.isNotEmpty) {
           Navigator.pushNamed(context, '/train', arguments: wordsToReview);
         }
-      }
+      },
     );
   }
 }

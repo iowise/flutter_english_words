@@ -65,7 +65,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  FutureBuilder<List<TrainLog>> buildBody(TrainLogRepository trainLog) {
+  Widget buildBody(TrainLogRepository trainLog) {
+    if (entryInput.arg == null) {
+      return ListView(
+        children: <Widget>[
+          WordEntryForm(entry: entryInput),
+        ],
+      );
+    }
     return FutureBuilder(
       future: trainLog.getLogs(entryInput.arg.id),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
