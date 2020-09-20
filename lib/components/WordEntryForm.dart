@@ -9,11 +9,16 @@ class WordEntryForm extends StatefulWidget {
   WordEntryForm({Key key, this.entry}) : super(key: key);
 
   @override
-  _WordEntryFormState createState() => _WordEntryFormState();
+  _WordEntryFormState createState() => _WordEntryFormState(this.entry);
 }
 
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController wordContextController;
+
+  _WordEntryFormState(final WordEntryInput entry) {
+    wordContextController = TextEditingController(text: entry.context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                 ),
                 WordContextTextFormField(
                   entry: widget.entry,
+                  controller: wordContextController,
                   onChanged: (value) {
                     setState(() {
                       widget.entry.context = value;
@@ -85,7 +91,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
   }
 }
 
-class WordEntryInput extends WordContextInput{
+class WordEntryInput extends WordContextInput {
   int id;
   String translation;
   String synonyms;
@@ -97,7 +103,7 @@ class WordEntryInput extends WordContextInput{
     @required this.translation,
     @required this.synonyms,
     this.arg,
-  }): super(word, context);
+  }) : super(word, context);
 
   toEntry() {
     if (arg != null) {

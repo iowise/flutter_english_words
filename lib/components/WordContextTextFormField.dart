@@ -12,15 +12,14 @@ abstract class WordContextInput {
 class WordContextTextFormField extends StatelessWidget {
   final Function(String) onChanged;
   final WordContextInput entry;
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController controller;
 
   WordContextTextFormField({
     Key key,
     @required this.onChanged,
     @required this.entry,
-  }) : super(key: key) {
-    controller.text = entry.context;
-  }
+    @required this.controller,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
