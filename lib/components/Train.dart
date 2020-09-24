@@ -125,7 +125,7 @@ class _TrainResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: isCorrect ? Colors.green : Colors.red,
+      color: isCorrect ? Colors.green : Colors.amber[900],
       child: InkWell(
         onTap: () => speak(word),
         child: Padding(
@@ -136,7 +136,7 @@ class _TrainResult extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Text(
-                  isCorrect ? "Correct" : "Wrong",
+                  isCorrect ? "Awesome 🚀" : "Until the next time 😉",
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1

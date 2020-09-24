@@ -21,7 +21,7 @@ showNotification() async {
 Future<FlutterLocalNotificationsPlugin> _createPlugin() async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  var initializationSettingsAndroid = AndroidInitializationSettings('ic_stat_name');
   var initializationSettingsIOS = IOSInitializationSettings(
       onDidReceiveLocalNotification: onDidReceiveLocalNotification);
   var initializationSettings = InitializationSettings(
