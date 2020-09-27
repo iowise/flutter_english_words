@@ -92,7 +92,7 @@ class _TrainState extends State<Train> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.visiblePassword,
               enableSuggestions: false,
-              enabled: !widget.isCheck,
+              readOnly: widget.isCheck,
               style: Theme.of(context).textTheme.headline5,
               controller: widget.enteredWordController,
               decoration: InputDecoration(
