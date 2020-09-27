@@ -7,10 +7,15 @@ typedef ResultCallback = void Function();
 
 class TrainController extends TextEditingController {
   final WordEntry entry;
+  int attempt = 0;
 
   TrainController(this.entry);
 
   bool get isCorrect => _clean(entry.word) == _clean(text);
+
+  newAttempt() {
+    attempt += 1;
+  }
 
   _clean(final str) => str.trim().toLowerCase();
 }
@@ -40,12 +45,13 @@ class _TrainState extends State<Train> {
 
   @override
   Widget build(BuildContext context) {
-    final results = widget.isCheck
+    final results = widget.isCheck || widget.enteredWordController.attempt > 0
         ? [
             _TrainResult(
               enteredWord: enteredWord,
               word: widget.entry.word,
               isCorrect: widget.enteredWordController.isCorrect,
+              attempt: widget.enteredWordController.attempt,
             ),
             Padding(
               padding: const EdgeInsets.all(32.0),
@@ -72,15 +78,7 @@ class _TrainState extends State<Train> {
                     style: Theme.of(context).textTheme.bodyText1,
                     textAlign: TextAlign.center,
                   ),
-                  ...(widget.entry.synonyms.isNotEmpty
-                      ? [
-                          Text(
-                            widget.entry.synonyms,
-                            style: Theme.of(context).textTheme.bodyText2,
-                            textAlign: TextAlign.center,
-                          )
-                        ]
-                      : []),
+                  ...(buildSynonyms(context)),
                 ],
               ),
             ),
@@ -112,15 +110,33 @@ class _TrainState extends State<Train> {
       ),
     );
   }
+
+  List<Widget> buildSynonyms(BuildContext context) {
+    return widget.entry.synonyms.isNotEmpty
+        ? [
+            Text(
+              widget.entry.synonyms,
+              style: Theme.of(context).textTheme.bodyText2,
+              textAlign: TextAlign.center,
+            )
+          ]
+        : [];
+  }
 }
 
 class _TrainResult extends StatelessWidget {
   final String word;
   final String enteredWord;
   final bool isCorrect;
+  final int attempt;
 
-  const _TrainResult({Key key, this.word, this.enteredWord, this.isCorrect})
-      : super(key: key);
+  const _TrainResult({
+    Key key,
+    @required this.word,
+    @required this.enteredWord,
+    @required this.isCorrect,
+    @required this.attempt,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +152,7 @@ class _TrainResult extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Text(
-                  isCorrect ? "Awesome 🚀" : "Until the next time 😉",
+                  buildFeedbackText(),
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1
@@ -156,6 +172,15 @@ class _TrainResult extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String buildFeedbackText() {
+    if (isCorrect) {
+      return "Awesome! 🚀";
+    } else {
+      if (attempt == 1) return "Try again! 😸";
+      return "Until the next time 😉";
+    }
   }
 }
 

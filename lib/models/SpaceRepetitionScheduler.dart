@@ -19,8 +19,9 @@ class TrainService extends ChangeNotifier {
     return makeListToLearn(forLearn);
   }
 
-  Future trainWord(WordEntry word, isCorrent) async {
-    final score = isCorrent ? 4 : 0;
+  Future trainWord(WordEntry word, bool isCorrect, int attempt) async {
+    final score = isCorrect ? (attempt == 0 ? 4 : 1) : 0;
+
     final history = await trainLogRepository.getLogs(word.id);
     final historyScore = history.map((e) => e.score);
     final waitInDays = daysTillNextTestAlgorithm(score, historyScore);

@@ -26,6 +26,8 @@ class TrainWords extends StatefulWidget {
   _TrainWordsState createState() => _TrainWordsState();
 }
 
+final MAX_ATTEMPS = 1;
+
 class _TrainWordsState extends State<TrainWords> {
   bool isCheck = false;
   var trainIndex = 0;
@@ -41,7 +43,7 @@ class _TrainWordsState extends State<TrainWords> {
   TrainController createTrainController() =>
       TrainController(widget.wordsToLearn[trainIndex]);
 
-  _checkTheWord() {
+  _checkTheWord() async {
     if (isCheck) {
       var isEnd = trainIndex >= widget.wordsToLearn.length - 1;
       if (isEnd) {
@@ -54,12 +56,18 @@ class _TrainWordsState extends State<TrainWords> {
         trainController = createTrainController();
       });
     } else {
-      final trainService = GetIt.I.get<TrainService>();
-      trainService.trainWord(wordToTrain, trainController.isCorrect);
-      speak(wordToTrain.word);
+      if (!trainController.isCorrect && trainController.attempt < MAX_ATTEMPS) {
+        setState(() {
+          trainController.newAttempt();
+        });
+        return;
+      };
       setState(() {
         isCheck = true;
       });
+      final trainService = GetIt.I.get<TrainService>();
+      await trainService.trainWord(wordToTrain, trainController.isCorrect, trainController.attempt);
+      speak(wordToTrain.word);
     }
   }
 
