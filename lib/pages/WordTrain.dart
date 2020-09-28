@@ -62,12 +62,12 @@ class _TrainWordsState extends State<TrainWords> {
         });
         return;
       };
+      final trainService = GetIt.I.get<TrainService>();
+      trainService.trainWord(wordToTrain, trainController.isCorrect, trainController.attempt);
+      speak(wordToTrain.word);
       setState(() {
         isCheck = true;
       });
-      final trainService = GetIt.I.get<TrainService>();
-      await trainService.trainWord(wordToTrain, trainController.isCorrect, trainController.attempt);
-      speak(wordToTrain.word);
     }
   }
 
