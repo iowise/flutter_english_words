@@ -6,18 +6,18 @@ import '../models/tranlsatorsAndDictionaries/reverso.dart';
 class TranslationTextInput extends StatelessWidget {
   TranslationTextInput({
     Key key,
-    @required this.onChanged,
     @required this.word,
     @required this.decoration,
     @required this.initialValue,
+    @required this.onChange,
   }) : super(key: key) {
     _typeAheadController = TextEditingController(text: initialValue);
     _typeAheadController.addListener(() {
-      this.onChanged(_typeAheadController.text);
+      this.onChange(_typeAheadController.text);
     });
   }
 
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String> onChange;
   final String word;
   final String initialValue;
   final InputDecoration decoration;
@@ -28,7 +28,14 @@ class TranslationTextInput extends StatelessWidget {
     return TypeAheadFormField(
       textFieldConfiguration: TextFieldConfiguration(
         controller: this._typeAheadController,
-        decoration: this.decoration,
+        decoration: this.decoration.copyWith(
+          suffixIcon: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              onClear();
+            },
+          ),
+        ),
       ),
       suggestionsCallback: (_pattern) => _suggestions(word),
       itemBuilder: (context, suggestion) {
@@ -38,13 +45,23 @@ class TranslationTextInput extends StatelessWidget {
         );
       },
       onSaved: (value) {
-        this.onChanged(value);
+        concatenateTranslation(value);
       },
       onSuggestionSelected: (suggestion) {
-        this._typeAheadController.text = suggestion.text;
-        this.onChanged(suggestion.text);
+        concatenateTranslation(suggestion.text);
       },
     );
+  }
+
+  void onClear() {
+    this._typeAheadController.text = '';
+  }
+
+  String concatenateTranslation(String value) {
+    final doesTextHaveTranslation = this._typeAheadController.text.isNotEmpty;
+    this._typeAheadController.text = doesTextHaveTranslation
+        ? "${this._typeAheadController.text}; $value"
+        : value;
   }
 }
 

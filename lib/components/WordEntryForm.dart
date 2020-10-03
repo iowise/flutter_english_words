@@ -56,9 +56,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     hintText: 'Enter a translation...',
                     labelText: 'Translation',
                   ),
-                  onChanged: (value) {
-                    widget.entry.translation = value;
-                  },
+                    onChange: (value) {
+                      widget.entry.translation = value;
+                    },
                 ),
                 WordContextTextFormField(
                   entry: widget.entry,
