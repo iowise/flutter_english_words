@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/WordEntryRepository.dart';
+import 'TrainCard.dart';
 
 typedef ResultCallback = void Function();
 
@@ -66,23 +67,7 @@ class _TrainState extends State<Train> {
       key: _formKey,
       child: ListView(
         children: <Widget>[
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    widget.entry.translation,
-                    style: Theme.of(context).textTheme.bodyText1,
-                    textAlign: TextAlign.center,
-                  ),
-                  ...(buildSynonyms(context)),
-                ],
-              ),
-            ),
-          ),
+          TrainCard(entry: widget.entry, text: widget.entry.translation),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
@@ -109,18 +94,6 @@ class _TrainState extends State<Train> {
         ],
       ),
     );
-  }
-
-  List<Widget> buildSynonyms(BuildContext context) {
-    return widget.entry.synonyms.isNotEmpty
-        ? [
-            Text(
-              widget.entry.synonyms,
-              style: Theme.of(context).textTheme.bodyText2,
-              textAlign: TextAlign.center,
-            )
-          ]
-        : [];
   }
 }
 

@@ -47,6 +47,11 @@ class AppDrawer extends StatelessWidget {
               await exportDB(wordEntryRepository, trainLogRepository);
             },
           ),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Sentence Training'),
+            onTap: () => Navigator.pushNamed(context, '/train/sentence'),
+          ),
         ],
       ),
     );

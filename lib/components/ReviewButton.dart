@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/SpaceRepetitionScheduler.dart';
 import '../models/WordEntryRepository.dart';
 
 class ReviewButton extends StatelessWidget {
@@ -9,10 +10,10 @@ class ReviewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
-      child: Text("${wordsToReview?.length} words to review"),
+      child: Text("Review ${wordsToTrain(wordsToReview)} of ${wordsToReview?.length} Words"),
       onPressed: () {
         if (wordsToReview.isNotEmpty) {
-          Navigator.pushNamed(context, '/train', arguments: wordsToReview);
+          Navigator.pushNamed(context, '/train/word', arguments: limitWordsToTrain(wordsToReview));
         }
       },
     );

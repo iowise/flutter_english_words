@@ -9,10 +9,6 @@ import '../components/ReviewButton.dart';
 import '../components/WordList.dart';
 
 class WordsPage extends StatefulWidget {
-  WordsPage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _WordsPageState createState() => _WordsPageState();
 }
@@ -35,30 +31,53 @@ class _WordsPageState extends State<WordsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: CustomSearchDelegate(this.repository),
-              );
-            },
-          ),
-        ],
+    final ScaffoldWrapper = repository == null
+        ? (w) => w
+        : (w) =>
+            ChangeNotifierProvider(create: (context) => repository, child: w);
+    return ScaffoldWrapper(
+      Scaffold(
+        appBar: AppBar(
+          title: buildTitle(),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                if (repository == null) return;
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(this.repository),
+                );
+              },
+            ),
+          ],
+        ),
+        drawer: AppDrawer(),
+        body: Center(
+          child: _buildList(),
+        ),
+        floatingActionButton: FloatingActionButton(
+          tooltip: 'Add a word',
+          child: Icon(Icons.add),
+          onPressed: () => Navigator.pushNamed(context, '/word/create'),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      drawer: AppDrawer(),
-      body: Center(
-        child: _buildList(),
+    );
+  }
+
+  Widget buildTitle() {
+    if (repository == null) return Text("Words");
+
+    return Consumer<WordEntryRepository>(
+      builder: (context, wordEntryRepository, child) => FutureBuilder(
+        future: wordEntryRepository.getWordEntries(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) return Text("Words");
+
+          final wordsCount = snapshot.data.length;
+          return Text("$wordsCount Words");
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Add a word',
-        child: Icon(Icons.add),
-        onPressed: () => Navigator.pushNamed(context, '/word/create'),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -66,28 +85,25 @@ class _WordsPageState extends State<WordsPage> {
     if (repository == null || trainRepository == null) {
       return CircularProgressIndicator();
     }
-    return ChangeNotifierProvider(
-      create: (context) => repository,
-      child: Consumer<WordEntryRepository>(
-        builder: (context, wordEntryRepository, child) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildReviewButton(),
-              FutureBuilder(
-                future: wordEntryRepository.getWordEntries(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  }
-                  var words = snapshot.data;
-                  return Expanded(child: WordList(words: words));
-                },
-              ),
-            ],
-          );
-        },
-      ),
+    return Consumer<WordEntryRepository>(
+      builder: (context, wordEntryRepository, child) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _buildReviewButton(),
+            FutureBuilder(
+              future: wordEntryRepository.getWordEntries(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                var words = snapshot.data;
+                return Expanded(child: WordList(words: words));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

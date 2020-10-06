@@ -86,5 +86,8 @@ List<T> makeListToLearn<T>(List<T> list) {
   final daysSinceEpoch = (now / 3600 / 24).toInt();
   list = List.from(list == null ? [] : list);
   list.shuffle(Random(daysSinceEpoch));
-  return List.from(list.getRange(0, min(MAX_TO_LEARN, list.length)));
+  return list;
 }
+
+List<T> limitWordsToTrain<T>(List<T> list) => List.from(list.getRange(0, wordsToTrain(list)));
+int wordsToTrain(List list) => min(MAX_TO_LEARN, list.length);

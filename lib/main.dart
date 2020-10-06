@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:word_trainer/pages/SentenceTrain.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
 import './pages/WordTrain.dart';
@@ -31,9 +32,10 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => WordsPage(title: 'Words'),
-        '/train': (BuildContext context) => TrainPage(title: 'Train a word'),
-        '/words': (BuildContext context) => WordsPage(title: 'Words'),
+        '/': (BuildContext context) => WordsPage(),
+        '/train/word': (BuildContext context) => TrainPage(title: 'Train a word'),
+        '/train/sentence': (BuildContext context) => EnterSentenceTrainPage(),
+        '/words': (BuildContext context) => WordsPage(),
         '/word/create': (BuildContext context) =>
             WordDetails(title: 'Enter a word'),
         '/word/edit': (BuildContext context) => WordDetails(title: 'Edit a word'),
