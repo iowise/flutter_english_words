@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:word_trainer/models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
 import 'WordContextTextFormField.dart';
@@ -56,9 +57,23 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     hintText: 'Enter a translation...',
                     labelText: 'Translation',
                   ),
-                    onChange: (value) {
-                      widget.entry.translation = value;
-                    },
+                  onChange: (value) {
+                    widget.entry.translation = value;
+                  },
+                  getSuggestions: getTranslations,
+                ),
+                TranslationTextInput(
+                  initialValue: widget.entry.definition,
+                  word: widget.entry.word,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a definition...',
+                    labelText: 'Definition',
+                  ),
+                  onChange: (value) {
+                    widget.entry.definition = value;
+                  },
+                  getSuggestions: getDefinitions,
                 ),
                 WordContextTextFormField(
                   entry: widget.entry,
@@ -82,6 +97,19 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     });
                   },
                 ),
+                TextFormField(
+                  initialValue: widget.entry.antonyms,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'Enter a antonyms...',
+                    labelText: 'Antonyms',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      widget.entry.antonyms = value;
+                    });
+                  },
+                ),
               ],
             ),
           ),
@@ -94,14 +122,18 @@ class _WordEntryFormState extends State<WordEntryForm> {
 class WordEntryInput extends WordContextInput {
   int id;
   String translation;
+  String definition;
   String synonyms;
+  String antonyms;
   WordEntry arg;
 
   WordEntryInput({
     @required word,
     @required context,
     @required this.translation,
+    @required this.definition,
     @required this.synonyms,
+    @required this.antonyms,
     this.arg,
   }) : super(word, context);
 
@@ -111,15 +143,19 @@ class WordEntryInput extends WordContextInput {
         arg,
         word: word.trim(),
         translation: translation.trim(),
+        definition: definition.trim(),
         context: context.trim(),
         synonyms: synonyms.trim(),
+        antonyms: antonyms.trim(),
       );
     }
     return WordEntry.create(
       word: word.trim(),
       translation: translation.trim(),
+      definition: definition.trim(),
       context: context.trim(),
       synonyms: synonyms.trim(),
+      antonyms: antonyms.trim(),
     );
   }
 
@@ -127,13 +163,21 @@ class WordEntryInput extends WordContextInput {
     return WordEntryInput(
       word: arg.word,
       translation: arg.translation,
+      definition: arg.definition,
       context: arg.context,
       synonyms: arg.synonyms,
+      antonyms: arg.antonyms,
       arg: arg,
     );
   }
 
   static WordEntryInput empty() {
-    return WordEntryInput(word: "", translation: "", context: "", synonyms: "");
+    return WordEntryInput(
+        word: "",
+        translation: "",
+        definition: "",
+        context: "",
+        synonyms: "",
+        antonyms: "");
   }
 }

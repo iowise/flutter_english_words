@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sqflite/sqflite.dart';
 
 final String WORDS_TABLE = '_word_entry';
 
@@ -10,6 +9,8 @@ final String _columnWord = 'word';
 final String _columnTranslation = 'translation';
 final String _columnContext = 'context';
 final String _columnSynonyms = 'synonyms';
+final String _columnAntonyms = 'antonyms';
+final String _columnDefinition = 'definition';
 final String _columnCreatedAt = '_created_at';
 final String _columnTrainedAt = '_trained_at';
 final String columnDueToLearnAfter = '_due_to_learn_after';
@@ -19,8 +20,10 @@ class WordEntry {
 
   String word;
   String translation;
+  String definition;
   String context;
   String synonyms;
+  String antonyms;
 
   DateTime createdAt;
   DateTime trainedAt;
@@ -31,7 +34,9 @@ class WordEntry {
       _columnWord: word,
       _columnTranslation: translation,
       _columnContext: context,
+      _columnDefinition: definition,
       _columnSynonyms: synonyms,
+      _columnAntonyms: antonyms,
       _columnCreatedAt: createdAt.toIso8601String(),
     };
     if (id != null) {
@@ -49,8 +54,10 @@ class WordEntry {
   WordEntry.create({
     @required this.word,
     @required this.translation,
+    @required this.definition,
     @required this.context,
     @required this.synonyms,
+    @required this.antonyms,
   }) {
     createdAt = DateTime.now();
   }
@@ -59,8 +66,10 @@ class WordEntry {
     WordEntry other, {
     @required final String word,
     @required final String translation,
+    @required final String definition,
     @required final String context,
     @required final String synonyms,
+    @required final String antonyms,
   }) {
     this.id = other.id;
     this.createdAt = other.createdAt;
@@ -69,16 +78,20 @@ class WordEntry {
 
     this.word = word != null ? word : other.word;
     this.translation = translation != null ? translation : other.translation;
+    this.definition = definition != null ? definition : other.definition;
     this.context = context != null ? context : other.context;
     this.synonyms = synonyms != null ? synonyms : other.synonyms;
+    this.antonyms = antonyms != null ? antonyms : other.antonyms;
   }
 
   WordEntry.fromMap(Map<String, dynamic> map) {
     id = map[_columnId];
     word = map[_columnWord];
     translation = map[_columnTranslation];
+    definition = map[_columnDefinition] ?? '';
     context = map[_columnContext] ?? '';
     synonyms = map[_columnSynonyms] ?? '';
+    antonyms = map[_columnAntonyms] ?? '';
     createdAt = DateTime.parse(map[_columnCreatedAt]);
 
     trainedAt = map[_columnTrainedAt] != null
@@ -107,23 +120,6 @@ class WordEntryRepository extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection('list');
   }
-
-  static String get createSqlScript => '''
-create table $WORDS_TABLE (
-  $_columnWord text not null,
-  $_columnTranslation text not null,
-  $_columnContext text,
-  $_columnCreatedAt datatime not null,
-  $_columnTrainedAt datatime,
-  $columnDueToLearnAfter datatime,
-  $_columnId integer primary key autoincrement
-)
-''';
-
-  static String get migrateAddContextColumn => '''
-alter table $WORDS_TABLE
-add $_columnContext text
-''';
 
   Future<WordEntry> insert(WordEntry entry) async {
     final reference = await words.add(entry.toMap());

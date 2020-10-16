@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:translator/translator.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import '../models/tranlsatorsAndDictionaries/reverso.dart';
+import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 class TranslationTextInput extends StatelessWidget {
   TranslationTextInput({
@@ -10,6 +9,7 @@ class TranslationTextInput extends StatelessWidget {
     @required this.decoration,
     @required this.initialValue,
     @required this.onChange,
+    @required this.getSuggestions
   }) : super(key: key) {
     _typeAheadController = TextEditingController(text: initialValue);
     _typeAheadController.addListener(() {
@@ -21,6 +21,7 @@ class TranslationTextInput extends StatelessWidget {
   final String word;
   final String initialValue;
   final InputDecoration decoration;
+  final Future<List<DictionaryItem>> Function(String text) getSuggestions;
   TextEditingController _typeAheadController;
 
   @override
@@ -37,7 +38,7 @@ class TranslationTextInput extends StatelessWidget {
           ),
         ),
       ),
-      suggestionsCallback: (_pattern) => _suggestions(word),
+      suggestionsCallback: (_pattern) => getSuggestions(word),
       itemBuilder: (context, suggestion) {
         return ListTile(
           leading: Icon(suggestion.icon),
@@ -63,25 +64,4 @@ class TranslationTextInput extends StatelessWidget {
         ? "${this._typeAheadController.text}; $value"
         : value;
   }
-}
-
-class DictionaryItem {
-  final String text;
-  final IconData icon;
-
-  DictionaryItem(this.text, this.icon);
-}
-
-Future<List<DictionaryItem>> _suggestions(String text) async {
-  if (text.isEmpty) {
-    return [];
-  }
-  final russianTranslation = await text.translate(from: 'en', to: 'ru');
-  return [
-    DictionaryItem(russianTranslation.text, Icons.translate),
-    ...[
-      for (final i in await reversoTranslation(text))
-        DictionaryItem(i, Icons.sync),
-    ],
-  ];
 }

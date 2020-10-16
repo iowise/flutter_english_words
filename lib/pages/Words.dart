@@ -173,7 +173,7 @@ class CustomSearchDelegate extends SearchDelegate {
           final filtered =
               data.where((element) => element.word.contains(query)).toList();
           if (filtered.isEmpty) {
-            return Center(child: Text('Nothing is {found'));
+            return Center(child: Text('Nothing is found'));
           }
           return WordList(words: filtered);
         },
