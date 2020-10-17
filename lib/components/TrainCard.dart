@@ -6,7 +6,7 @@ class TrainCard extends StatelessWidget {
   final WordEntry entry;
   final String text;
 
-  const TrainCard({Key key, this.entry, this.text }) : super(key: key);
+  const TrainCard({Key key, this.entry, this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +33,14 @@ class TrainCard extends StatelessWidget {
     final text = _buildSynonymsAndAntonyms(entry);
     return text.isNotEmpty
         ? [
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodyText2.copyWith(height: 14),
-              textAlign: TextAlign.center,
-            )
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.bodyText2,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ]
         : [];
   }

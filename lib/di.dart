@@ -17,27 +17,31 @@ void setup() {
     return await Firebase.initializeApp();
   });
   GetIt.I.registerSingletonWithDependencies<WordEntryRepository>(
-    () => WordEntryRepository(),
+        () => WordEntryRepository(),
     dependsOn: [FirebaseApp],
   );
 
   GetIt.I.registerSingletonWithDependencies<TrainLogRepository>(
-    () => TrainLogRepository(),
+        () => TrainLogRepository(),
     dependsOn: [FirebaseApp],
   );
 
   GetIt.I.registerSingletonWithDependencies<TrainService>(
-    () => TrainService(
-        GetIt.I.get<WordEntryRepository>(), GetIt.I.get<TrainLogRepository>()),
+        () =>
+        TrainService(
+            GetIt.I.get<WordEntryRepository>(),
+            GetIt.I.get<TrainLogRepository>()),
     dependsOn: [WordEntryRepository, TrainLogRepository],
   );
 
   GetIt.I.registerSingletonWithDependencies<SharedWordsService>(() {
-    final service = SharedWordsService((word) => GetIt.I
-        .get(instanceName: 'Navigator')
-        .currentState
-        .pushNamed("/word/create",
-            arguments: WordDetailsArguments(word: word)));
+    final service = SharedWordsService((word) {
+      GetIt.I
+          .get(instanceName: 'Navigator')
+          .currentState
+          .pushNamed("/word/create",
+          arguments: WordDetailsArguments(word: word));
+    });
     return service;
   }, dependsOn: [TrainService]);
 }

@@ -16,6 +16,7 @@ class TrainService extends ChangeNotifier {
     final forLearn = await wordEntryRepository.query(
       where: (words) => words.dueToLearnAfter == null || words.dueToLearnAfter.isBefore(now)
     ).toList();
+    forLearn.sort((right, left) => right.id.compareTo(left.id));
     return makeListToLearn(forLearn);
   }
 
@@ -82,8 +83,8 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
 const MAX_TO_LEARN = 10;
 
 List<T> makeListToLearn<T>(List<T> list) {
-  final now = DateTime.now().microsecondsSinceEpoch / 1000;
-  final daysSinceEpoch = (now / 3600 / 24).toInt();
+  final now = DateTime.now().microsecondsSinceEpoch / 1000 /1000;
+  final daysSinceEpoch = now ~/ 3600 ~/ 24;
   list = List.from(list == null ? [] : list);
   list.shuffle(Random(daysSinceEpoch));
   return list;

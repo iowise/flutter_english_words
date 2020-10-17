@@ -4,22 +4,30 @@ import '../models/WordEntryRepository.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../components/Train.dart';
 
+enum HintTypes {
+  definition,
+  translation,
+}
+
 class TrainPage extends StatelessWidget {
-  TrainPage({Key key, this.title}) : super(key: key);
+  TrainPage({Key key, this.title, @required this.hintType}) : super(key: key);
 
   final String title;
+  final HintTypes hintType;
 
   @override
   Widget build(BuildContext context) {
     final List<WordEntry> arg = ModalRoute.of(context).settings.arguments;
-    return TrainWords(title: title, wordsToLearn: arg);
+    return TrainWords(title: title, wordsToLearn: arg, hintType: hintType);
   }
 }
 
 class TrainWords extends StatefulWidget {
-  TrainWords({Key key, this.title, this.wordsToLearn}) : super(key: key);
+  TrainWords({Key key, this.title, this.wordsToLearn, this.hintType})
+      : super(key: key);
 
   final String title;
+  final HintTypes hintType;
   final List<WordEntry> wordsToLearn;
 
   @override
@@ -61,9 +69,11 @@ class _TrainWordsState extends State<TrainWords> {
           trainController.newAttempt();
         });
         return;
-      };
+      }
+      ;
       final trainService = GetIt.I.get<TrainService>();
-      trainService.trainWord(wordToTrain, trainController.isCorrect, trainController.attempt);
+      trainService.trainWord(
+          wordToTrain, trainController.isCorrect, trainController.attempt);
       speak(wordToTrain.word);
       setState(() {
         isCheck = true;
@@ -75,6 +85,9 @@ class _TrainWordsState extends State<TrainWords> {
 
   @override
   Widget build(BuildContext context) {
+    final trainingHint =
+        widget.hintType == HintTypes.definition ? _getDefinition : _getTranslation;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -88,6 +101,7 @@ class _TrainWordsState extends State<TrainWords> {
             isCheck: isCheck,
             onSubmit: _checkTheWord,
             enteredWordController: trainController,
+            getInputForTraining: trainingHint,
           ),
         ),
       ),
@@ -99,3 +113,6 @@ class _TrainWordsState extends State<TrainWords> {
     );
   }
 }
+
+String _getDefinition(WordEntry entry) => entry.definition;
+String _getTranslation(WordEntry entry) => entry.translation;
