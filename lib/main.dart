@@ -33,12 +33,20 @@ class MyApp extends StatelessWidget {
       ),
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => WordsPage(),
-        '/train/word': (BuildContext context) => TrainPage(title: 'Train a word'),
+        '/train/word/translation/': (BuildContext context) => TrainPage(
+              title: 'Train a word',
+              hintType: HintTypes.translation,
+            ),
+        '/train/word/definition/': (BuildContext context) => TrainPage(
+          title: 'Train a word',
+          hintType: HintTypes.definition,
+        ),
         '/train/sentence': (BuildContext context) => EnterSentenceTrainPage(),
         '/words': (BuildContext context) => WordsPage(),
         '/word/create': (BuildContext context) =>
             WordDetails(title: 'Enter a word'),
-        '/word/edit': (BuildContext context) => WordDetails(title: 'Edit a word'),
+        '/word/edit': (BuildContext context) =>
+            WordDetails(title: 'Edit a word'),
       },
     );
   }

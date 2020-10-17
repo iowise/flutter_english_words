@@ -26,6 +26,7 @@ class Train extends StatefulWidget {
   final bool isCheck;
   final ResultCallback onSubmit;
   final TrainController enteredWordController;
+  final String Function(WordEntry) getInputForTraining;
 
   Train({
     Key key,
@@ -33,6 +34,7 @@ class Train extends StatefulWidget {
     @required this.isCheck,
     @required this.onSubmit,
     @required this.enteredWordController,
+    @required this.getInputForTraining,
   }) : super(key: key);
 
   @override
@@ -67,7 +69,7 @@ class _TrainState extends State<Train> {
       key: _formKey,
       child: ListView(
         children: <Widget>[
-          TrainCard(entry: widget.entry, text: widget.entry.translation),
+          TrainCard(entry: widget.entry, text: widget.getInputForTraining(widget.entry)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(

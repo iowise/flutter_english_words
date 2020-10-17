@@ -6,7 +6,7 @@ class TrainCard extends StatelessWidget {
   final WordEntry entry;
   final String text;
 
-  const TrainCard({Key key, this.entry, this.text }) : super(key: key);
+  const TrainCard({Key key, this.entry, this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +30,24 @@ class TrainCard extends StatelessWidget {
   }
 
   List<Widget> buildSynonyms(BuildContext context) {
-    return entry.synonyms.isNotEmpty
+    final text = _buildSynonymsAndAntonyms(entry);
+    return text.isNotEmpty
         ? [
-            Text(
-              entry.synonyms,
-              style: Theme.of(context).textTheme.bodyText2,
-              textAlign: TextAlign.center,
-            )
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.bodyText2,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ]
         : [];
   }
+}
+
+String _buildSynonymsAndAntonyms(WordEntry entry) {
+  final synonyms = entry.synonyms.isEmpty ? "" : "Synonyms: ${entry.synonyms}";
+  final antonyms = entry.antonyms.isEmpty ? "" : "Antonyms: ${entry.antonyms}";
+  return [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
 }

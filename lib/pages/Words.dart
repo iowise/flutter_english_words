@@ -20,12 +20,12 @@ class _WordsPageState extends State<WordsPage> {
   @override
   void initState() {
     super.initState();
-    GetIt.I.allReady().then((value) {
+    GetIt.I.isReady<TrainService>().then((value) {
       setState(() {
         repository = GetIt.I.get<WordEntryRepository>();
         trainRepository = GetIt.I.get<TrainService>();
       });
-      GetIt.I.get<SharedWordsService>().init();
+      GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
   }
 
@@ -173,7 +173,7 @@ class CustomSearchDelegate extends SearchDelegate {
           final filtered =
               data.where((element) => element.word.contains(query)).toList();
           if (filtered.isEmpty) {
-            return Center(child: Text('Nothing is {found'));
+            return Center(child: Text('Nothing is found'));
           }
           return WordList(words: filtered);
         },

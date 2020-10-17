@@ -9,13 +9,37 @@ class ReviewButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlineButton(
-      child: Text("Review ${wordsToTrain(wordsToReview)} of ${wordsToReview?.length} Words"),
-      onPressed: () {
-        if (wordsToReview.isNotEmpty) {
-          Navigator.pushNamed(context, '/train/word', arguments: limitWordsToTrain(wordsToReview));
-        }
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: OutlineButton(
+            child: Text(
+                "Review ${wordsToTrain(wordsToReview)} of ${wordsToReview?.length} Words"),
+            onPressed: () {
+              pushTrainingScreen(context, '/train/word/translation/', wordsToReview);
+            },
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: OutlineButton(
+            child: Text("Defs"),
+            onPressed: () {
+              final withDefinitions = wordsToReview.where((element) => element.definition.isNotEmpty).toList();
+              pushTrainingScreen(context, '/train/word/definition/', withDefinitions);
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  void pushTrainingScreen(BuildContext context, String path, List<WordEntry> words) {
+    if (words.isNotEmpty) {
+      Navigator.pushNamed(context, path,
+          arguments: limitWordsToTrain(words));
+    }
   }
 }
