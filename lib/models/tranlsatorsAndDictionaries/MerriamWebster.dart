@@ -14,8 +14,9 @@ Future<List<String>> _callThesaurus(String text) async {
   final url =
       "https://dictionaryapi.com/api/v3/references/thesaurus/json/$text?key=$_AUTH_KEY";
   final response = await http.post(url);
+
   final thesaurusRecords = json.decode(response.body);
-  final shortDefinitions = thesaurusRecords
-      .expand((element) => new List<String>.from(element['shortdef']));
+  final shortDefinitions = thesaurusRecords.expand((element) =>
+      new List<String>.from(element is Map ? element['shortdef'] : []));
   return new List<String>.from(shortDefinitions);
 }

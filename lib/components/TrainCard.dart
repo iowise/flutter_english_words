@@ -30,14 +30,21 @@ class TrainCard extends StatelessWidget {
   }
 
   List<Widget> buildSynonyms(BuildContext context) {
-    return entry.synonyms.isNotEmpty
+    final text = _buildSynonymsAndAntonyms(entry);
+    return text.isNotEmpty
         ? [
             Text(
-              entry.synonyms,
-              style: Theme.of(context).textTheme.bodyText2,
+              text,
+              style: Theme.of(context).textTheme.bodyText2.copyWith(height: 14),
               textAlign: TextAlign.center,
             )
           ]
         : [];
   }
+}
+
+String _buildSynonymsAndAntonyms(WordEntry entry) {
+  final synonyms = entry.synonyms.isEmpty ? "" : "Synonyms: ${entry.synonyms}";
+  final antonyms = entry.antonyms.isEmpty ? "" : "Antonyms: ${entry.antonyms}";
+  return [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
 }
