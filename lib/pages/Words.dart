@@ -13,9 +13,21 @@ class WordsPage extends StatefulWidget {
   _WordsPageState createState() => _WordsPageState();
 }
 
+enum Sorting {
+  byDate,
+  byWord,
+}
+
+enum Filtering {
+  all,
+  unTrained,
+}
+
 class _WordsPageState extends State<WordsPage> {
   WordEntryRepository repository;
   TrainService trainRepository;
+  Sorting sorting = Sorting.byDate;
+  Filtering filtering = Filtering.all;
 
   @override
   void initState() {
@@ -40,6 +52,13 @@ class _WordsPageState extends State<WordsPage> {
         appBar: AppBar(
           title: buildTitle(),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.sort),
+              onPressed: () {
+                if (repository == null) return;
+                _showSortingAndFilter(context);
+              },
+            ),
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
@@ -97,7 +116,7 @@ class _WordsPageState extends State<WordsPage> {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
                 }
-                var words = snapshot.data;
+                var words = _filterAndSortWords(snapshot.data);
                 return Expanded(child: WordList(words: words));
               },
             ),
@@ -124,6 +143,85 @@ class _WordsPageState extends State<WordsPage> {
         },
       ),
     );
+  }
+
+  void _showSortingAndFilter(BuildContext context) {
+    final selectedStyle = Theme.of(context)
+        .textTheme
+        .bodyText2
+        .copyWith(color: Theme.of(context).accentColor);
+    final selectedOrNull =
+        (value, option) => (value == option ? selectedStyle : null);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select Sorting and Filtering'),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text(
+                  'Sort by word',
+                  style: selectedOrNull(sorting, Sorting.byWord),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _changeSortState(Sorting.byWord);
+                },
+              ),
+              SimpleDialogOption(
+                child: Text(
+                  'Sort by date',
+                  style: selectedOrNull(sorting, Sorting.byDate),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _changeSortState(Sorting.byDate);
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('Show not trained',
+                    style: selectedOrNull(filtering, Filtering.unTrained)),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _changeFilterState(Filtering.unTrained);
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('Show all',
+                    style: selectedOrNull(filtering, Filtering.all)),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _changeFilterState(Filtering.all);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _changeSortState(final Sorting _sorting) {
+    setState(() {
+      sorting = _sorting;
+    });
+  }
+
+  void _changeFilterState(final Filtering _filtering) {
+    setState(() {
+      filtering = _filtering;
+    });
+  }
+
+  List<WordEntry> _filterAndSortWords(List<WordEntry> words) {
+    final filtered = filtering == Filtering.unTrained
+        ? words.where((element) => element.dueToLearnAfter == null).toList()
+        : words;
+    if (sorting == Sorting.byWord) {
+      filtered.sort((left, right) => left.word.compareTo(right.word));
+    } else {
+      filtered
+          .sort((left, right) => -left.createdAt.compareTo(right.createdAt));
+    }
+    return filtered;
   }
 }
 
