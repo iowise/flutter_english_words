@@ -267,9 +267,7 @@ class CustomSearchDelegate extends SearchDelegate {
       },
       child: Consumer<WordEntryBloc>(
         builder: (context, blocSearch, child) {
-          final List data = blocSearch._data;
-          final filtered =
-              data.where((element) => element.word.contains(query)).toList();
+          final filtered = filterWords(blocSearch._data);
           if (filtered.isEmpty) {
             return Center(child: Text('Nothing is found'));
           }
@@ -283,6 +281,13 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     return buildResults(context);
   }
+
+  List<WordEntry> filterWords(List<WordEntry> data) => data
+      .where((element) =>
+          element.word.contains(query) ||
+          element.translation.contains(query) ||
+          element.definition.contains(query))
+      .toList();
 }
 
 class WordEntryBloc extends ChangeNotifier {
