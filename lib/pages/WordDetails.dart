@@ -52,6 +52,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   @override
   Widget build(BuildContext context) {
     final TrainLogRepository trainLog = GetIt.I.get<TrainLogRepository>();
+    final WordEntryRepository wordEntries = GetIt.I.get<WordEntryRepository>();
 
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +66,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                 ),
               ],
       ),
-      body: buildBody(trainLog),
+      body: buildBody(trainLog, wordEntries),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
         child: Icon(Icons.save),
@@ -74,7 +75,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  Widget buildBody(TrainLogRepository trainLog) {
+  Widget buildBody(TrainLogRepository trainLog, WordEntryRepository wordEntries) {
     if (entryInput.arg == null) {
       return ListView(
         children: <Widget>[
@@ -83,7 +84,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
       );
     }
     return FutureBuilder(
-      future: trainLog.getLogs(entryInput.arg.id),
+      future: Future.wait([trainLog.getLogs(entryInput.arg.id), wordEntries.getAllLabels()]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List details;
         if (entryInput.arg?.dueToLearnAfter == null) {
@@ -91,12 +92,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         } else {
           details = [
             buildWordDetails(context, trainLog),
-            ...buildTrainLogs(snapshot),
+            ...buildTrainLogs(snapshot.hasData, snapshot.data != null ? snapshot.data[0] : null),
           ];
         }
+        final allLabels = snapshot.hasData ? snapshot.data[1] : new List<String>();
+
         return ListView(
           children: <Widget>[
-            WordEntryForm(entry: entryInput),
+            WordEntryForm(entry: entryInput, allLabels: allLabels),
             ...details,
           ],
         );
@@ -113,10 +116,9 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  List<Widget> buildTrainLogs(AsyncSnapshot<List<TrainLog>> snapshot) {
+  List<Widget> buildTrainLogs(bool hasData, List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
-    if (snapshot.hasData) {
-      final logs = snapshot.data;
+    if (hasData) {
       return logs
           .map(
             (e) => ListTile(

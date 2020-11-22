@@ -14,6 +14,7 @@ final String _columnDefinition = 'definition';
 final String _columnCreatedAt = '_created_at';
 final String _columnTrainedAt = '_trained_at';
 final String columnDueToLearnAfter = '_due_to_learn_after';
+final String _columnLabels = '_labels';
 
 class WordEntry {
   String id;
@@ -29,6 +30,8 @@ class WordEntry {
   DateTime trainedAt;
   DateTime dueToLearnAfter;
 
+  List<String> labels;
+
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       _columnWord: word,
@@ -38,6 +41,7 @@ class WordEntry {
       _columnSynonyms: synonyms,
       _columnAntonyms: antonyms,
       _columnCreatedAt: createdAt.toIso8601String(),
+      _columnLabels: labels,
     };
     if (id != null) {
       map[_columnId] = id;
@@ -58,6 +62,7 @@ class WordEntry {
     @required this.context,
     @required this.synonyms,
     @required this.antonyms,
+    @required this.labels,
   }) {
     createdAt = DateTime.now();
   }
@@ -70,6 +75,7 @@ class WordEntry {
     @required final String context,
     @required final String synonyms,
     @required final String antonyms,
+    @required final List<String> labels,
   }) {
     this.id = other.id;
     this.createdAt = other.createdAt;
@@ -82,6 +88,7 @@ class WordEntry {
     this.context = context != null ? context : other.context;
     this.synonyms = synonyms != null ? synonyms : other.synonyms;
     this.antonyms = antonyms != null ? antonyms : other.antonyms;
+    this.labels = labels != null ? labels : other.labels;
   }
 
   WordEntry.fromMap(Map<String, dynamic> map) {
@@ -93,6 +100,9 @@ class WordEntry {
     synonyms = map[_columnSynonyms] ?? '';
     antonyms = map[_columnAntonyms] ?? '';
     createdAt = DateTime.parse(map[_columnCreatedAt]);
+    labels = map[_columnLabels] != null
+        ? new List<String>.from(map[_columnLabels])
+        : [];
 
     trainedAt = map[_columnTrainedAt] != null
         ? DateTime.parse(map[_columnTrainedAt])
@@ -107,6 +117,8 @@ class WordEntry {
     entry.id = snapshot.reference.id;
     return entry;
   }
+
+  bool hasLabel(String label) =>  label == null || labels.contains(label);
 }
 
 class WordEntryRepository extends ChangeNotifier {
@@ -133,13 +145,21 @@ class WordEntryRepository extends ChangeNotifier {
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
-  Future<List<WordEntry>> getWordEntries() async {
+  Future<List<WordEntry>> getWordEntries({final String label}) async {
     final snapshot = await words.get();
     final entries = [
       for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
     ];
-    entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return entries;
+    final filtered = entries.where((word) => word.hasLabel(label)).toList(growable: false);
+    filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return filtered;
+  }
+
+  Future<List<String>> getAllLabels() async {
+    final words = await getWordEntries();
+    final labels = words.expand((e) => e.labels).toSet().toList();
+    labels.sort((a, b) => a.compareTo(b));
+    return labels;
   }
 
   Stream<WordEntry> query({

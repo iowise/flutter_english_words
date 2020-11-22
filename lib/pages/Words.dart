@@ -28,6 +28,7 @@ class _WordsPageState extends State<WordsPage> {
   TrainService trainRepository;
   Sorting sorting = Sorting.byDate;
   Filtering filtering = Filtering.all;
+  String filterLabel = null;
 
   @override
   void initState() {
@@ -65,13 +66,13 @@ class _WordsPageState extends State<WordsPage> {
                 if (repository == null) return;
                 showSearch(
                   context: context,
-                  delegate: CustomSearchDelegate(this.repository),
+                  delegate: CustomSearchDelegate(this.repository, filterLabel),
                 );
               },
             ),
           ],
         ),
-        drawer: AppDrawer(),
+        drawer: buildDrawer(),
         body: Center(
           child: _buildList(),
         ),
@@ -79,7 +80,27 @@ class _WordsPageState extends State<WordsPage> {
           tooltip: 'Add a word',
           child: Icon(Icons.add),
           onPressed: () => Navigator.pushNamed(context, '/word/create'),
-        ), // This trailing comma makes auto-formatting nicer for build methods.
+        ),
+      ),
+    );
+  }
+
+  Widget buildDrawer() {
+    if (repository == null) return AppDrawer.empty();
+
+    return Consumer<WordEntryRepository>(
+      builder: (context, wordEntryRepository, child) => FutureBuilder(
+        future: wordEntryRepository.getAllLabels(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) return AppDrawer.empty();
+          return AppDrawer(
+            allLabels: snapshot.data,
+            currentLabel: filterLabel,
+            applyLabelFilter: (newFilterLabel) => setState(() {
+              filterLabel = newFilterLabel;
+            }),
+          );
+        },
       ),
     );
   }
@@ -89,7 +110,7 @@ class _WordsPageState extends State<WordsPage> {
 
     return Consumer<WordEntryRepository>(
       builder: (context, wordEntryRepository, child) => FutureBuilder(
-        future: wordEntryRepository.getWordEntries(),
+        future: wordEntryRepository.getWordEntries(label: filterLabel),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) return Text("Words");
 
@@ -111,7 +132,7 @@ class _WordsPageState extends State<WordsPage> {
           children: [
             _buildReviewButton(),
             FutureBuilder(
-              future: wordEntryRepository.getWordEntries(),
+              future: wordEntryRepository.getWordEntries(label: filterLabel),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
@@ -132,7 +153,7 @@ class _WordsPageState extends State<WordsPage> {
       child: Consumer<TrainService>(
         builder: (context, trainRepository, child) {
           return FutureBuilder(
-            future: trainRepository.getToReviewToday(),
+            future: trainRepository.getToReviewToday(filterLabel),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 return ReviewButton(wordsToReview: snapshot.data);
@@ -229,10 +250,11 @@ class CustomSearchDelegate extends SearchDelegate {
   WordEntryBloc blocSearch;
 
   final WordEntryRepository repository;
+  final String label;
 
-  CustomSearchDelegate(this.repository) {
+  CustomSearchDelegate(this.repository, this.label) {
     blocSearch = WordEntryBloc();
-    if (repository != null) blocSearch.listenRepository(repository);
+    if (repository != null) blocSearch.listenRepository(repository, label);
   }
 
   @override
@@ -262,7 +284,7 @@ class CustomSearchDelegate extends SearchDelegate {
     return ChangeNotifierProvider(
       create: (context) {
         blocSearch = WordEntryBloc();
-        if (repository != null) blocSearch.listenRepository(repository);
+        if (repository != null) blocSearch.listenRepository(repository, label);
         return blocSearch;
       },
       child: Consumer<WordEntryBloc>(
@@ -295,9 +317,9 @@ class WordEntryBloc extends ChangeNotifier {
 
   WordEntryRepository repository;
 
-  listenRepository(repository) async {
+  listenRepository(WordEntryRepository repository, String label) async {
     this.repository = repository;
-    _data = await this.repository.getWordEntries();
+    _data = await this.repository.getWordEntries(label: label);
     notifyListeners();
     this.repository.editedWord.addListener(_editWord);
     this.repository.deletedWordId.addListener(_removeWord);
