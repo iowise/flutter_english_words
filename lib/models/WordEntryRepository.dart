@@ -118,7 +118,7 @@ class WordEntry {
     return entry;
   }
 
-  bool hasLabel(String label) =>  label == null || labels.contains(label);
+  bool hasLabel(String label) => label == null ? labels.isEmpty : labels.contains(label);
 }
 
 class WordEntryRepository extends ChangeNotifier {
@@ -145,19 +145,23 @@ class WordEntryRepository extends ChangeNotifier {
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
-  Future<List<WordEntry>> getWordEntries({final String label}) async {
+  Future<List<WordEntry>> _getWordEntries() async {
     final snapshot = await words.get();
-    final entries = [
+    return [
       for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
     ];
+  }
+
+  Future<List<WordEntry>> getWordEntries({final String label}) async {
+    final entries = await _getWordEntries();
     final filtered = entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
   }
 
   Future<List<String>> getAllLabels() async {
-    final words = await getWordEntries();
-    final labels = words.expand((e) => e.labels).toSet().toList();
+    final entries = await _getWordEntries();
+    final labels = entries.expand((e) => e.labels).toSet().toList();
     labels.sort((a, b) => a.compareTo(b));
     return labels;
   }

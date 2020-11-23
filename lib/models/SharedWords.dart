@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SharedWordsService {
@@ -16,7 +15,7 @@ class SharedWordsService {
       }
     });
 
-    var data = await _getSharedData();
+    final data = await _getSharedData();
     if (data['text'] == null) return;
     onCreateWord(_cleanSendText(data['text']));
   }

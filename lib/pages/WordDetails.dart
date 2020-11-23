@@ -75,16 +75,21 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  Widget buildBody(TrainLogRepository trainLog, WordEntryRepository wordEntries) {
+  Widget buildBody(
+      TrainLogRepository trainLog, WordEntryRepository wordEntries) {
     if (entryInput.arg == null) {
       return ListView(
         children: <Widget>[
-          WordEntryForm(entry: entryInput),
+          WordEntryForm(
+            entry: entryInput,
+            allLabels: [],
+          ),
         ],
       );
     }
     return FutureBuilder(
-      future: Future.wait([trainLog.getLogs(entryInput.arg.id), wordEntries.getAllLabels()]),
+      future: Future.wait(
+          [trainLog.getLogs(entryInput.arg.id), wordEntries.getAllLabels()]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List details;
         if (entryInput.arg?.dueToLearnAfter == null) {
@@ -92,10 +97,12 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         } else {
           details = [
             buildWordDetails(context, trainLog),
-            ...buildTrainLogs(snapshot.hasData, snapshot.data != null ? snapshot.data[0] : null),
+            ...buildTrainLogs(snapshot.hasData,
+                snapshot.data != null ? snapshot.data[0] : null),
           ];
         }
-        final allLabels = snapshot.hasData ? snapshot.data[1] : new List<String>();
+        final allLabels =
+            snapshot.hasData ? snapshot.data[1] : new List<String>();
 
         return ListView(
           children: <Widget>[

@@ -28,7 +28,7 @@ class _WordsPageState extends State<WordsPage> {
   TrainService trainRepository;
   Sorting sorting = Sorting.byDate;
   Filtering filtering = Filtering.all;
-  String filterLabel = null;
+  String filterLabel;
 
   @override
   void initState() {

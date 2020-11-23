@@ -9,7 +9,8 @@ class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;
   List<String> allLabels;
 
-  WordEntryForm({Key key, this.entry, this.allLabels}) : super(key: key);
+  WordEntryForm({Key key, this.entry, @required this.allLabels})
+      : super(key: key);
 
   @override
   _WordEntryFormState createState() => _WordEntryFormState(this.entry);
@@ -112,7 +113,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     });
                   },
                 ),
-                LabelsInput(
+                LabelsInput.fromStrings(
                   initialValue: widget.entry.labels,
                   onChange: (List<String> value) {
                     widget.entry.labels = value;

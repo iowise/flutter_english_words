@@ -5,7 +5,14 @@ import 'package:word_trainer/components/Train.dart';
 
 void main() {
   createController() => TrainController(WordEntry.create(
-      word: 'test', translation: '', context: '', synonyms: ''));
+        word: 'test',
+        translation: '',
+        context: '',
+        synonyms: '',
+        antonyms: '',
+        definition: '',
+        labels: [],
+      ));
   test('Train case insensitive', () {
     final controller = createController();
     controller.text = 'Test';

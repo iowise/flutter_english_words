@@ -37,19 +37,19 @@ class TrainService extends ChangeNotifier {
   }
 }
 
-/**
- * Returns the number of days to delay the next review of an item by, fractionally, based on the history of answers x to
- * a given question, where
- * x == 0: Incorrect, Hardest
- * x == 1: Incorrect, Hard
- * x == 2: Incorrect, Medium
- * x == 3: Correct, Medium
- * x == 4: Correct, Easy
- * x == 5: Correct, Easiest
- * @param x The history of answers in the above scoring.
- * @param theta When larger, the delays for correct answers will increase.
- * Based on [a gist](https://gist.github.com/doctorpangloss/13ab29abd087dc1927475e560f876797)
- */
+///
+/// Returns the number of days to delay the next review of an item by, fractionally, based on the history of answers x to
+/// a given question, where
+/// x == 0: Incorrect, Hardest
+/// x == 1: Incorrect, Hard
+/// x == 2: Incorrect, Medium
+/// x == 3: Correct, Medium
+/// x == 4: Correct, Easy
+/// x == 5: Correct, Easiest
+/// @param x The history of answers in the above scoring.
+/// @param theta When larger, the delays for correct answers will increase.
+/// Based on [a gist](https://gist.github.com/doctorpangloss/13ab29abd087dc1927475e560f876797)
+///
 int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
     {a: 6.0, b: -0.8, c: 0.28, d: 0.02, theta: 0.2}) {
   if (recent < 4) {

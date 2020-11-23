@@ -1,23 +1,39 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 
 class Label {
   final String text;
   final bool existing;
-  Label(this.text, [this.existing=true]);
-  Label.create(this.text, [this.existing=false]);
+
+  Label(this.text, [this.existing = true]);
+
+  Label.create(this.text, [this.existing = false]);
 }
 
 class LabelsInput extends StatefulWidget {
-  List<Label> initialValue;
-  List<Label> allLabels;
-  ValueChanged<List<String>> onChange;
+  final List<Label> initialValue;
+  final List<Label> allLabels;
+  final ValueChanged<List<String>> onChange;
 
-  LabelsInput({Key key, @required List<String> initialValue, @required this.onChange, @required List<String> allLabels})
-      : super(key: key) {
-    this.allLabels = allLabels.map((e) => Label(e)).toList();
-    this.initialValue = initialValue.map(((e) => Label(e))).toList();
+  LabelsInput(
+      {Key key,
+      @required this.initialValue,
+      @required this.onChange,
+      @required this.allLabels})
+      : super(key: key);
+
+  factory LabelsInput.fromStrings(
+      {Key key,
+      @required List<String> initialValue,
+      @required onChange,
+      @required List<String> allLabels}) {
+    final _allLabels = allLabels.map((e) => Label(e)).toList();
+    final _initialValue = initialValue.map(((e) => Label(e))).toList();
+    return LabelsInput(
+        key: key,
+        initialValue: _initialValue,
+        allLabels: _allLabels,
+        onChange: onChange);
   }
 
   @override
