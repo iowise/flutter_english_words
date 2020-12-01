@@ -89,7 +89,7 @@ class _LabelsInputState extends State<LabelsInput> {
         .where((label) => label.text.toLowerCase().contains(lowercaseQuery))
         .toList(growable: false);
     return exactLabel == null
-        ? [...filtered, Label.create(query.trim())]
+        ? [Label.create(query.trim()), ...filtered]
         : filtered;
   }
 }
