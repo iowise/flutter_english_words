@@ -187,7 +187,7 @@ class WordEntryInput extends WordContextInput {
     );
   }
 
-  static WordEntryInput empty() {
+  static WordEntryInput empty({String defaultLabel}) {
     return WordEntryInput(
       word: "",
       translation: "",
@@ -195,7 +195,7 @@ class WordEntryInput extends WordContextInput {
       context: "",
       synonyms: "",
       antonyms: "",
-      labels: [],
+      labels: defaultLabel == null ? [] : [defaultLabel],
     );
   }
 }

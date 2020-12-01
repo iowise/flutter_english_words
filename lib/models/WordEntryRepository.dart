@@ -159,11 +159,19 @@ class WordEntryRepository extends ChangeNotifier {
     return filtered;
   }
 
-  Future<List<String>> getAllLabels() async {
+  Future<Map<String, int>> getAllLabels() async {
     final entries = await _getWordEntries();
-    final labels = entries.expand((e) => e.labels).toSet().toList();
-    labels.sort((a, b) => a.compareTo(b));
-    return labels;
+    final labels = entries.expand((e) => e.labels).toList();
+
+    var labelsAndCount = <String, int>{};
+    for (final element in labels) {
+      if (labelsAndCount[element] == null) {
+        labelsAndCount[element] = 0;
+      }
+      labelsAndCount[element] += 1;
+    }
+
+    return labelsAndCount;
   }
 
   Stream<WordEntry> query({

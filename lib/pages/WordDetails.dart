@@ -8,8 +8,9 @@ import '../components/WordEntryForm.dart';
 class WordDetailsArguments {
   final WordEntry entry;
   final String word;
+  final String label;
 
-  WordDetailsArguments({this.entry, this.word});
+  WordDetailsArguments({this.entry, this.word, this.label});
 }
 
 class WordDetails extends StatelessWidget {
@@ -21,7 +22,7 @@ class WordDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final WordDetailsArguments arg = ModalRoute.of(context).settings.arguments;
     final entryInput = arg?.entry == null
-        ? WordEntryInput.empty()
+        ? WordEntryInput.empty(defaultLabel: arg?.label)
         : WordEntryInput.fromWordEntry(arg.entry);
     if (arg?.word != null) {
       entryInput.word = arg.word;
@@ -78,14 +79,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   Widget buildBody(
       TrainLogRepository trainLog, WordEntryRepository wordEntries) {
     if (entryInput.arg == null) {
-      return FutureBuilder(
+      return FutureBuilder<Map<String, int>>(
           future: wordEntries.getAllLabels(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
             return ListView(
               children: <Widget>[
                 WordEntryForm(
                   entry: entryInput,
-                  allLabels: snapshot.hasData ? snapshot.data : [],
+                  allLabels: snapshot.hasData ? snapshot.data.keys.toList() : [],
                 ),
               ],
             );

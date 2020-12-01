@@ -48,7 +48,6 @@ class _LabelsInputState extends State<LabelsInput> {
     return ChipsInput<Label>(
       key: _chipKey,
       initialValue: widget.initialValue,
-      // textStyle: Theme.of(context).textTheme.subtitle1,
       decoration: InputDecoration(
         labelText: "Labels",
         filled: true,

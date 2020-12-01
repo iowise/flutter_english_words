@@ -7,6 +7,7 @@ import '../models/SpaceRepetitionScheduler.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/ReviewButton.dart';
 import '../components/WordList.dart';
+import './WordDetails.dart';
 
 class WordsPage extends StatefulWidget {
   @override
@@ -79,7 +80,7 @@ class _WordsPageState extends State<WordsPage> {
         floatingActionButton: FloatingActionButton(
           tooltip: 'Add a word',
           child: Icon(Icons.add),
-          onPressed: () => Navigator.pushNamed(context, '/word/create'),
+          onPressed: () => Navigator.pushNamed(context, '/word/create', arguments: WordDetailsArguments(label: filterLabel)),
         ),
       ),
     );
