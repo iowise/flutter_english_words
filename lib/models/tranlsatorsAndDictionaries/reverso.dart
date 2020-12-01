@@ -152,4 +152,4 @@ Future<Map<String, dynamic>> _callReverso(final String text,
 
 final EMRegex = new RegExp(r'</?em>');
 
-String _replaceHTMLWithMarkdown(String s) => s.replaceAll(EMRegex, '*');
+String _replaceHTMLWithMarkdown(String s) => s.replaceAll(EMRegex, '**');
