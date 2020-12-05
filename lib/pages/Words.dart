@@ -80,7 +80,8 @@ class _WordsPageState extends State<WordsPage> {
         floatingActionButton: FloatingActionButton(
           tooltip: 'Add a word',
           child: Icon(Icons.add),
-          onPressed: () => Navigator.pushNamed(context, '/word/create', arguments: WordDetailsArguments(label: filterLabel)),
+          onPressed: () => Navigator.pushNamed(context, '/word/create',
+              arguments: WordDetailsArguments(label: filterLabel)),
         ),
       ),
     );
@@ -90,9 +91,11 @@ class _WordsPageState extends State<WordsPage> {
     if (repository == null) return AppDrawer.empty();
 
     return Consumer<WordEntryRepository>(
-      builder: (context, wordEntryRepository, child) => FutureBuilder(
+      builder: (context, wordEntryRepository, child) =>
+          FutureBuilder<Map<String, int>>(
         future: wordEntryRepository.getAllLabels(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
           if (!snapshot.hasData) return AppDrawer.empty();
           return AppDrawer(
             allLabels: snapshot.data,
@@ -110,9 +113,11 @@ class _WordsPageState extends State<WordsPage> {
     if (repository == null) return Text("Words");
 
     return Consumer<WordEntryRepository>(
-      builder: (context, wordEntryRepository, child) => FutureBuilder(
+      builder: (context, wordEntryRepository, child) =>
+          FutureBuilder<List<WordEntry>>(
         future: wordEntryRepository.getWordEntries(label: filterLabel),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<WordEntry>> snapshot) {
           if (!snapshot.hasData) return Text("Words");
 
           final wordsCount = snapshot.data.length;
@@ -132,9 +137,10 @@ class _WordsPageState extends State<WordsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildReviewButton(),
-            FutureBuilder(
+            FutureBuilder<List<WordEntry>>(
               future: wordEntryRepository.getWordEntries(label: filterLabel),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<WordEntry>> snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
                 }
@@ -152,17 +158,17 @@ class _WordsPageState extends State<WordsPage> {
     return ChangeNotifierProvider(
       create: (context) => trainRepository,
       child: Consumer<TrainService>(
-        builder: (context, trainRepository, child) {
-          return FutureBuilder(
-            future: trainRepository.getToReviewToday(filterLabel),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                return ReviewButton(wordsToReview: snapshot.data);
-              }
-              return ReviewButton(wordsToReview: []);
-            },
-          );
-        },
+        builder: (context, trainRepository, child) =>
+            FutureBuilder<List<WordEntry>>(
+          future: trainRepository.getToReviewToday(filterLabel),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<WordEntry>> snapshot) {
+            if (snapshot.hasData) {
+              return ReviewButton(wordsToReview: snapshot.data);
+            }
+            return ReviewButton(wordsToReview: []);
+          },
+        ),
       ),
     );
   }

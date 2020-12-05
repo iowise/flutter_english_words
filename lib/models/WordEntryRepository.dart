@@ -122,31 +122,31 @@ class WordEntry {
 }
 
 class WordEntryRepository extends ChangeNotifier {
-  CollectionReference words;
+  CollectionReference _words;
   final editedWord = ValueNotifier<WordEntry>(null);
   final deletedWordId = ValueNotifier<String>(null);
 
   WordEntryRepository() {
-    words = FirebaseFirestore.instance
+    _words = FirebaseFirestore.instance
         .collection('words')
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection('list');
   }
 
   Future<WordEntry> insert(WordEntry entry) async {
-    final reference = await words.add(entry.toMap());
+    final reference = await _words.add(entry.toMap());
     entry.id = reference.id;
     notifyListeners();
     return entry;
   }
 
   Future<WordEntry> getWordEntry(String id) async {
-    final snapshot = await words.doc(id).get();
+    final snapshot = await _words.doc(id).get();
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
   Future<List<WordEntry>> _getWordEntries() async {
-    final snapshot = await words.get();
+    final snapshot = await _words.get();
     return [
       for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
     ];
@@ -177,7 +177,7 @@ class WordEntryRepository extends ChangeNotifier {
   Stream<WordEntry> query({
     bool Function(WordEntry word) where,
   }) async* {
-    final snapshot = await words.get();
+    final snapshot = await _words.get();
     for (final doc in snapshot.docs) {
       final word = WordEntry.fromDocument(doc);
       if (where(word)) {
@@ -187,13 +187,13 @@ class WordEntryRepository extends ChangeNotifier {
   }
 
   Future delete(String id) async {
-    await words.doc(id).delete();
+    await _words.doc(id).delete();
     deletedWordId.value = id;
     notifyListeners();
   }
 
   Future update(WordEntry entry) async {
-    await words.doc(entry.id).update(entry.toMap());
+    await _words.doc(entry.id).update(entry.toMap());
     editedWord.value = entry;
     notifyListeners();
   }
@@ -207,7 +207,7 @@ class WordEntryRepository extends ChangeNotifier {
   }
 
   Future<WordEntry> findCopy(String word) async {
-    final snapshot = await words.where(_columnWord, isEqualTo: word).get();
+    final snapshot = await _words.where(_columnWord, isEqualTo: word).get();
 
     return snapshot.docs.isNotEmpty
         ? WordEntry.fromDocument(snapshot.docs[0])

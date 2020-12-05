@@ -53,10 +53,10 @@ class TrainLog {
 }
 
 class TrainLogRepository extends ChangeNotifier {
-  CollectionReference logs;
+  CollectionReference _logs;
 
   TrainLogRepository() {
-    logs = FirebaseFirestore.instance
+    _logs = FirebaseFirestore.instance
         .collection('trainLog')
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection('list');
@@ -73,28 +73,28 @@ create table $_table (
 ''';
 
   Future<TrainLog> insert(TrainLog log) async {
-    final reference = await logs.add(log.toMap());
+    final reference = await _logs.add(log.toMap());
     log.id = reference.id;
     notifyListeners();
     return log;
   }
 
   Future<List<TrainLog>> getLogs(String wordId) async {
-    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    final snapshot = await _logs.where(_columnWordId, isEqualTo: wordId).get();
     final entries = [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
     entries.sort((a, b) => b.trainedAt.compareTo(a.trainedAt));
     return entries;
   }
 
   Future<List<TrainLog>> dumpLogs() async {
-    final snapshot = await logs.get();
+    final snapshot = await _logs.get();
     return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
   }
 
   Future deleteLogsForWord(String wordId) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    final snapshot = await _logs.where(_columnWordId, isEqualTo: wordId).get();
     for (final element in snapshot.docs) {
       batch.delete(element.reference);
     }
