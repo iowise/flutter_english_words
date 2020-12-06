@@ -58,7 +58,7 @@ class TranslationTextInput extends StatelessWidget {
     this._typeAheadController.text = '';
   }
 
-  String concatenateTranslation(String value) {
+  concatenateTranslation(String value) {
     final doesTextHaveTranslation = this._typeAheadController.text.isNotEmpty;
     this._typeAheadController.text = doesTextHaveTranslation
         ? "${this._typeAheadController.text}; $value"

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:word_trainer/models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
+import 'LabelsInput.dart';
 import 'WordContextTextFormField.dart';
 
 class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;
+  List<String> allLabels;
 
-  WordEntryForm({Key key, this.entry}) : super(key: key);
+  WordEntryForm({Key key, this.entry, @required this.allLabels})
+      : super(key: key);
 
   @override
   _WordEntryFormState createState() => _WordEntryFormState(this.entry);
@@ -110,6 +113,13 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     });
                   },
                 ),
+                LabelsInput.fromStrings(
+                  initialValue: widget.entry.labels,
+                  onChange: (List<String> value) {
+                    widget.entry.labels = value;
+                  },
+                  allLabels: widget.allLabels,
+                ),
               ],
             ),
           ),
@@ -125,6 +135,8 @@ class WordEntryInput extends WordContextInput {
   String definition;
   String synonyms;
   String antonyms;
+  List<String> labels;
+
   WordEntry arg;
 
   WordEntryInput({
@@ -134,6 +146,7 @@ class WordEntryInput extends WordContextInput {
     @required this.definition,
     @required this.synonyms,
     @required this.antonyms,
+    @required this.labels,
     this.arg,
   }) : super(word, context);
 
@@ -147,6 +160,7 @@ class WordEntryInput extends WordContextInput {
         context: context.trim(),
         synonyms: synonyms.trim(),
         antonyms: antonyms.trim(),
+        labels: labels,
       );
     }
     return WordEntry.create(
@@ -156,6 +170,7 @@ class WordEntryInput extends WordContextInput {
       context: context.trim(),
       synonyms: synonyms.trim(),
       antonyms: antonyms.trim(),
+      labels: labels,
     );
   }
 
@@ -167,17 +182,20 @@ class WordEntryInput extends WordContextInput {
       context: arg.context,
       synonyms: arg.synonyms,
       antonyms: arg.antonyms,
+      labels: arg.labels,
       arg: arg,
     );
   }
 
-  static WordEntryInput empty() {
+  static WordEntryInput empty({String defaultLabel}) {
     return WordEntryInput(
-        word: "",
-        translation: "",
-        definition: "",
-        context: "",
-        synonyms: "",
-        antonyms: "");
+      word: "",
+      translation: "",
+      definition: "",
+      context: "",
+      synonyms: "",
+      antonyms: "",
+      labels: defaultLabel == null ? [] : [defaultLabel],
+    );
   }
 }

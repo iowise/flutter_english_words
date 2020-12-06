@@ -7,6 +7,7 @@ import '../models/SpaceRepetitionScheduler.dart';
 import '../models/WordEntryRepository.dart';
 import '../components/ReviewButton.dart';
 import '../components/WordList.dart';
+import './WordDetails.dart';
 
 class WordsPage extends StatefulWidget {
   @override
@@ -28,6 +29,7 @@ class _WordsPageState extends State<WordsPage> {
   TrainService trainRepository;
   Sorting sorting = Sorting.byDate;
   Filtering filtering = Filtering.all;
+  String filterLabel;
 
   @override
   void initState() {
@@ -65,21 +67,44 @@ class _WordsPageState extends State<WordsPage> {
                 if (repository == null) return;
                 showSearch(
                   context: context,
-                  delegate: CustomSearchDelegate(this.repository),
+                  delegate: CustomSearchDelegate(this.repository, filterLabel),
                 );
               },
             ),
           ],
         ),
-        drawer: AppDrawer(),
+        drawer: buildDrawer(),
         body: Center(
           child: _buildList(),
         ),
         floatingActionButton: FloatingActionButton(
           tooltip: 'Add a word',
           child: Icon(Icons.add),
-          onPressed: () => Navigator.pushNamed(context, '/word/create'),
-        ), // This trailing comma makes auto-formatting nicer for build methods.
+          onPressed: () => Navigator.pushNamed(context, '/word/create',
+              arguments: WordDetailsArguments(label: filterLabel)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDrawer() {
+    if (repository == null) return AppDrawer.empty();
+
+    return Consumer<WordEntryRepository>(
+      builder: (context, wordEntryRepository, child) =>
+          FutureBuilder<Map<String, int>>(
+        future: wordEntryRepository.getAllLabels(),
+        builder:
+            (BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
+          if (!snapshot.hasData) return AppDrawer.empty();
+          return AppDrawer(
+            allLabels: snapshot.data,
+            currentLabel: filterLabel,
+            applyLabelFilter: (newFilterLabel) => setState(() {
+              filterLabel = newFilterLabel;
+            }),
+          );
+        },
       ),
     );
   }
@@ -88,9 +113,11 @@ class _WordsPageState extends State<WordsPage> {
     if (repository == null) return Text("Words");
 
     return Consumer<WordEntryRepository>(
-      builder: (context, wordEntryRepository, child) => FutureBuilder(
-        future: wordEntryRepository.getWordEntries(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (context, wordEntryRepository, child) =>
+          FutureBuilder<List<WordEntry>>(
+        future: wordEntryRepository.getWordEntries(label: filterLabel),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<WordEntry>> snapshot) {
           if (!snapshot.hasData) return Text("Words");
 
           final wordsCount = snapshot.data.length;
@@ -110,9 +137,10 @@ class _WordsPageState extends State<WordsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildReviewButton(),
-            FutureBuilder(
-              future: wordEntryRepository.getWordEntries(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
+            FutureBuilder<List<WordEntry>>(
+              future: wordEntryRepository.getWordEntries(label: filterLabel),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<WordEntry>> snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
                 }
@@ -130,17 +158,17 @@ class _WordsPageState extends State<WordsPage> {
     return ChangeNotifierProvider(
       create: (context) => trainRepository,
       child: Consumer<TrainService>(
-        builder: (context, trainRepository, child) {
-          return FutureBuilder(
-            future: trainRepository.getToReviewToday(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                return ReviewButton(wordsToReview: snapshot.data);
-              }
-              return ReviewButton(wordsToReview: []);
-            },
-          );
-        },
+        builder: (context, trainRepository, child) =>
+            FutureBuilder<List<WordEntry>>(
+          future: trainRepository.getToReviewToday(filterLabel),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<WordEntry>> snapshot) {
+            if (snapshot.hasData) {
+              return ReviewButton(wordsToReview: snapshot.data);
+            }
+            return ReviewButton(wordsToReview: []);
+          },
+        ),
       ),
     );
   }
@@ -229,10 +257,11 @@ class CustomSearchDelegate extends SearchDelegate {
   WordEntryBloc blocSearch;
 
   final WordEntryRepository repository;
+  final String label;
 
-  CustomSearchDelegate(this.repository) {
+  CustomSearchDelegate(this.repository, this.label) {
     blocSearch = WordEntryBloc();
-    if (repository != null) blocSearch.listenRepository(repository);
+    if (repository != null) blocSearch.listenRepository(repository, label);
   }
 
   @override
@@ -262,14 +291,12 @@ class CustomSearchDelegate extends SearchDelegate {
     return ChangeNotifierProvider(
       create: (context) {
         blocSearch = WordEntryBloc();
-        if (repository != null) blocSearch.listenRepository(repository);
+        if (repository != null) blocSearch.listenRepository(repository, label);
         return blocSearch;
       },
       child: Consumer<WordEntryBloc>(
         builder: (context, blocSearch, child) {
-          final List data = blocSearch._data;
-          final filtered =
-              data.where((element) => element.word.contains(query)).toList();
+          final filtered = filterWords(blocSearch._data);
           if (filtered.isEmpty) {
             return Center(child: Text('Nothing is found'));
           }
@@ -283,6 +310,13 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     return buildResults(context);
   }
+
+  List<WordEntry> filterWords(List<WordEntry> data) => data
+      .where((element) =>
+          element.word.contains(query) ||
+          element.translation.contains(query) ||
+          element.definition.contains(query))
+      .toList();
 }
 
 class WordEntryBloc extends ChangeNotifier {
@@ -290,9 +324,9 @@ class WordEntryBloc extends ChangeNotifier {
 
   WordEntryRepository repository;
 
-  listenRepository(repository) async {
+  listenRepository(WordEntryRepository repository, String label) async {
     this.repository = repository;
-    _data = await this.repository.getWordEntries();
+    _data = await this.repository.getWordEntries(label: label);
     notifyListeners();
     this.repository.editedWord.addListener(_editWord);
     this.repository.deletedWordId.addListener(_removeWord);

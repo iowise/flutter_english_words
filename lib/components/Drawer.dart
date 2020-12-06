@@ -7,9 +7,24 @@ import '../models/TrainLogRepository.dart';
 import '../models/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
+  final Map<String, int> allLabels;
+  final String currentLabel;
+  final Function(String) applyLabelFilter;
+
   const AppDrawer({
     Key key,
+    @required this.allLabels,
+    @required this.currentLabel,
+    @required this.applyLabelFilter,
   }) : super(key: key);
+
+  factory AppDrawer.empty() {
+    return AppDrawer(
+      allLabels: <String, int>{},
+      currentLabel: null,
+      applyLabelFilter: (string) {},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +67,28 @@ class AppDrawer extends StatelessWidget {
             title: Text('Sentence Training'),
             onTap: () => Navigator.pushNamed(context, '/train/sentence'),
           ),
+          ListTile(
+            leading: Icon(Icons.inbox),
+            title: Text('Word Inbox'),
+            selected: currentLabel == null,
+            onTap: () {
+              applyLabelFilter(null);
+              Navigator.pop(context);
+            },
+          ),
+          ...allLabels.entries.map(
+            (e) => ListTile(
+              leading: Icon(
+                  e.key == currentLabel ? Icons.label : Icons.label_outline),
+              title: Text(e.key),
+              trailing: Text(e.value.toString()),
+              selected: e.key == currentLabel,
+              onTap: () {
+                applyLabelFilter(e.key);
+                Navigator.pop(context);
+              },
+            ),
+          ).toList()
         ],
       ),
     );

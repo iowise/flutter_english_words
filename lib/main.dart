@@ -38,9 +38,9 @@ class MyApp extends StatelessWidget {
               hintType: HintTypes.translation,
             ),
         '/train/word/definition/': (BuildContext context) => TrainPage(
-          title: 'Train a word',
-          hintType: HintTypes.definition,
-        ),
+              title: 'Train a word',
+              hintType: HintTypes.definition,
+            ),
         '/train/sentence': (BuildContext context) => EnterSentenceTrainPage(),
         '/words': (BuildContext context) => WordsPage(),
         '/word/create': (BuildContext context) =>

@@ -8,20 +8,22 @@ import '../components/WordEntryForm.dart';
 class WordDetailsArguments {
   final WordEntry entry;
   final String word;
+  final String label;
 
-  WordDetailsArguments({this.entry, this.word});
+  WordDetailsArguments({this.entry, this.word, this.label});
 }
 
 class WordDetails extends StatelessWidget {
-  WordDetails({Key key, this.title}) : super(key: key);
+  WordDetails({Key key, @required this.title}) : super(key: key);
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
-    final WordDetailsArguments arg = ModalRoute.of(context).settings.arguments;
+    final WordDetailsArguments arg =
+        ModalRoute.of(context)?.settings?.arguments;
     final entryInput = arg?.entry == null
-        ? WordEntryInput.empty()
+        ? WordEntryInput.empty(defaultLabel: arg?.label)
         : WordEntryInput.fromWordEntry(arg.entry);
     if (arg?.word != null) {
       entryInput.word = arg.word;
@@ -52,6 +54,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   @override
   Widget build(BuildContext context) {
     final TrainLogRepository trainLog = GetIt.I.get<TrainLogRepository>();
+    final WordEntryRepository wordEntries = GetIt.I.get<WordEntryRepository>();
 
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +68,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                 ),
               ],
       ),
-      body: buildBody(trainLog),
+      body: buildBody(trainLog, wordEntries),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Save',
         child: Icon(Icons.save),
@@ -74,34 +77,55 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  Widget buildBody(TrainLogRepository trainLog) {
+  Widget buildBody(
+      TrainLogRepository trainLog, WordEntryRepository wordEntries) {
     if (entryInput.arg == null) {
-      return ListView(
-        children: <Widget>[
-          WordEntryForm(entry: entryInput),
-        ],
-      );
+      return FutureBuilder<Map<String, int>>(
+          future: wordEntries.getAllLabels(),
+          builder:
+              (BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
+            return ListView(
+              children: <Widget>[
+                WordEntryForm(
+                  entry: entryInput,
+                  allLabels:
+                      snapshot.hasData ? snapshot.data.keys.toList() : [],
+                ),
+              ],
+            );
+          });
     }
-    return FutureBuilder(
-      future: trainLog.getLogs(entryInput.arg.id),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+    return FutureBuilder<LogsAndLabels>(
+      future: getLogsAndLabels(trainLog, wordEntries),
+      builder: (BuildContext context, AsyncSnapshot<LogsAndLabels> snapshot) {
         List details;
         if (entryInput.arg?.dueToLearnAfter == null) {
           details = [];
         } else {
           details = [
             buildWordDetails(context, trainLog),
-            ...buildTrainLogs(snapshot),
+            ...buildTrainLogs(snapshot.hasData,
+                snapshot.data != null ? snapshot.data.logs : null),
           ];
         }
+        final allLabels =
+            snapshot.hasData ? snapshot.data.labels : new List<String>();
+
         return ListView(
           children: <Widget>[
-            WordEntryForm(entry: entryInput),
+            WordEntryForm(entry: entryInput, allLabels: allLabels),
             ...details,
           ],
         );
       },
     );
+  }
+
+  Future<LogsAndLabels> getLogsAndLabels(
+      TrainLogRepository trainLog, WordEntryRepository wordEntries) async {
+    final logsFuture = trainLog.getLogs(entryInput.arg.id);
+    final labelsFuture = wordEntries.getAllLabels();
+    return LogsAndLabels(await logsFuture, (await labelsFuture).keys.toList(growable: false));
   }
 
   Widget buildWordDetails(BuildContext context, TrainLogRepository trainLog) {
@@ -113,10 +137,9 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  List<Widget> buildTrainLogs(AsyncSnapshot<List<TrainLog>> snapshot) {
+  List<Widget> buildTrainLogs(bool hasData, List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
-    if (snapshot.hasData) {
-      final logs = snapshot.data;
+    if (hasData) {
       return logs
           .map(
             (e) => ListTile(
@@ -140,4 +163,11 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     await GetIt.I.get<WordEntryRepository>().delete(wordId);
     Navigator.pop(context);
   }
+}
+
+class LogsAndLabels {
+  final List<TrainLog> logs;
+  final List<String> labels;
+
+  const LogsAndLabels(this.logs, this.labels);
 }
