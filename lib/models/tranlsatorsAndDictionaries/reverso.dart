@@ -137,6 +137,9 @@ Future<List<String>> reversoWordContexts(final String text) async {
 /// }
 Future<Map<String, dynamic>> _callReverso(final String text,
     {final source_lang = 'en', final target_lang = 'ru'}) async {
+  if (_cache.containsKey(text)){
+    return _cache[text];
+  }
   final data = {
     "source_text": text,
     "target_text": '',
@@ -147,9 +150,15 @@ Future<Map<String, dynamic>> _callReverso(final String text,
       "https://context.reverso.net/bst-query-service",
       headers: _HEADERS,
       body: jsonEncode(data));
-  return json.decode(response.body);
+  final decoded = json.decode(response.body);
+  if (response.statusCode == 200) {
+    _cache[text] = decoded;
+  }
+  return decoded;
 }
 
 final EMRegex = new RegExp(r'</?em>');
 
 String _replaceHTMLWithMarkdown(String s) => s.replaceAll(EMRegex, '**');
+
+final _cache = new Map<String, Map<String, dynamic>>();

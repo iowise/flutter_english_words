@@ -11,6 +11,9 @@ Future<List<String>> merriamWebsterDefinitions(String text) async {
 }
 
 Future<List<String>> _callThesaurus(String text) async {
+  if (_cache.containsKey(text)) {
+    return _cache[text];
+  }
   final url =
       "https://dictionaryapi.com/api/v3/references/thesaurus/json/$text?key=$_AUTH_KEY";
   final response = await http.post(url);
@@ -18,5 +21,11 @@ Future<List<String>> _callThesaurus(String text) async {
   final thesaurusRecords = json.decode(response.body);
   final shortDefinitions = thesaurusRecords.expand((element) =>
       new List<String>.from(element is Map ? element['shortdef'] : []));
-  return new List<String>.from(shortDefinitions);
+  final result = new List<String>.from(shortDefinitions);
+  if (response.statusCode == 200) {
+    _cache[text] = result;
+  }
+  return result;
 }
+
+final _cache = Map<String, List<String>>();
