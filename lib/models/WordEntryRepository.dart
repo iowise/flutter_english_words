@@ -145,7 +145,7 @@ class WordEntryRepository extends ChangeNotifier {
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
-  Future<List<WordEntry>> _getWordEntries() async {
+  Future<List<WordEntry>> getAllWordEntries() async {
     final snapshot = await _words.get();
     return [
       for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
@@ -153,14 +153,14 @@ class WordEntryRepository extends ChangeNotifier {
   }
 
   Future<List<WordEntry>> getWordEntries({final String label}) async {
-    final entries = await _getWordEntries();
+    final entries = await getAllWordEntries();
     final filtered = entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
   }
 
   Future<Map<String, int>> getAllLabels() async {
-    final entries = await _getWordEntries();
+    final entries = await getAllWordEntries();
     final labels = entries.expand((e) => e.labels).toList();
 
     var labelsAndCount = <String, int>{};

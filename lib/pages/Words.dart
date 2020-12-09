@@ -261,7 +261,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   CustomSearchDelegate(this.repository, this.label) {
     blocSearch = WordEntryBloc();
-    if (repository != null) blocSearch.listenRepository(repository, label);
+    if (repository != null) blocSearch.listenRepository(repository);
   }
 
   @override
@@ -291,7 +291,7 @@ class CustomSearchDelegate extends SearchDelegate {
     return ChangeNotifierProvider(
       create: (context) {
         blocSearch = WordEntryBloc();
-        if (repository != null) blocSearch.listenRepository(repository, label);
+        if (repository != null) blocSearch.listenRepository(repository);
         return blocSearch;
       },
       child: Consumer<WordEntryBloc>(
@@ -324,9 +324,9 @@ class WordEntryBloc extends ChangeNotifier {
 
   WordEntryRepository repository;
 
-  listenRepository(WordEntryRepository repository, String label) async {
+  listenRepository(WordEntryRepository repository) async {
     this.repository = repository;
-    _data = await this.repository.getWordEntries(label: label);
+    _data = await this.repository.getAllWordEntries();
     notifyListeners();
     this.repository.editedWord.addListener(_editWord);
     this.repository.deletedWordId.addListener(_removeWord);
