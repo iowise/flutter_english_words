@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../components/Train.dart';
 

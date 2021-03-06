@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import '../models/TrainLogRepository.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/blocs/WordEntryCubit.dart';
+import '../models/repositories/TrainLogRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
 
 class WordDetailsArguments {
@@ -56,23 +58,31 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     final TrainLogRepository trainLog = GetIt.I.get<TrainLogRepository>();
     final WordEntryRepository wordEntries = GetIt.I.get<WordEntryRepository>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: entryInput.arg == null
-            ? []
-            : <Widget>[
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: _onDelete,
-                ),
-              ],
-      ),
-      body: buildBody(trainLog, wordEntries),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Save',
-        child: Icon(Icons.save),
-        onPressed: _onSave,
+    return BlocProvider<WordEntryCubit>(
+      lazy: false,
+      create: (_) => WordEntryCubit.setup(wordEntries),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: entryInput.arg == null
+              ? []
+              : <Widget>[
+                  BlocBuilder<WordEntryCubit, WordEntryListState>(
+                    builder: (context, _) => IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => _onDelete(context),
+                    ),
+                  ),
+                ],
+        ),
+        body: buildBody(trainLog, wordEntries),
+        floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
+          builder: (context, _) => FloatingActionButton(
+            tooltip: 'Save',
+            child: Icon(Icons.save),
+            onPressed: () => _onSave(context),
+          ),
+        ),
       ),
     );
   }
@@ -80,52 +90,51 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   Widget buildBody(
       TrainLogRepository trainLog, WordEntryRepository wordEntries) {
     if (entryInput.arg == null) {
-      return FutureBuilder<Map<String, int>>(
-          future: wordEntries.getAllLabels(),
+      return BlocBuilder<WordEntryCubit, WordEntryListState>(
+        builder: (_, state) => ListView(
+          children: <Widget>[
+            WordEntryForm(
+              entry: entryInput,
+              allLabels: state.labels.keys.toList(),
+            ),
+          ],
+        ),
+      );
+    }
+    return BlocBuilder<WordEntryCubit, WordEntryListState>(
+      builder: (_, state) {
+        return FutureBuilder<LogsAndLabels>(
+          future: getLogs(trainLog, wordEntries),
           builder:
-              (BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
+              (BuildContext context, AsyncSnapshot<LogsAndLabels> snapshot) {
+            List details;
+            if (entryInput.arg?.dueToLearnAfter == null) {
+              details = [];
+            } else {
+              details = [
+                buildWordDetails(context, trainLog),
+                ...buildTrainLogs(snapshot.hasData,
+                    snapshot.data != null ? snapshot.data.logs : null),
+              ];
+            }
+            final allLabels = state.labels.keys.toList();
+
             return ListView(
               children: <Widget>[
-                WordEntryForm(
-                  entry: entryInput,
-                  allLabels:
-                      snapshot.hasData ? snapshot.data.keys.toList() : [],
-                ),
+                WordEntryForm(entry: entryInput, allLabels: allLabels),
+                ...details,
               ],
             );
-          });
-    }
-    return FutureBuilder<LogsAndLabels>(
-      future: getLogsAndLabels(trainLog, wordEntries),
-      builder: (BuildContext context, AsyncSnapshot<LogsAndLabels> snapshot) {
-        List details;
-        if (entryInput.arg?.dueToLearnAfter == null) {
-          details = [];
-        } else {
-          details = [
-            buildWordDetails(context, trainLog),
-            ...buildTrainLogs(snapshot.hasData,
-                snapshot.data != null ? snapshot.data.logs : null),
-          ];
-        }
-        final allLabels =
-            snapshot.hasData ? snapshot.data.labels : new List<String>();
-
-        return ListView(
-          children: <Widget>[
-            WordEntryForm(entry: entryInput, allLabels: allLabels),
-            ...details,
-          ],
+          },
         );
       },
     );
   }
 
-  Future<LogsAndLabels> getLogsAndLabels(
+  Future<LogsAndLabels> getLogs(
       TrainLogRepository trainLog, WordEntryRepository wordEntries) async {
     final logsFuture = trainLog.getLogs(entryInput.arg.id);
-    final labelsFuture = wordEntries.getAllLabels();
-    return LogsAndLabels(await logsFuture, (await labelsFuture).keys.toList(growable: false));
+    return LogsAndLabels(await logsFuture, []);
   }
 
   Widget buildWordDetails(BuildContext context, TrainLogRepository trainLog) {
@@ -152,15 +161,15 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     return [Center(child: CircularProgressIndicator())];
   }
 
-  _onSave() async {
-    await GetIt.I.get<WordEntryRepository>().save(entryInput.toEntry());
+  _onSave(BuildContext context) async {
+    await context.read<WordEntryCubit>().save(entryInput.toEntry());
     Navigator.pop(context);
   }
 
-  _onDelete() async {
+  _onDelete(BuildContext context) async {
     final wordId = entryInput.arg.id;
     await GetIt.I.get<TrainLogRepository>().deleteLogsForWord(wordId);
-    await GetIt.I.get<WordEntryRepository>().delete(wordId);
+    await context.read<WordEntryCubit>().delete(entryInput.arg);
     Navigator.pop(context);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/WordEntryRepository.dart';
+import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
 
 class TrainCard extends StatelessWidget {
   final WordEntry entry;

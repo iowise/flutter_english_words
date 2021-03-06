@@ -1,5 +1,7 @@
+import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 final String WORDS_TABLE = '_word_entry';
@@ -118,43 +120,44 @@ class WordEntry {
     return entry;
   }
 
-  bool hasLabel(String label) => label == null ? labels.isEmpty : labels.contains(label);
+  bool hasLabel(String label) =>
+      label == null ? labels.isEmpty : labels.contains(label);
 }
 
 class WordEntryRepository extends ChangeNotifier {
   CollectionReference _words;
-  final editedWord = ValueNotifier<WordEntry>(null);
-  final deletedWordId = ValueNotifier<String>(null);
 
-  WordEntryRepository() {
-    _words = FirebaseFirestore.instance
+  get words {
+    _words ??= FirebaseFirestore.instance
         .collection('words')
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection('list');
+    return _words;
   }
 
+  get isReady => _words != null;
+
   Future<WordEntry> insert(WordEntry entry) async {
-    final reference = await _words.add(entry.toMap());
+    final reference = await words.add(entry.toMap());
     entry.id = reference.id;
     notifyListeners();
     return entry;
   }
 
   Future<WordEntry> getWordEntry(String id) async {
-    final snapshot = await _words.doc(id).get();
+    final snapshot = await words.doc(id).get();
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
   Future<List<WordEntry>> getAllWordEntries() async {
-    final snapshot = await _words.get();
-    return [
-      for (final doc in snapshot.docs) WordEntry.fromDocument(doc)
-    ];
+    final snapshot = await words.get();
+    return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
   Future<List<WordEntry>> getWordEntries({final String label}) async {
     final entries = await getAllWordEntries();
-    final filtered = entries.where((word) => word.hasLabel(label)).toList(growable: false);
+    final filtered =
+        entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
   }
@@ -177,7 +180,7 @@ class WordEntryRepository extends ChangeNotifier {
   Stream<WordEntry> query({
     bool Function(WordEntry word) where,
   }) async* {
-    final snapshot = await _words.get();
+    final snapshot = await words.get();
     for (final doc in snapshot.docs) {
       final word = WordEntry.fromDocument(doc);
       if (where(word)) {
@@ -187,14 +190,12 @@ class WordEntryRepository extends ChangeNotifier {
   }
 
   Future delete(String id) async {
-    await _words.doc(id).delete();
-    deletedWordId.value = id;
+    await words.doc(id).delete();
     notifyListeners();
   }
 
   Future update(WordEntry entry) async {
-    await _words.doc(entry.id).update(entry.toMap());
-    editedWord.value = entry;
+    await words.doc(entry.id).update(entry.toMap());
     notifyListeners();
   }
 
@@ -207,7 +208,7 @@ class WordEntryRepository extends ChangeNotifier {
   }
 
   Future<WordEntry> findCopy(String word) async {
-    final snapshot = await _words.where(_columnWord, isEqualTo: word).get();
+    final snapshot = await words.where(_columnWord, isEqualTo: word).get();
 
     return snapshot.docs.isNotEmpty
         ? WordEntry.fromDocument(snapshot.docs[0])

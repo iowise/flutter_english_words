@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import '../models/auth.dart';
 import '../models/DB.dart';
-import '../models/TrainLogRepository.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/TrainLogRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
   final Map<String, int> allLabels;
@@ -37,11 +37,11 @@ class AppDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
             ),
-            child: ChangeNotifierProvider(
+            child: provider.ChangeNotifierProvider(
               create: (context) => UserChanged(),
               child: ListTile(
                 leading: Icon(Icons.account_circle),
-                title: Consumer<UserChanged>(
+                title: provider.Consumer<UserChanged>(
                   builder: (context, userChanged, child) {
                     final user = userChanged.user;
                     return user == null ? Text('Sign in') : Text(user.email);

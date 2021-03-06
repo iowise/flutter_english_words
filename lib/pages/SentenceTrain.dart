@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../components/TrainCard.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class EnterSentenceTrainPage extends StatefulWidget {
   @override
