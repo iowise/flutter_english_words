@@ -21,10 +21,13 @@ class WordEntryListState {
   final Sorting sorting;
   final Filtering filtering;
   final String selectedLabel;
+
   final List<WordEntry> allWords;
   final List<WordEntry> selectedWords;
   List<WordEntry> wordsToReview;
-  final Map<String, int> labels;
+
+  LabelsStatistic labelsStatistics;
+
   final isConfigured = false;
 
   WordEntryListState({
@@ -32,10 +35,12 @@ class WordEntryListState {
     this.sorting = Sorting.byDate,
     this.filtering = Filtering.all,
     this.selectedLabel,
-  })  : selectedWords =
-            sortAndFilter(sorting, filtering, selectedLabel, allWords),
-        labels = getAllLabels(allWords) {
-    wordsToReview = filterWordsToReview(selectedWords).toList(growable: false);
+  }) : selectedWords =
+            sortAndFilter(sorting, filtering, selectedLabel, allWords) {
+    final now = DateTime.now();
+    labelsStatistics = getAllLabels(allWords, now);
+    wordsToReview =
+        filterWordsToReview(selectedWords, now).toList(growable: false);
     wordsToReview.sort((right, left) => right.id.compareTo(left.id));
   }
 
@@ -120,19 +125,60 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
   }
 }
 
-Map<String, int> getAllLabels(List<WordEntry> entries) {
+@immutable
+class LabelWithStatistic {
+  final int total;
+  final int toLearn;
+  final String label;
+
+  LabelWithStatistic(
+    this.label, {
+    @required this.toLearn,
+    @required this.total,
+  });
+}
+
+@immutable
+class LabelsStatistic extends Iterable<LabelWithStatistic> {
+  final List<LabelWithStatistic> _list;
+
+  LabelsStatistic(this._list);
+
+  List<String> _labels;
+
+  List<String> get labels =>
+      _labels ??= _list.map((e) => e.label).toList(growable: true);
+
+  @override
+  Iterator<LabelWithStatistic> get iterator => _list.iterator;
+}
+
+LabelsStatistic getAllLabels(List<WordEntry> entries, DateTime now) {
   final labels = entries.expand((e) => e.labels).toList(growable: false);
 
   var labelsAndCount = <String, int>{};
+  var labelsAndToLearn = <String, int>{};
+
   for (final element in labels) {
-    if (labelsAndCount[element] == null) {
-      labelsAndCount[element] = 0;
-    }
-    labelsAndCount[element] += 1;
+    labelsAndCount.update(element, increment, ifAbsent: one);
   }
 
-  return labelsAndCount;
+  for (final element in entries.where((element) => element.isForLearn(now))) {
+    for (final label in element.labels) {
+      labelsAndToLearn.update(label, increment, ifAbsent: one);
+    }
+  }
+
+  final listOfLabelsWithStatistics = labelsAndCount.keys
+      .map((e) => LabelWithStatistic(e,
+          total: labelsAndCount[e] ?? 0, toLearn: labelsAndToLearn[e] ?? 0))
+      .toList(growable: true);
+  return LabelsStatistic(listOfLabelsWithStatistics);
 }
+
+int increment(v) => v + 1;
+
+int one() => 1;
 
 List<WordEntry> sortAndFilter(
     Sorting sorting, Filtering filtering, String label, List<WordEntry> words) {
@@ -153,8 +199,7 @@ List<WordEntry> sortAndFilter(
   return selectedByLabel;
 }
 
-Iterable<WordEntry> filterWordsToReview(List<WordEntry> selectedWords) {
-  final now = DateTime.now();
-  return selectedWords.where((word) =>
-  (word.dueToLearnAfter == null || word.dueToLearnAfter.isBefore(now)));
+Iterable<WordEntry> filterWordsToReview(
+    List<WordEntry> selectedWords, DateTime now) {
+  return selectedWords.where((word) => word.isForLearn(now));
 }

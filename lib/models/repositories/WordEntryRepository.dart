@@ -1,22 +1,20 @@
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-final String WORDS_TABLE = '_word_entry';
+const String WORDS_TABLE = '_word_entry';
 
-final String _columnId = '_id';
-final String _columnWord = 'word';
-final String _columnTranslation = 'translation';
-final String _columnContext = 'context';
-final String _columnSynonyms = 'synonyms';
-final String _columnAntonyms = 'antonyms';
-final String _columnDefinition = 'definition';
-final String _columnCreatedAt = '_created_at';
-final String _columnTrainedAt = '_trained_at';
-final String columnDueToLearnAfter = '_due_to_learn_after';
-final String _columnLabels = '_labels';
+const String _columnId = '_id';
+const String _columnWord = 'word';
+const String _columnTranslation = 'translation';
+const String _columnContext = 'context';
+const String _columnSynonyms = 'synonyms';
+const String _columnAntonyms = 'antonyms';
+const String _columnDefinition = 'definition';
+const String _columnCreatedAt = '_created_at';
+const String _columnTrainedAt = '_trained_at';
+const String columnDueToLearnAfter = '_due_to_learn_after';
+const String _columnLabels = '_labels';
 
 class WordEntry {
   String id;
@@ -103,7 +101,7 @@ class WordEntry {
     antonyms = map[_columnAntonyms] ?? '';
     createdAt = DateTime.parse(map[_columnCreatedAt]);
     labels = map[_columnLabels] != null
-        ? new List<String>.from(map[_columnLabels])
+        ? new List<String>.from(map[_columnLabels], growable: false)
         : [];
 
     trainedAt = map[_columnTrainedAt] != null
@@ -122,12 +120,16 @@ class WordEntry {
 
   bool hasLabel(String label) =>
       label == null ? labels.isEmpty : labels.contains(label);
+
+  bool isForLearn(DateTime now) => dueToLearnAfter == null || dueToLearnAfter.isBefore(now);
 }
 
 class WordEntryRepository extends ChangeNotifier {
   CollectionReference _words;
 
   get words {
+    if (FirebaseAuth.instance.currentUser == null) return null;
+
     _words ??= FirebaseFirestore.instance
         .collection('words')
         .doc(FirebaseAuth.instance.currentUser.uid)

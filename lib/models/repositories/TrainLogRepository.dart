@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 
 import 'WordEntryRepository.dart';
 
-final String _table = '_train_log';
+const String _table = '_train_log';
 
-final String _columnId = '_id';
-final String _columnWordId = 'word_id';
-final String _columnScore = 'score';
-final String _columnTrainedAt = '_trained_at';
+const String _columnId = '_id';
+const String _columnWordId = 'word_id';
+const String _columnScore = 'score';
+const String _columnTrainedAt = '_trained_at';
 
 class TrainLog {
   String id;

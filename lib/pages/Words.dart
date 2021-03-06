@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart' as provider;
 import '../components/Drawer.dart';
 import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
@@ -34,13 +33,13 @@ class _WordsPageState extends State<WordsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ScaffoldWrapper = (w) => BlocProvider<WordEntryCubit>(
+    final scaffoldWrapper = (w) => BlocProvider<WordEntryCubit>(
           lazy: false,
           create: (_) => WordEntryCubit.setup(repository),
           child: w,
         );
 
-    return ScaffoldWrapper(
+    return scaffoldWrapper(
       Scaffold(
           appBar: AppBar(
             title: buildTitle(),
@@ -93,7 +92,7 @@ class _WordsPageState extends State<WordsPage> {
 
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) => AppDrawer(
-          allLabels: state.labels,
+          allLabels: state.labelsStatistics,
           currentLabel: state.selectedLabel,
           applyLabelFilter: (newLabel) =>
               context.read<WordEntryCubit>().useLabel(newLabel)),

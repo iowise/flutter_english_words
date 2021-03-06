@@ -95,7 +95,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
           children: <Widget>[
             WordEntryForm(
               entry: entryInput,
-              allLabels: state.labels.keys.toList(),
+              allLabels: state.labelsStatistics.labels,
             ),
           ],
         ),
@@ -117,7 +117,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                     snapshot.data != null ? snapshot.data.logs : null),
               ];
             }
-            final allLabels = state.labels.keys.toList();
+            final allLabels = state.labelsStatistics.labels;
 
             return ListView(
               children: <Widget>[

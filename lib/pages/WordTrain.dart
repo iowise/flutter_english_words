@@ -34,7 +34,7 @@ class TrainWords extends StatefulWidget {
   _TrainWordsState createState() => _TrainWordsState();
 }
 
-final MAX_ATTEMPS = 1;
+const MAX_ATTEMPTS = 1;
 
 class _TrainWordsState extends State<TrainWords> {
   bool isCheck = false;
@@ -64,7 +64,7 @@ class _TrainWordsState extends State<TrainWords> {
         trainController = createTrainController();
       });
     } else {
-      if (!trainController.isCorrect && trainController.attempt < MAX_ATTEMPS) {
+      if (!trainController.isCorrect && trainController.attempt < MAX_ATTEMPTS) {
         setState(() {
           trainController.newAttempt();
         });
