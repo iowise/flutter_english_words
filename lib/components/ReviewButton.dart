@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/SpaceRepetitionScheduler.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class ReviewButton extends StatelessWidget {
   final List<WordEntry> wordsToReview;

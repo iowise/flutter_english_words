@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-final _HEADERS = {
+const _HEADERS = {
   "User-Agent": "Mozilla/5.0",
   "Content-Type": "application/json; charset=UTF-8",
 };
@@ -136,15 +136,15 @@ Future<List<String>> reversoWordContexts(final String text) async {
 ///     "extracted_phrases": []
 /// }
 Future<Map<String, dynamic>> _callReverso(final String text,
-    {final source_lang = 'en', final target_lang = 'ru'}) async {
+    {final sourceLang = 'en', final targetLang = 'ru'}) async {
   if (_cache.containsKey(text)){
     return _cache[text];
   }
   final data = {
     "source_text": text,
     "target_text": '',
-    "source_lang": source_lang,
-    "target_lang": target_lang,
+    "source_lang": sourceLang,
+    "target_lang": targetLang,
   };
   final response = await http.post(
       "https://context.reverso.net/bst-query-service",
@@ -157,8 +157,8 @@ Future<Map<String, dynamic>> _callReverso(final String text,
   return decoded;
 }
 
-final EMRegex = new RegExp(r'</?em>');
+final emRegex = new RegExp(r'</?em>');
 
-String _replaceHTMLWithMarkdown(String s) => s.replaceAll(EMRegex, '**');
+String _replaceHTMLWithMarkdown(String s) => s.replaceAll(emRegex, '**');
 
 final _cache = new Map<String, Map<String, dynamic>>();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_trainer/models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
 import 'LabelsInput.dart';
 import 'WordContextTextFormField.dart';

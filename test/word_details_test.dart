@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
-import 'package:word_trainer/models/TrainLogRepository.dart';
-import 'package:word_trainer/models/WordEntryRepository.dart';
+import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
+import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
 
 import 'package:word_trainer/pages/WordDetails.dart';
 

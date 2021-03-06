@@ -1,4 +1,4 @@
-import 'package:word_trainer/models/WordEntryRepository.dart';
+import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:word_trainer/components/Train.dart';

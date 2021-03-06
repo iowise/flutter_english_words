@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
+import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
 import '../models/auth.dart';
 import '../models/DB.dart';
-import '../models/TrainLogRepository.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/TrainLogRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
-  final Map<String, int> allLabels;
+  final LabelsStatistic allLabels;
   final String currentLabel;
   final Function(String) applyLabelFilter;
 
@@ -20,7 +21,7 @@ class AppDrawer extends StatelessWidget {
 
   factory AppDrawer.empty() {
     return AppDrawer(
-      allLabels: <String, int>{},
+      allLabels: LabelsStatistic(List<LabelWithStatistic>.empty(growable: false)),
       currentLabel: null,
       applyLabelFilter: (string) {},
     );
@@ -37,11 +38,11 @@ class AppDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
             ),
-            child: ChangeNotifierProvider(
+            child: provider.ChangeNotifierProvider(
               create: (context) => UserChanged(),
               child: ListTile(
                 leading: Icon(Icons.account_circle),
-                title: Consumer<UserChanged>(
+                title: provider.Consumer<UserChanged>(
                   builder: (context, userChanged, child) {
                     final user = userChanged.user;
                     return user == null ? Text('Sign in') : Text(user.email);
@@ -76,15 +77,15 @@ class AppDrawer extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          ...allLabels.entries.map(
+          ...allLabels.map(
             (e) => ListTile(
               leading: Icon(
-                  e.key == currentLabel ? Icons.label : Icons.label_outline),
-              title: Text(e.key),
-              trailing: Text(e.value.toString()),
-              selected: e.key == currentLabel,
+                  e.label == currentLabel ? Icons.label : Icons.label_outline),
+              title: Text(e.label),
+              trailing: Text("${e.toLearn} / ${e.total}"),
+              selected: e.label == currentLabel,
               onTap: () {
-                applyLabelFilter(e.key);
+                applyLabelFilter(e.label);
                 Navigator.pop(context);
               },
             ),

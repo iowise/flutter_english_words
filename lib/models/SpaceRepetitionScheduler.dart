@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import './WordEntryRepository.dart';
-import './TrainLogRepository.dart';
+import 'repositories/WordEntryRepository.dart';
+import 'repositories/TrainLogRepository.dart';
 
 class TrainService extends ChangeNotifier {
   WordEntryRepository wordEntryRepository;
@@ -11,13 +11,8 @@ class TrainService extends ChangeNotifier {
 
   TrainService(this.wordEntryRepository, this.trainLogRepository);
 
-  Future<List<WordEntry>> getToReviewToday(String label) async {
-    final now = DateTime.now();
-    final forLearn = await wordEntryRepository.query(
-      where: (word) => (word.dueToLearnAfter == null || word.dueToLearnAfter.isBefore(now)) && word.hasLabel(label)
-    ).toList();
-    forLearn.sort((right, left) => right.id.compareTo(left.id));
-    return makeListToLearn(forLearn);
+  List<WordEntry> getToReviewToday(List<WordEntry> wordForReview) {
+    return makeListToLearn(wordForReview);
   }
 
   Future trainWord(WordEntry word, bool isCorrect, int attempt) async {

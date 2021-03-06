@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_trainer/pages/WordDetails.dart';
-import '../models/WordEntryRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {
   WordList({Key key, @required this.words}) : super(key: key);

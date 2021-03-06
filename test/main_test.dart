@@ -14,7 +14,6 @@ void main() {
   testWidgets('Home Widget renders', (WidgetTester tester) async {
     await tester.pumpWidget(MyApp());
 
-    // Verify that our counter has incremented.
     expect(find.text('Train'), findsNothing);
     expect(find.text('Words'), findsOneWidget);
   });

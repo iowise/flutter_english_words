@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:path_provider/path_provider.dart';
-import './TrainLogRepository.dart';
-import './WordEntryRepository.dart';
+import 'repositories/TrainLogRepository.dart';
+import 'repositories/WordEntryRepository.dart';
 
 
 exportDB(WordEntryRepository wordEntryRepository,
