@@ -51,7 +51,6 @@ class _TrainState extends State<Train> {
     final results = widget.isCheck || widget.enteredWordController.attempt > 0
         ? [
             _TrainResult(
-              enteredWord: enteredWord,
               word: widget.entry.word,
               isCorrect: widget.enteredWordController.isCorrect,
               attempt: widget.enteredWordController.attempt,
@@ -101,14 +100,12 @@ class _TrainState extends State<Train> {
 
 class _TrainResult extends StatelessWidget {
   final String word;
-  final String enteredWord;
   final bool isCorrect;
   final int attempt;
 
   const _TrainResult({
     Key? key,
     required this.word,
-    required this.enteredWord,
     required this.isCorrect,
     required this.attempt,
   }) : super(key: key);

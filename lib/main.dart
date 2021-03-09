@@ -1,8 +1,4 @@
 // @dart=2.9
-import 'dart:isolate';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,19 +11,6 @@ import './di.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (kDebugMode) {
-    await FirebaseCrashlytics.instance
-        .setCrashlyticsCollectionEnabled(false);
-  };
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  Isolate.current.addErrorListener(RawReceivePort((pair) async {
-    final List<dynamic> errorAndStacktrace = pair;
-    await FirebaseCrashlytics.instance.recordError(
-      errorAndStacktrace.first,
-      errorAndStacktrace.last,
-    );
-  }).sendPort);
 
   setup();
   runApp(MyApp());
