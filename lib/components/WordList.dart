@@ -3,7 +3,7 @@ import 'package:word_trainer/pages/WordDetails.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {
-  WordList({Key key, @required this.words}) : super(key: key);
+  WordList({Key? key, required this.words}) : super(key: key);
 
   final List<WordEntry> words;
 

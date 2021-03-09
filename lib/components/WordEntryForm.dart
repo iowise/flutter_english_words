@@ -9,8 +9,11 @@ class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;
   List<String> allLabels;
 
-  WordEntryForm({Key key, this.entry, @required this.allLabels})
-      : super(key: key);
+  WordEntryForm({
+    Key? key,
+    required this.entry,
+    required this.allLabels,
+  }) : super(key: key);
 
   @override
   _WordEntryFormState createState() => _WordEntryFormState(this.entry);
@@ -18,11 +21,10 @@ class WordEntryForm extends StatefulWidget {
 
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController wordContextController;
+  final TextEditingController wordContextController;
 
-  _WordEntryFormState(final WordEntryInput entry) {
-    wordContextController = TextEditingController(text: entry.context);
-  }
+  _WordEntryFormState(final WordEntryInput entry)
+      : wordContextController = TextEditingController(text: entry.context);
 
   @override
   Widget build(BuildContext context) {
@@ -130,30 +132,30 @@ class _WordEntryFormState extends State<WordEntryForm> {
 }
 
 class WordEntryInput extends WordContextInput {
-  int id;
+  int? id;
   String translation;
   String definition;
   String synonyms;
   String antonyms;
   List<String> labels;
 
-  WordEntry arg;
+  WordEntry? arg;
 
   WordEntryInput({
     @required word,
     @required context,
-    @required this.translation,
-    @required this.definition,
-    @required this.synonyms,
-    @required this.antonyms,
-    @required this.labels,
+    required this.translation,
+    required this.definition,
+    required this.synonyms,
+    required this.antonyms,
+    required this.labels,
     this.arg,
   }) : super(word, context);
 
   toEntry() {
     if (arg != null) {
       return WordEntry.copy(
-        arg,
+        arg!,
         word: word.trim(),
         translation: translation.trim(),
         definition: definition.trim(),
@@ -187,7 +189,7 @@ class WordEntryInput extends WordContextInput {
     );
   }
 
-  static WordEntryInput empty({String defaultLabel}) {
+  static WordEntryInput empty({String? defaultLabel}) {
     return WordEntryInput(
       word: "",
       translation: "",

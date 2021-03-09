@@ -137,8 +137,8 @@ Future<List<String>> reversoWordContexts(final String text) async {
 /// }
 Future<Map<String, dynamic>> _callReverso(final String text,
     {final sourceLang = 'en', final targetLang = 'ru'}) async {
-  if (_cache.containsKey(text)){
-    return _cache[text];
+  if (_cache.containsKey(text)) {
+    return _cache[text]!;
   }
   final data = {
     "source_text": text,
@@ -147,9 +147,10 @@ Future<Map<String, dynamic>> _callReverso(final String text,
     "target_lang": targetLang,
   };
   final response = await http.post(
-      "https://context.reverso.net/bst-query-service",
-      headers: _HEADERS,
-      body: jsonEncode(data));
+    Uri.parse("https://context.reverso.net/bst-query-service"),
+    headers: _HEADERS,
+    body: jsonEncode(data),
+  );
   final decoded = json.decode(response.body);
   if (response.statusCode == 200) {
     _cache[text] = decoded;

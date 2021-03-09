@@ -12,11 +12,11 @@ Future<List<String>> merriamWebsterDefinitions(String text) async {
 
 Future<List<String>> _callThesaurus(String text) async {
   if (_cache.containsKey(text)) {
-    return _cache[text];
+    return _cache[text]!;
   }
   final url =
       "https://dictionaryapi.com/api/v3/references/thesaurus/json/$text?key=$_AUTH_KEY";
-  final response = await http.post(url);
+  final response = await http.post(Uri.parse(url));
 
   final thesaurusRecords = json.decode(response.body);
   final shortDefinitions = thesaurusRecords.expand((element) =>

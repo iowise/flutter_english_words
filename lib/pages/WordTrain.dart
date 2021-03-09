@@ -10,20 +10,21 @@ enum HintTypes {
 }
 
 class TrainPage extends StatelessWidget {
-  TrainPage({Key key, this.title, @required this.hintType}) : super(key: key);
+  TrainPage({Key? key, required this.title, required this.hintType}) : super(key: key);
 
   final String title;
   final HintTypes hintType;
 
   @override
   Widget build(BuildContext context) {
-    final List<WordEntry> arg = ModalRoute.of(context).settings.arguments;
+    final Object? argObj = ModalRoute.of(context)!.settings.arguments;
+    final List<WordEntry> arg = argObj as List<WordEntry>;
     return TrainWords(title: title, wordsToLearn: arg, hintType: hintType);
   }
 }
 
 class TrainWords extends StatefulWidget {
-  TrainWords({Key key, this.title, this.wordsToLearn, this.hintType})
+  TrainWords({Key? key, required this.title, required this.wordsToLearn, required this.hintType})
       : super(key: key);
 
   final String title;
@@ -39,7 +40,7 @@ const MAX_ATTEMPTS = 1;
 class _TrainWordsState extends State<TrainWords> {
   bool isCheck = false;
   var trainIndex = 0;
-  TrainController trainController;
+  late TrainController trainController;
 
   initState() {
     isCheck = false;

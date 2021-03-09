@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter_share/flutter_share.dart';
+// import 'package:file_picker/file_picker.dart';
+import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'repositories/TrainLogRepository.dart';
 import 'repositories/WordEntryRepository.dart';
 
-
 exportDB(WordEntryRepository wordEntryRepository,
     TrainLogRepository trainLogRepository) async {
-  final externalDir = (await getExternalStorageDirectory()).path;
+  final externalDir = (await getExternalStorageDirectory())!.path;
   File file = File(externalDir + 'word.train.export.data.json');
   final logs =
       List.of([for (var i in await trainLogRepository.dumpLogs()) i.toMap()]);
@@ -19,17 +18,19 @@ exportDB(WordEntryRepository wordEntryRepository,
   Map<String, dynamic> exportMaps = {'words': words, 'logs': logs};
   file.writeAsString(jsonEncode(exportMaps));
 
-  await FlutterShare.shareFile(
-    title: 'Example share',
+  await Share.shareFiles(
+    [file.path],
     text: 'Example share text',
-    filePath: file.path,
   );
 }
 
 importDB(WordEntryRepository wordEntryRepository,
     TrainLogRepository trainLogRepository) async {
-  File file = await FilePicker.getFile();
-  final json = jsonDecode(await file.readAsString());
+  /*
+  FilePickerResult? file = await FilePicker.platform.pickFiles(withData: true);
+  if (file == null || !file.isSinglePick) return;
+
+  final json = jsonDecode(file.files.first.bytes.toString());
 
   final words = json['words'];
   final wordsMap = {};
@@ -56,4 +57,6 @@ importDB(WordEntryRepository wordEntryRepository,
     final log = TrainLog.fromMap(i);
     await trainLogRepository.insert(log);
   }
+  */
+
 }
