@@ -4,14 +4,13 @@ import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 class TranslationTextInput extends StatelessWidget {
   TranslationTextInput({
-    Key key,
-    @required this.word,
-    @required this.decoration,
-    @required this.initialValue,
-    @required this.onChange,
-    @required this.getSuggestions
-  }) : super(key: key) {
-    _typeAheadController = TextEditingController(text: initialValue);
+    Key? key,
+    required this.word,
+    required this.decoration,
+    required this.initialValue,
+    required this.onChange,
+    required this.getSuggestions
+  }) : _typeAheadController = TextEditingController(text: initialValue), super(key: key) {
     _typeAheadController.addListener(() {
       this.onChange(_typeAheadController.text);
     });
@@ -26,7 +25,7 @@ class TranslationTextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadFormField(
+    return TypeAheadFormField<DictionaryItem>(
       textFieldConfiguration: TextFieldConfiguration(
         controller: this._typeAheadController,
         decoration: this.decoration.copyWith(

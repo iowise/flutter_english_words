@@ -8,7 +8,7 @@ class SharedWordsService {
 
   Future init() async {
     SystemChannels.lifecycle.setMessageHandler((msg) async {
-      if (msg.contains('resumed')) {
+      if (msg!.contains('resumed')) {
         final data = await _getSharedData();
         if (data['text'] == null) return;
         onCreateWord(_cleanSendText(data['text']));

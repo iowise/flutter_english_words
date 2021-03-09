@@ -9,14 +9,14 @@ import '../models/repositories/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
   final LabelsStatistic allLabels;
-  final String currentLabel;
-  final Function(String) applyLabelFilter;
+  final String? currentLabel;
+  final Function(String?) applyLabelFilter;
 
   const AppDrawer({
-    Key key,
-    @required this.allLabels,
-    @required this.currentLabel,
-    @required this.applyLabelFilter,
+    Key? key,
+    required this.allLabels,
+    required this.currentLabel,
+    required this.applyLabelFilter,
   }) : super(key: key);
 
   factory AppDrawer.empty() {
@@ -45,7 +45,7 @@ class AppDrawer extends StatelessWidget {
                 title: provider.Consumer<UserChanged>(
                   builder: (context, userChanged, child) {
                     final user = userChanged.user;
-                    return user == null ? Text('Sign in') : Text(user.email);
+                    return user == null ? Text('Sign in') : Text(user.email!);
                   },
                 ),
                 onTap: () {

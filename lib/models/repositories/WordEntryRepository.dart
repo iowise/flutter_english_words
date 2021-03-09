@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 
 const String WORDS_TABLE = '_word_entry';
 
@@ -16,21 +16,21 @@ const String _columnTrainedAt = '_trained_at';
 const String columnDueToLearnAfter = '_due_to_learn_after';
 const String _columnLabels = '_labels';
 
-class WordEntry {
-  String id;
+class WordEntry extends Equatable {
+  String? id;
 
-  String word;
-  String translation;
-  String definition;
-  String context;
-  String synonyms;
-  String antonyms;
+  late String word;
+  late String translation;
+  late String definition;
+  late String context;
+  late String synonyms;
+  late String antonyms;
 
-  DateTime createdAt;
-  DateTime trainedAt;
-  DateTime dueToLearnAfter;
+  late DateTime createdAt;
+  DateTime? trainedAt;
+  DateTime? dueToLearnAfter;
 
-  List<String> labels;
+  late List<String> labels;
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -47,35 +47,35 @@ class WordEntry {
       map[_columnId] = id;
     }
     if (trainedAt != null) {
-      map[_columnTrainedAt] = trainedAt.toIso8601String();
+      map[_columnTrainedAt] = trainedAt!.toIso8601String();
     }
     if (dueToLearnAfter != null) {
-      map[columnDueToLearnAfter] = dueToLearnAfter.toIso8601String();
+      map[columnDueToLearnAfter] = dueToLearnAfter!.toIso8601String();
     }
     return map;
   }
 
   WordEntry.create({
-    @required this.word,
-    @required this.translation,
-    @required this.definition,
-    @required this.context,
-    @required this.synonyms,
-    @required this.antonyms,
-    @required this.labels,
+    required this.word,
+    required this.translation,
+    required this.definition,
+    required this.context,
+    required this.synonyms,
+    required this.antonyms,
+    required this.labels,
   }) {
     createdAt = DateTime.now();
   }
 
   WordEntry.copy(
     WordEntry other, {
-    @required final String word,
-    @required final String translation,
-    @required final String definition,
-    @required final String context,
-    @required final String synonyms,
-    @required final String antonyms,
-    @required final List<String> labels,
+    required final String word,
+    required final String translation,
+    required final String definition,
+    required final String context,
+    required final String synonyms,
+    required final String antonyms,
+    required final List<String> labels,
   }) {
     this.id = other.id;
     this.createdAt = other.createdAt;
@@ -113,40 +113,54 @@ class WordEntry {
   }
 
   factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
-    final entry = WordEntry.fromMap(snapshot.data());
+    final entry = WordEntry.fromMap(snapshot.data()!);
     entry.id = snapshot.reference.id;
     return entry;
   }
 
-  bool hasLabel(String label) =>
+  bool hasLabel(String? label) =>
       label == null ? labels.isEmpty : labels.contains(label);
 
-  bool isForLearn(DateTime now) => dueToLearnAfter == null || dueToLearnAfter.isBefore(now);
+  bool isForLearn(DateTime now) => dueToLearnAfter == null || dueToLearnAfter!.isBefore(now);
+
+  @override
+  List<Object?> get props => [
+        id,
+        word,
+        translation,
+        definition,
+        context,
+        synonyms,
+        antonyms,
+        createdAt,
+        trainedAt,
+        dueToLearnAfter,
+        labels,
+      ];
 }
 
-class WordEntryRepository extends ChangeNotifier {
-  CollectionReference _words;
+class WordEntryRepository {
+  CollectionReference? _words;
 
   get words {
     if (FirebaseAuth.instance.currentUser == null) return null;
 
     _words ??= FirebaseFirestore.instance
         .collection('words')
-        .doc(FirebaseAuth.instance.currentUser.uid)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('list');
     return _words;
   }
 
-  get isReady => _words != null;
+  get isReady => words != null;
 
   Future<WordEntry> insert(WordEntry entry) async {
     final reference = await words.add(entry.toMap());
     entry.id = reference.id;
-    notifyListeners();
     return entry;
   }
 
-  Future<WordEntry> getWordEntry(String id) async {
+  Future<WordEntry?> getWordEntry(String id) async {
     final snapshot = await words.doc(id).get();
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
@@ -156,7 +170,7 @@ class WordEntryRepository extends ChangeNotifier {
     return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
-  Future<List<WordEntry>> getWordEntries({final String label}) async {
+  Future<List<WordEntry>> getWordEntries({final String? label}) async {
     final entries = await getAllWordEntries();
     final filtered =
         entries.where((word) => word.hasLabel(label)).toList(growable: false);
@@ -164,23 +178,8 @@ class WordEntryRepository extends ChangeNotifier {
     return filtered;
   }
 
-  Future<Map<String, int>> getAllLabels() async {
-    final entries = await getAllWordEntries();
-    final labels = entries.expand((e) => e.labels).toList();
-
-    var labelsAndCount = <String, int>{};
-    for (final element in labels) {
-      if (labelsAndCount[element] == null) {
-        labelsAndCount[element] = 0;
-      }
-      labelsAndCount[element] += 1;
-    }
-
-    return labelsAndCount;
-  }
-
   Stream<WordEntry> query({
-    bool Function(WordEntry word) where,
+    required bool Function(WordEntry word) where,
   }) async* {
     final snapshot = await words.get();
     for (final doc in snapshot.docs) {
@@ -193,12 +192,10 @@ class WordEntryRepository extends ChangeNotifier {
 
   Future delete(String id) async {
     await words.doc(id).delete();
-    notifyListeners();
   }
 
   Future update(WordEntry entry) async {
     await words.doc(entry.id).update(entry.toMap());
-    notifyListeners();
   }
 
   Future save(WordEntry entry) {
@@ -209,7 +206,7 @@ class WordEntryRepository extends ChangeNotifier {
     }
   }
 
-  Future<WordEntry> findCopy(String word) async {
+  Future<WordEntry?> findCopy(String word) async {
     final snapshot = await words.where(_columnWord, isEqualTo: word).get();
 
     return snapshot.docs.isNotEmpty

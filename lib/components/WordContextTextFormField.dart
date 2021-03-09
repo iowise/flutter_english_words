@@ -15,10 +15,10 @@ class WordContextTextFormField extends StatelessWidget {
   final TextEditingController controller;
 
   WordContextTextFormField({
-    Key key,
-    @required this.onChanged,
-    @required this.entry,
-    @required this.controller,
+    Key? key,
+    required this.onChanged,
+    required this.entry,
+    required this.controller,
   }) : super(key: key);
 
   @override

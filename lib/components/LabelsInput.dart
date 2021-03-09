@@ -15,18 +15,19 @@ class LabelsInput extends StatefulWidget {
   final List<Label> allLabels;
   final ValueChanged<List<String>> onChange;
 
-  LabelsInput(
-      {Key key,
-      @required this.initialValue,
-      @required this.onChange,
-      @required this.allLabels})
-      : super(key: key);
+  LabelsInput({
+    Key? key,
+    required this.initialValue,
+    required this.onChange,
+    required this.allLabels,
+  }) : super(key: key);
 
-  factory LabelsInput.fromStrings(
-      {Key key,
-      @required List<String> initialValue,
-      @required onChange,
-      @required List<String> allLabels}) {
+  factory LabelsInput.fromStrings({
+    Key? key,
+    required List<String> initialValue,
+    required onChange,
+    required List<String> allLabels,
+  }) {
     final _allLabels = allLabels.map((e) => Label(e)).toList();
     final _initialValue = initialValue.map(((e) => Label(e))).toList();
     return LabelsInput(
@@ -78,8 +79,12 @@ class _LabelsInputState extends State<LabelsInput> {
   }
 
   List<Label> findSuggestions(String query) {
-    final exactLabel = widget.allLabels
-        .firstWhere((element) => element.text == query, orElse: () => null);
+    late final Label? exactLabel;
+    try {
+      exactLabel = widget.allLabels.firstWhere((e) => e.text == query);
+    } catch (IterableElementError) {
+      exactLabel = null;
+    }
     if (query.length == 0) {
       return widget.allLabels;
     }

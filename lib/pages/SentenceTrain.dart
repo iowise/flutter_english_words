@@ -14,8 +14,8 @@ class EnterSentenceTrainPage extends StatefulWidget {
 class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   bool isCheck = false;
   var trainIndex = 0;
-  List<WordEntry> wordsToLearn;
-  TextEditingController sentenceController;
+  late List<WordEntry> wordsToLearn;
+  late TextEditingController sentenceController = TextEditingController();
 
   _EnterSentenceTrainPageState();
 
@@ -29,7 +29,6 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
       words.shuffle();
       setState(() {
         wordsToLearn = words.getRange(0, min(10, words.length)).toList();
-        sentenceController = TextEditingController();
       });
     });
   }
@@ -89,8 +88,13 @@ class TrainSentence extends StatelessWidget {
 
   final TextEditingController sentenceController;
 
-  TrainSentence({Key key, this.word, this.isCheck, this.onSubmit, this.sentenceController})
-      : super(key: key);
+  TrainSentence({
+    Key? key,
+    required this.word,
+    required this.isCheck,
+    required this.onSubmit,
+    required this.sentenceController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

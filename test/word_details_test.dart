@@ -17,10 +17,8 @@ void main() {
   group("Create a word and edit word without logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
-      when(wordEntryRepository.getAllLabels())
-          .thenAnswer((_) => Future.value({"testLabel": 1}));
       final trainLogRepository = FakeTrainLogRepository();
-      when(trainLogRepository.getLogs(null))
+      when(trainLogRepository.getLogs("null"))
           .thenAnswer((realInvocation) => Future.value([]));
 
       GetIt.I.registerSingleton<WordEntryRepository>(wordEntryRepository);
@@ -39,7 +37,7 @@ void main() {
       await pumpArgumentWidget(
         tester,
         child: WordDetails(title: "Create a word"),
-        args: WordDetailsArguments(label: "testLabel"),
+        args: WordDetailsArguments(label: "testLabel", entry: null),
       );
 
       expect(find.text('Create a word'), findsOneWidget);
@@ -112,11 +110,9 @@ void main() {
   group("Edit word with logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
-      when(wordEntryRepository.getAllLabels())
-          .thenAnswer((_) => Future.value({"testLabel": 1}));
       final trainLogRepository = FakeTrainLogRepository();
-      when(trainLogRepository.getLogs(null))
-          .thenAnswer((realInvocation) => Future.value([TrainLog(null, 10)]));
+      when(trainLogRepository.getLogs("null"))
+          .thenAnswer((realInvocation) => Future.value([TrainLog("null", 10)]));
 
       GetIt.I.registerSingleton<WordEntryRepository>(wordEntryRepository);
       GetIt.I.registerSingleton<TrainLogRepository>(trainLogRepository);
@@ -150,15 +146,15 @@ void main() {
 
 Future<void> pumpArgumentWidget(
   WidgetTester tester, {
-  @required Object args,
-  @required Widget child,
+  required Object args,
+  required Widget child,
 }) async {
   final key = GlobalKey<NavigatorState>();
   await tester.pumpWidget(
     MaterialApp(
       navigatorKey: key,
       home: FlatButton(
-        onPressed: () => key.currentState.push(
+        onPressed: () => key.currentState!.push(
           MaterialPageRoute<void>(
             settings: RouteSettings(arguments: args),
             builder: (_) => child,

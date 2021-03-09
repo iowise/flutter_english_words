@@ -1,15 +1,17 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
 
-import 'repositories/WordEntryRepository.dart';
-import 'repositories/TrainLogRepository.dart';
+import './blocs/TrainLogCubit.dart';
+import './repositories/WordEntryRepository.dart';
+import './repositories/TrainLogRepository.dart';
 
 class TrainService extends ChangeNotifier {
-  WordEntryRepository wordEntryRepository;
-  TrainLogRepository trainLogRepository;
+  WordEntryCubit wordEntryBloc;
+  TrainLogCubit trainLogCubit;
 
-  TrainService(this.wordEntryRepository, this.trainLogRepository);
+  TrainService(this.wordEntryBloc, this.trainLogCubit);
 
   List<WordEntry> getToReviewToday(List<WordEntry> wordForReview) {
     return makeListToLearn(wordForReview);
@@ -18,16 +20,16 @@ class TrainService extends ChangeNotifier {
   Future trainWord(WordEntry word, bool isCorrect, int attempt) async {
     final score = isCorrect ? (attempt == 0 ? 4 : 1) : 0;
 
-    final history = await trainLogRepository.getLogs(word.id);
+    final history = trainLogCubit.state.getLogs(word.id!);
     final historyScore = history.map((e) => e.score);
     final waitInDays = daysTillNextTestAlgorithm(score, historyScore);
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     word.dueToLearnAfter = today.add(Duration(days: waitInDays));
-    await wordEntryRepository.update(word);
+    await wordEntryBloc.update(word);
 
-    await trainLogRepository.insert(TrainLog(word.id, score));
+    await trainLogCubit.insert(TrainLog(word.id!, score));
     notifyListeners();
   }
 }
@@ -67,7 +69,7 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
   }
 
   // Sum up the history
-  var historySum = history.fold(
+  var historySum = history.fold<double>(
     0.0,
     (prev, val) => prev + (b + (c * val) + (d * val * val)),
   );

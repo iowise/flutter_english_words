@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:equatable/equatable.dart';
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {
@@ -17,38 +18,40 @@ enum Filtering {
 const EMPTY = "";
 
 @immutable
-class WordEntryListState {
+class WordEntryListState extends Equatable {
   final Sorting sorting;
   final Filtering filtering;
-  final String selectedLabel;
+  final String? selectedLabel;
 
   final List<WordEntry> allWords;
   final List<WordEntry> selectedWords;
-  List<WordEntry> wordsToReview;
+  late final List<WordEntry> wordsToReview;
 
-  LabelsStatistic labelsStatistics;
+  late final LabelsStatistic labelsStatistics;
 
-  final isConfigured = false;
+  final isConfigured;
 
   WordEntryListState({
-    @required this.allWords,
+    required this.allWords,
     this.sorting = Sorting.byDate,
     this.filtering = Filtering.all,
-    this.selectedLabel,
+    required this.selectedLabel,
+    this.isConfigured = false,
   }) : selectedWords =
             sortAndFilter(sorting, filtering, selectedLabel, allWords) {
     final now = DateTime.now();
     labelsStatistics = getAllLabels(allWords, now);
     wordsToReview =
         filterWordsToReview(selectedWords, now).toList(growable: false);
-    wordsToReview.sort((right, left) => right.id.compareTo(left.id));
+    wordsToReview.sort((right, left) => right.id!.compareTo(left.id!));
   }
 
   WordEntryListState copy({
-    Sorting sorting,
-    Filtering filtering,
-    String selectedLabel = EMPTY,
-    List<WordEntry> words,
+    Sorting? sorting,
+    Filtering? filtering,
+    String? selectedLabel = EMPTY,
+    List<WordEntry>? words,
+    bool? isConfigured,
   }) {
     return WordEntryListState(
       sorting: sorting ?? this.sorting,
@@ -56,40 +59,55 @@ class WordEntryListState {
       selectedLabel:
           selectedLabel != EMPTY ? selectedLabel : this.selectedLabel,
       allWords: words ?? allWords,
+      isConfigured: isConfigured ?? this.isConfigured,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        isConfigured,
+        sorting,
+        filtering,
+        selectedLabel,
+        allWords,
+        labelsStatistics,
+      ];
 }
 
 class WordEntryCubit extends Cubit<WordEntryListState> {
   final WordEntryRepository repository;
 
   WordEntryCubit(this.repository)
-      : super(new WordEntryListState(allWords: new List<WordEntry>()));
+      : super(new WordEntryListState(
+          allWords: List<WordEntry>.empty(growable: false),
+          selectedLabel: null,
+        ));
 
   factory WordEntryCubit.setup(WordEntryRepository repository) {
     final cubit = WordEntryCubit(repository);
     final refreshWords = () async {
+      if (!repository.isReady) return;
+
       final words = await repository.getAllWordEntries();
-      cubit.emit(cubit.state.copy(words: words));
+      cubit.emit(cubit.state.copy(words: words, isConfigured: true));
     };
-    Firebase.initializeApp().then((value) {
+    Firebase.initializeApp().whenComplete(() {
       FirebaseAuth.instance.userChanges().listen((_) => refreshWords());
     });
 
     if (repository.isReady) refreshWords();
-    repository.addListener(() => refreshWords());
     return cubit;
   }
 
-  void setFiltering(Filtering _filtering) {
+  void setFiltering(Filtering _filtering) async {
     emit(state.copy(filtering: _filtering));
   }
 
-  void setSorting(Sorting _sorting) {
+  void setSorting(Sorting _sorting) async {
     emit(state.copy(sorting: _sorting));
   }
 
-  void useLabel(String label) {
+  void useLabel(String? label) async {
     emit(state.copy(selectedLabel: label));
   }
 
@@ -103,18 +121,25 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
   Future create(WordEntry word) async {
     await repository.insert(word);
-    emit(state.copy(words: [...state.allWords, word]));
+
+    final newState =
+        state.copy(words: [...state.allWords, word].toList(growable: false));
+    final isSame = state == newState;
+    emit(newState);
   }
 
   Future update(WordEntry word) async {
     await repository.update(word);
-    final others = state.allWords.where((element) => element.id != word.id);
-    emit(state.copy(words: [...others, word]));
+    final others = state.allWords.where((element) => element.id! != word.id);
+
+    emit(state.copy(words: [...others, word].toList(growable: false)));
   }
 
   Future delete(WordEntry word) async {
-    await this.repository.delete(word.id);
-    final words = state.allWords.where((element) => element.id != word.id);
+    final wordId = word.id!;
+    await this.repository.delete(wordId);
+    final words = state.allWords.where((element) => element.id! != wordId);
+
     emit(state.copy(words: words.toList(growable: false)));
   }
 
@@ -126,16 +151,19 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 }
 
 @immutable
-class LabelWithStatistic {
+class LabelWithStatistic extends Equatable {
   final int total;
   final int toLearn;
   final String label;
 
   LabelWithStatistic(
     this.label, {
-    @required this.toLearn,
-    @required this.total,
+    required this.toLearn,
+    required this.total,
   });
+
+  @override
+  List<Object?> get props => [total, toLearn, label];
 }
 
 @immutable
@@ -144,13 +172,23 @@ class LabelsStatistic extends Iterable<LabelWithStatistic> {
 
   LabelsStatistic(this._list);
 
-  List<String> _labels;
+  List<String>? _labels = null;
 
   List<String> get labels =>
       _labels ??= _list.map((e) => e.label).toList(growable: true);
 
   @override
   Iterator<LabelWithStatistic> get iterator => _list.iterator;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LabelsStatistic &&
+          runtimeType == other.runtimeType &&
+          _list == other._list;
+
+  @override
+  int get hashCode => _list.hashCode;
 }
 
 LabelsStatistic getAllLabels(List<WordEntry> entries, DateTime now) {
@@ -180,8 +218,8 @@ int increment(v) => v + 1;
 
 int one() => 1;
 
-List<WordEntry> sortAndFilter(
-    Sorting sorting, Filtering filtering, String label, List<WordEntry> words) {
+List<WordEntry> sortAndFilter(Sorting sorting, Filtering filtering,
+    String? label, List<WordEntry> words) {
   final filtered = filtering == Filtering.unTrained
       ? words
           .where((element) => element.dueToLearnAfter == null)

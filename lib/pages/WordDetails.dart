@@ -2,40 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import '../models/blocs/TrainLogCubit.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
 
+@immutable
 class WordDetailsArguments {
-  final WordEntry entry;
-  final String word;
-  final String label;
+  final WordEntry? entry;
+  final String? word;
+  final String? label;
 
   WordDetailsArguments({this.entry, this.word, this.label});
 }
 
 class WordDetails extends StatelessWidget {
-  WordDetails({Key key, @required this.title}) : super(key: key);
+  WordDetails({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
-    final WordDetailsArguments arg =
-        ModalRoute.of(context)?.settings?.arguments;
+    final Object? argObj = ModalRoute.of(context)?.settings.arguments;
+    final WordDetailsArguments? arg = argObj as WordDetailsArguments;
     final entryInput = arg?.entry == null
         ? WordEntryInput.empty(defaultLabel: arg?.label)
-        : WordEntryInput.fromWordEntry(arg.entry);
+        : WordEntryInput.fromWordEntry(arg!.entry!);
     if (arg?.word != null) {
-      entryInput.word = arg.word;
+      entryInput.word = arg!.word!;
     }
     return WordCreateOrEdit(title: title, entryInput: entryInput);
   }
 }
 
 class WordCreateOrEdit extends StatefulWidget {
-  WordCreateOrEdit({Key key, this.title, this.entryInput}) : super(key: key);
+  WordCreateOrEdit({Key? key, required this.title, required this.entryInput})
+      : super(key: key);
 
   final String title;
   final WordEntryInput entryInput;
@@ -45,7 +48,7 @@ class WordCreateOrEdit extends StatefulWidget {
 }
 
 class _WordCreateOrEditState extends State<WordCreateOrEdit> {
-  WordEntryInput entryInput;
+  late WordEntryInput entryInput;
 
   @override
   void initState() {
@@ -55,12 +58,11 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
 
   @override
   Widget build(BuildContext context) {
-    final TrainLogRepository trainLog = GetIt.I.get<TrainLogRepository>();
-    final WordEntryRepository wordEntries = GetIt.I.get<WordEntryRepository>();
-
-    return BlocProvider<WordEntryCubit>(
-      lazy: false,
-      create: (_) => WordEntryCubit.setup(wordEntries),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
+        BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -75,7 +77,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                   ),
                 ],
         ),
-        body: buildBody(trainLog, wordEntries),
+        body: buildBody(),
         floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
           builder: (context, _) => FloatingActionButton(
             tooltip: 'Save',
@@ -87,8 +89,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  Widget buildBody(
-      TrainLogRepository trainLog, WordEntryRepository wordEntries) {
+  Widget buildBody() {
     if (entryInput.arg == null) {
       return BlocBuilder<WordEntryCubit, WordEntryListState>(
         builder: (_, state) => ListView(
@@ -102,63 +103,57 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
       );
     }
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (_, state) {
-        return FutureBuilder<LogsAndLabels>(
-          future: getLogs(trainLog, wordEntries),
-          builder:
-              (BuildContext context, AsyncSnapshot<LogsAndLabels> snapshot) {
-            List details;
-            if (entryInput.arg?.dueToLearnAfter == null) {
-              details = [];
-            } else {
-              details = [
-                buildWordDetails(context, trainLog),
-                ...buildTrainLogs(snapshot.hasData,
-                    snapshot.data != null ? snapshot.data.logs : null),
-              ];
-            }
-            final allLabels = state.labelsStatistics.labels;
+      builder: (_, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
+        builder: (_, trainLogState) {
+          List details;
+          if (entryInput.arg?.dueToLearnAfter == null) {
+            details = [];
+          } else {
+            details = [
+              buildWordDetails(context),
+              ...buildTrainLogs(trainLogState.logs),
+            ];
+          }
+          final allLabels = state.labelsStatistics.labels;
 
-            return ListView(
-              children: <Widget>[
-                WordEntryForm(entry: entryInput, allLabels: allLabels),
-                ...details,
-              ],
-            );
-          },
-        );
-      },
+          return ListView(
+            children: <Widget>[
+              WordEntryForm(entry: entryInput, allLabels: allLabels),
+              ...details,
+            ],
+          );
+        },
+      ),
     );
   }
 
   Future<LogsAndLabels> getLogs(
-      TrainLogRepository trainLog, WordEntryRepository wordEntries) async {
-    final logsFuture = trainLog.getLogs(entryInput.arg.id);
+    TrainLogRepository trainLog,
+  ) async {
+    final logsFuture = trainLog.getLogs(entryInput.arg!.id!);
     return LogsAndLabels(await logsFuture, []);
   }
 
-  Widget buildWordDetails(BuildContext context, TrainLogRepository trainLog) {
+  Widget buildWordDetails(BuildContext context) {
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    final nextTrainDate = formatter.format(entryInput.arg.dueToLearnAfter);
+    final nextTrainDate = formatter.format(entryInput.arg!.dueToLearnAfter!);
     return ListTile(
       title: Text("Next train on: $nextTrainDate",
           style: Theme.of(context).textTheme.bodyText1),
     );
   }
 
-  List<Widget> buildTrainLogs(bool hasData, List<TrainLog> logs) {
+  List<Widget> buildTrainLogs(List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
-    if (hasData) {
-      return logs
-          .map(
-            (e) => ListTile(
-              title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                  style: Theme.of(context).textTheme.bodyText2),
-            ),
-          )
-          .toList();
-    }
-    return [Center(child: CircularProgressIndicator())];
+    // if (logs == null) return List<Widget>.empty(growable: false);
+    return logs
+        .map(
+          (e) => ListTile(
+            title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
+                style: Theme.of(context).textTheme.bodyText2),
+          ),
+        )
+        .toList();
   }
 
   _onSave(BuildContext context) async {
@@ -167,9 +162,11 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   }
 
   _onDelete(BuildContext context) async {
-    final wordId = entryInput.arg.id;
-    await GetIt.I.get<TrainLogRepository>().deleteLogsForWord(wordId);
-    await context.read<WordEntryCubit>().delete(entryInput.arg);
+    if (entryInput.arg == null) return;
+
+    final wordId = entryInput.arg!.id!;
+    await GetIt.I.get<TrainLogCubit>().deleteLogsForWord(wordId);
+    await context.read<WordEntryCubit>().delete(entryInput.arg!);
     Navigator.pop(context);
   }
 }

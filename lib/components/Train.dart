@@ -29,12 +29,12 @@ class Train extends StatefulWidget {
   final String Function(WordEntry) getInputForTraining;
 
   Train({
-    Key key,
-    @required this.entry,
-    @required this.isCheck,
-    @required this.onSubmit,
-    @required this.enteredWordController,
-    @required this.getInputForTraining,
+    Key? key,
+    required this.entry,
+    required this.isCheck,
+    required this.onSubmit,
+    required this.enteredWordController,
+    required this.getInputForTraining,
   }) : super(key: key);
 
   @override
@@ -44,7 +44,7 @@ class Train extends StatefulWidget {
 class _TrainState extends State<Train> {
   final _formKey = GlobalKey<FormState>();
 
-  String enteredWord;
+  late String enteredWord;
 
   @override
   Widget build(BuildContext context) {
@@ -106,11 +106,11 @@ class _TrainResult extends StatelessWidget {
   final int attempt;
 
   const _TrainResult({
-    Key key,
-    @required this.word,
-    @required this.enteredWord,
-    @required this.isCorrect,
-    @required this.attempt,
+    Key? key,
+    required this.word,
+    required this.enteredWord,
+    required this.isCorrect,
+    required this.attempt,
   }) : super(key: key);
 
   @override
@@ -130,14 +130,14 @@ class _TrainResult extends StatelessWidget {
                   buildFeedbackText(),
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1
+                      .bodyText1!
                       .copyWith(color: Colors.white),
                 ),
                 Text(
                   word,
                   style: Theme.of(context)
                       .textTheme
-                      .headline4
+                      .headline4!
                       .copyWith(color: Colors.white),
                   textAlign: TextAlign.center,
                 ),

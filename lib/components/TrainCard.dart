@@ -6,7 +6,11 @@ class TrainCard extends StatelessWidget {
   final WordEntry entry;
   final String text;
 
-  const TrainCard({Key key, this.entry, this.text}) : super(key: key);
+  const TrainCard({
+    Key? key,
+    required this.entry,
+    required this.text,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

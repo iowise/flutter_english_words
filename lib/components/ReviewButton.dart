@@ -5,7 +5,7 @@ import '../models/repositories/WordEntryRepository.dart';
 class ReviewButton extends StatelessWidget {
   final List<WordEntry> wordsToReview;
 
-  const ReviewButton({Key key, @required this.wordsToReview}) : super(key: key);
+  const ReviewButton({Key? key, required this.wordsToReview}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,9 @@ class ReviewButton extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 5),
-          child: OutlineButton(
+          child: OutlinedButton(
             child: Text(
-                "Review ${wordsToTrain(wordsToReview)} of ${wordsToReview?.length} Words"),
+                "Review ${wordsToTrain(wordsToReview)} of ${wordsToReview.length} Words"),
             onPressed: () {
               pushTrainingScreen(context, '/train/word/translation/', wordsToReview);
             },
@@ -24,7 +24,7 @@ class ReviewButton extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 5),
-          child: OutlineButton(
+          child: OutlinedButton(
             child: Text("Defs"),
             onPressed: () {
               final withDefinitions = wordsToReview.where((element) => element.definition.isNotEmpty).toList();

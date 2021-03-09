@@ -16,13 +16,12 @@ class WordsPage extends StatefulWidget {
 }
 
 class _WordsPageState extends State<WordsPage> {
-  WordEntryRepository repository;
-  TrainService trainRepository;
+  WordEntryRepository repository = GetIt.I.get<WordEntryRepository>();
+  TrainService? trainRepository;
 
   @override
   void initState() {
     super.initState();
-    repository = GetIt.I.get<WordEntryRepository>();
     GetIt.I.isReady<TrainService>().then((value) {
       setState(() {
         trainRepository = GetIt.I.get<TrainService>();
@@ -33,9 +32,8 @@ class _WordsPageState extends State<WordsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scaffoldWrapper = (w) => BlocProvider<WordEntryCubit>(
-          lazy: false,
-          create: (_) => WordEntryCubit.setup(repository),
+    final scaffoldWrapper = (w) => BlocProvider.value(
+          value: GetIt.I.get<WordEntryCubit>(),
           child: w,
         );
 
@@ -111,11 +109,11 @@ class _WordsPageState extends State<WordsPage> {
   }
 
   Widget _buildList() {
-    if (repository == null || trainRepository == null) {
-      return CircularProgressIndicator();
-    }
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) {
+        if (!state.isConfigured || trainRepository == null) {
+          return CircularProgressIndicator();
+        }
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -131,7 +129,7 @@ class _WordsPageState extends State<WordsPage> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (_, state) {
         final wordsToReview =
-            trainRepository.getToReviewToday(state.wordsToReview);
+            trainRepository!.getToReviewToday(state.wordsToReview);
         return ReviewButton(wordsToReview: wordsToReview);
       },
     );
@@ -140,7 +138,7 @@ class _WordsPageState extends State<WordsPage> {
   void _showSortingAndFilter(WordEntryCubit bloc, BuildContext context) {
     final selectedStyle = Theme.of(context)
         .textTheme
-        .bodyText2
+        .bodyText2!
         .copyWith(color: Theme.of(context).accentColor);
     final selectedOrNull =
         (value, option) => (value == option ? selectedStyle : null);
