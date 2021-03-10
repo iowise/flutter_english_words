@@ -21,10 +21,10 @@ const EMPTY = "";
 class WordEntryListState extends Equatable {
   final Sorting sorting;
   final Filtering filtering;
-  final String? selectedLabel;
+  late final String? selectedLabel;
 
   final List<WordEntry> allWords;
-  final List<WordEntry> selectedWords;
+  late final List<WordEntry> selectedWords;
   late final List<WordEntry> wordsToReview;
 
   late final LabelsStatistic labelsStatistics;
@@ -35,10 +35,13 @@ class WordEntryListState extends Equatable {
     required this.allWords,
     this.sorting = Sorting.byDate,
     this.filtering = Filtering.all,
-    required this.selectedLabel,
+    String? selectedLabel,
     this.isConfigured = false,
-  }) : selectedWords =
-            sortAndFilter(sorting, filtering, selectedLabel, allWords) {
+  }) {
+    this.selectedLabel = selectedLabel == '' ? null : selectedLabel;
+    selectedWords =
+        sortAndFilter(sorting, filtering, this.selectedLabel, allWords);
+
     final now = DateTime.now();
     labelsStatistics = getAllLabels(allWords, now);
     wordsToReview =
@@ -49,7 +52,7 @@ class WordEntryListState extends Equatable {
   WordEntryListState copy({
     Sorting? sorting,
     Filtering? filtering,
-    String? selectedLabel = EMPTY,
+    String? selectedLabel,
     List<WordEntry>? words,
     bool? isConfigured,
   }) {
@@ -57,7 +60,7 @@ class WordEntryListState extends Equatable {
       sorting: sorting ?? this.sorting,
       filtering: filtering ?? this.filtering,
       selectedLabel:
-          selectedLabel != EMPTY ? selectedLabel : this.selectedLabel,
+          selectedLabel ?? this.selectedLabel,
       allWords: words ?? allWords,
       isConfigured: isConfigured ?? this.isConfigured,
     );
@@ -124,7 +127,6 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
     final newState =
         state.copy(words: [...state.allWords, word].toList(growable: false));
-    final isSame = state == newState;
     emit(newState);
   }
 
@@ -164,6 +166,8 @@ class LabelWithStatistic extends Equatable {
 
   @override
   List<Object?> get props => [total, toLearn, label];
+
+  get labelText => label.isEmpty ? 'Inbox' : label;
 }
 
 @immutable
@@ -172,10 +176,10 @@ class LabelsStatistic extends Iterable<LabelWithStatistic> {
 
   LabelsStatistic(this._list);
 
-  List<String>? _labels = null;
+  List<String>? _labels;
 
   List<String> get labels =>
-      _labels ??= _list.map((e) => e.label).toList(growable: true);
+      _labels ??= _list.where((e) => e.label != '').map((e) => e.label).toList(growable: true);
 
   @override
   Iterator<LabelWithStatistic> get iterator => _list.iterator;
@@ -192,16 +196,22 @@ class LabelsStatistic extends Iterable<LabelWithStatistic> {
 }
 
 LabelsStatistic getAllLabels(List<WordEntry> entries, DateTime now) {
-  final labels = entries.expand((e) => e.labels).toList(growable: false);
-
   var labelsAndCount = <String, int>{};
   var labelsAndToLearn = <String, int>{};
 
-  for (final element in labels) {
-    labelsAndCount.update(element, increment, ifAbsent: one);
+  for (final element in entries) {
+    if (element.labels.isEmpty) {
+      labelsAndCount.update("", increment, ifAbsent: one);
+    }
+    for (final label in element.labels) {
+      labelsAndCount.update(label, increment, ifAbsent: one);
+    }
   }
 
   for (final element in entries.where((element) => element.isForLearn(now))) {
+    if (element.labels.isEmpty) {
+      labelsAndToLearn.update("", increment, ifAbsent: one);
+    }
     for (final label in element.labels) {
       labelsAndToLearn.update(label, increment, ifAbsent: one);
     }

@@ -82,13 +82,13 @@ class WordEntry extends Equatable {
     this.trainedAt = other.trainedAt;
     this.dueToLearnAfter = other.dueToLearnAfter;
 
-    this.word = word != null ? word : other.word;
-    this.translation = translation != null ? translation : other.translation;
-    this.definition = definition != null ? definition : other.definition;
-    this.context = context != null ? context : other.context;
-    this.synonyms = synonyms != null ? synonyms : other.synonyms;
-    this.antonyms = antonyms != null ? antonyms : other.antonyms;
-    this.labels = labels != null ? labels : other.labels;
+    this.word = word;
+    this.translation = translation;
+    this.definition = definition;
+    this.context = context;
+    this.synonyms = synonyms;
+    this.antonyms = antonyms;
+    this.labels = labels;
   }
 
   WordEntry.fromMap(Map<String, dynamic> map) {

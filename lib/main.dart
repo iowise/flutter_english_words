@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:word_trainer/components/SplashScreen.dart';
+import 'package:word_trainer/pages/Labels.dart';
 import 'package:word_trainer/pages/SentenceTrain.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => SplashScreen(builder: () => WordsPage()),
+        '/': (BuildContext context) => SplashScreen(builder: () => LabelsPage()),
         '/train/word/translation/': (BuildContext context) => TrainPage(
               title: 'Train a word',
               hintType: HintTypes.translation,
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
               hintType: HintTypes.definition,
             ),
         '/train/sentence': (BuildContext context) => EnterSentenceTrainPage(),
-        '/words': (BuildContext context) => WordsPage(),
+        '/words/': (BuildContext context) => WordsPage(),
+        '/labels/': (BuildContext context) => LabelsPage(),
         '/word/create': (BuildContext context) =>
             WordDetails(title: 'Enter a word'),
         '/word/edit': (BuildContext context) =>
