@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../di.dart' as di;
 
 class SplashScreen extends StatelessWidget {
   final Widget Function() builder;

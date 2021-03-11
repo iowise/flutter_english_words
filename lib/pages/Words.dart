@@ -10,6 +10,13 @@ import '../components/ReviewButton.dart';
 import '../components/WordList.dart';
 import './WordDetails.dart';
 
+@immutable
+class WordsArguments {
+  final String? label;
+
+  WordsArguments({this.label});
+}
+
 class WordsPage extends StatefulWidget {
   @override
   _WordsPageState createState() => _WordsPageState();
@@ -28,6 +35,12 @@ class _WordsPageState extends State<WordsPage> {
       });
       GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
+  }
+
+  String? get label {
+    final Object? argObj = ModalRoute.of(context)?.settings.arguments;
+    final WordsArguments? arg = argObj as WordsArguments;
+    return arg?.label;
   }
 
   @override
@@ -69,7 +82,6 @@ class _WordsPageState extends State<WordsPage> {
               })
             ],
           ),
-          drawer: buildDrawer(),
           body: Center(
             child: _buildList(),
           ),
@@ -85,25 +97,12 @@ class _WordsPageState extends State<WordsPage> {
     );
   }
 
-  Widget buildDrawer() {
-    if (repository == null) return AppDrawer.empty();
-
-    return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) => AppDrawer(
-          allLabels: state.labelsStatistics,
-          currentLabel: state.selectedLabel,
-          applyLabelFilter: (newLabel) =>
-              context.read<WordEntryCubit>().useLabel(newLabel)),
-    );
-  }
-
   Widget buildTitle() {
     if (repository == null) return Text("Words");
 
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) {
-        final wordsCount = state.selectedWords.length;
-        return Text("$wordsCount Words");
+        return Text(state.selectedLabel ?? 'Inbox');
       },
     );
   }

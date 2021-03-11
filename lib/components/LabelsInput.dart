@@ -31,10 +31,11 @@ class LabelsInput extends StatefulWidget {
     final _allLabels = allLabels.map((e) => Label(e)).toList();
     final _initialValue = initialValue.map(((e) => Label(e))).toList();
     return LabelsInput(
-        key: key,
-        initialValue: _initialValue,
-        allLabels: _allLabels,
-        onChange: onChange);
+      key: key,
+      initialValue: _initialValue,
+      allLabels: _allLabels,
+      onChange: onChange,
+    );
   }
 
   @override
