@@ -261,10 +261,12 @@ packages:
   flutter_chips_input:
     dependency: "direct main"
     description:
-      name: flutter_chips_input
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.9.4"
+      path: "."
+      ref: fix-removing-chip-after-1-char
+      resolved-ref: "57eef39afe9125e80318c33030e525c327aa4def"
+      url: "git@github.com:EvgeneOskin/flutter_chips_input.git"
+    source: git
+    version: "1.10.0"
   flutter_keyboard_visibility:
     dependency: transitive
     description:

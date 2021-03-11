@@ -33,7 +33,10 @@ dependencies:
   share: ^2.0.0
 
   flutter_markdown: ^0.6.0
-  flutter_chips_input: 1.9.4
+  flutter_chips_input:
+    git:
+      url: git@github.com:EvgeneOskin/flutter_chips_input.git
+      ref: fix-removing-chip-after-1-char
 
   bloc: 7.0.0-nullsafety.3
   flutter_bloc: 7.0.0-nullsafety.3
