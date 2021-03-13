@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-
-class WordEntry {
-  final String word;
-  final String translation;
-
-  WordEntry(this.word, this.translation);
-}
+import 'package:word_trainer/pages/WordDetails.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {
-  WordList({Key key, this.words}) : super(key: key);
+  WordList({Key? key, required this.words}) : super(key: key);
 
   final List<WordEntry> words;
 
-  Widget _buildRow(WordEntry row) {
+  Widget _buildRow(WordEntry row, BuildContext context) {
     return ListTile(
-      title: Text(row.translation),
-      subtitle: Text(row.word),
-//      onTap: () => this._showDetails(row),
+      title: Text(row.word),
+      subtitle: Text(row.translation),
+      onTap: () => this._showDetails(row, context),
     );
   }
+
   @override
   Widget build(BuildContext context) {
+    if (words.length == 0) {
+      return Center(child: Text("Please enter a new word"));
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       shrinkWrap: true,
@@ -28,9 +27,14 @@ class WordList extends StatelessWidget {
         if (i.isOdd) return Divider();
 
         final index = i ~/ 2;
-        return _buildRow(words[index]);
+        return _buildRow(words[index], context);
       },
       itemCount: words.length * 2 - 1,
     );
+  }
+
+  _showDetails(WordEntry row, context) {
+    Navigator.pushNamed(context, "/word/edit",
+        arguments: WordDetailsArguments(entry: row));
   }
 }
