@@ -153,7 +153,7 @@ Future<void> pumpArgumentWidget(
   await tester.pumpWidget(
     MaterialApp(
       navigatorKey: key,
-      home: FlatButton(
+      home: TextButton(
         onPressed: () => key.currentState!.push(
           MaterialPageRoute<void>(
             settings: RouteSettings(arguments: args),
@@ -165,7 +165,7 @@ Future<void> pumpArgumentWidget(
     ),
   );
 
-  await tester.tap(find.byType(FlatButton));
+  await tester.tap(find.byType(TextButton));
   await tester
       .pumpAndSettle(); // Might need to be removed when testing infinite animations
 }
