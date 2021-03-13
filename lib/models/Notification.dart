@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/standalone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/src/env.dart' as tzEnv;
 
 Future<void> showNotification() async {
   tz.initializeTimeZones();
+  final _timezone = await FlutterNativeTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(_timezone));
 
   final androidNotificationDetails = AndroidNotificationDetails(
     'repeatDailyAtTime channel id',
@@ -24,7 +27,7 @@ Future<void> showNotification() async {
     0,
     "It's a good time to train your words",
     "It's a good time to train your words",
-    time(9),
+    time(7),
     platformChannelSpecifics,
     androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation:
@@ -54,6 +57,6 @@ Future<void> onDidReceiveLocalNotification(
 Future<void> selectNotification(String? payload) => Future.value();
 
 tz.TZDateTime time(int hour, [int minutes=0, int seconds=0]) {
-  final time = tz.TZDateTime.now(tzEnv.UTC);
-  return tz.TZDateTime.utc(time.year, time.month, time.day, 9);
+  final time = tz.TZDateTime.now(tzEnv.local);
+  return tz.TZDateTime.local(time.year, time.month, time.day, 9);
 }
