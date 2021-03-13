@@ -258,15 +258,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.0.0-nullsafety.3"
-  flutter_chips_input:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: a1bc9fd6d8161778de6746e00d57465a65745afa
-      resolved-ref: a1bc9fd6d8161778de6746e00d57465a65745afa
-      url: "git@github.com:EvgeneOskin/flutter_chips_input.git"
-    source: git
-    version: "1.10.0"
   flutter_keyboard_visibility:
     dependency: transitive
     description:

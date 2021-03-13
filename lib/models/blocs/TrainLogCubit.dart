@@ -22,6 +22,11 @@ class TrainLogState extends Equatable {
   List<TrainLog> getLogs(String wordId) =>
       logs.where((e) => e.wordId == wordId).toList(growable: false);
 
+  List<TrainLog> get todayTrained {
+    final today = DateTime.now();
+    return logs.where((e) => dateEquals(e.trainedAt, today)).toList(growable: false);
+  }
+
   @override
   List<Object?> get props => [logs];
 }
@@ -62,4 +67,8 @@ class TrainLogCubit extends Cubit<TrainLogState> {
     final prunedLogs = state.logs.where((e) => e.wordId != wordId);
     emit(state.copy(logs: prunedLogs.toList(growable: false)));
   }
+}
+
+bool dateEquals(DateTime date, DateTime today) {
+  return date.day == today.day && date.month == today.month && date.year == today.year;
 }
