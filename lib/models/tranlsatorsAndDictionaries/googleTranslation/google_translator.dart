@@ -84,7 +84,7 @@ class GoogleTranslator {
   }
 
   /// Sets base URL for countries that default URL doesn't work
-  void set baseUrl(String url) => _baseUrl = url;
+  set baseUrl(String url) => _baseUrl = url;
 }
 
 enum ClientType {

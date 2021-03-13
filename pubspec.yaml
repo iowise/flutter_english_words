@@ -3,7 +3,7 @@ description: A Flutter application to learn English word for a Russian user.
 
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.1.0+3
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -33,10 +33,6 @@ dependencies:
   share: ^2.0.0
 
   flutter_markdown: ^0.6.0
-  flutter_chips_input:
-    git:
-      url: git@github.com:EvgeneOskin/flutter_chips_input.git
-      ref: fix-removing-chip-after-1-char
 
   bloc: 7.0.0-nullsafety.3
   flutter_bloc: 7.0.0-nullsafety.3

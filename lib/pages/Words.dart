@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import '../components/Drawer.dart';
 import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
