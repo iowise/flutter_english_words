@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:equatable/equatable.dart';
+import "package:collection/collection.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
+
+import '../repositories/TrainLogRepository.dart';
 
 class TrainLogState extends Equatable {
   final List<TrainLog> logs;
@@ -24,12 +28,34 @@ class TrainLogState extends Equatable {
 
   List<TrainLog> get todayTrained {
     final today = DateTime.now();
-    return logs.where((e) => dateEquals(e.trainedAt, today)).toList(growable: false);
+    return logs
+        .where((e) => dateEquals(e.trainedAt, today))
+        .toList(growable: false);
+  }
+
+  String get strikes {
+    final perDay = groupBy<TrainLog, String>(
+      logs,
+      (element) => strikeKey(element.trainedAt),
+    );
+    final today = DateTime.now();
+    final todayStrike = perDay.containsKey(strikeKey(today)) ? 1 : 0;
+    for (var i = 1; i < 99; i++) {
+      final rollingDate = today.subtract(Duration(days: i));
+      final wasTrainedInDay = perDay.containsKey(strikeKey(rollingDate));
+      if (!wasTrainedInDay) {
+        final strikesBeforeToday = i - 1;
+        return (strikesBeforeToday + todayStrike).toString();
+      }
+    }
+    return "99+";
   }
 
   @override
   List<Object?> get props => [logs];
 }
+
+String strikeKey(DateTime date) => "${date.year}-${date.month}-${date.day}";
 
 class TrainLogCubit extends Cubit<TrainLogState> {
   final TrainLogRepository repository;
@@ -70,5 +96,7 @@ class TrainLogCubit extends Cubit<TrainLogState> {
 }
 
 bool dateEquals(DateTime date, DateTime today) {
-  return date.day == today.day && date.month == today.month && date.year == today.year;
+  return date.day == today.day &&
+      date.month == today.month &&
+      date.year == today.year;
 }

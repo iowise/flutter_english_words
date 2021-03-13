@@ -34,8 +34,7 @@ class _LabelsPageState extends State<LabelsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scaffoldWrapper = (w) =>
-        MultiBlocProvider(providers: [
+    final scaffoldWrapper = (w) => MultiBlocProvider(providers: [
           BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
           BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
         ], child: w);
@@ -78,13 +77,17 @@ class _LabelsPageState extends State<LabelsPage> {
   Widget _buildToReviewPanel() {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) {
-        final labelsForReviewPanel =
-        generateLabelsForReviewPanel(state.labelsStatistics);
-        return ToReviewPanel(
+        return BlocBuilder<TrainLogCubit, TrainLogState>(
+            builder: (context, trainState) {
+          final labelsForReviewPanel =
+              generateLabelsForReviewPanel(state.labelsStatistics);
+          return ToReviewPanel(
             labels: labelsForReviewPanel,
             startTraining: (label) => _startTraining(label, context),
-            trainLog: context.read<TrainLogCubit>().state.todayTrained,
-        );
+            todayTrained: trainState.todayTrained,
+            strikes: trainState.strikes,
+          );
+        });
       },
     );
   }
@@ -99,7 +102,7 @@ class _LabelsPageState extends State<LabelsPage> {
     final bloc = context.read<WordEntryCubit>();
     bloc.useLabel(row.label);
     final wordsToReview =
-    trainRepository!.getToReviewToday(bloc.state.wordsToReview);
+        trainRepository!.getToReviewToday(bloc.state.wordsToReview);
 
     Navigator.pushNamed(
       context,

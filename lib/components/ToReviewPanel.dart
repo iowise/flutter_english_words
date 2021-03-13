@@ -4,14 +4,16 @@ import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
 
 class ToReviewPanel extends StatelessWidget {
   final List<LabelWithStatistic> labels;
-  final List<TrainLog> trainLog;
+  final List<TrainLog> todayTrained;
   final Function(LabelWithStatistic label) startTraining;
+  final String strikes;
 
   const ToReviewPanel({
     Key? key,
     required this.labels,
+    required this.strikes,
     required this.startTraining,
-    required this.trainLog,
+    required this.todayTrained,
   }) : super(key: key);
 
   @override
@@ -20,15 +22,31 @@ class ToReviewPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-          child: Text(
-            "Today Trained: ${trainedStatistic(trainLog)}",
-            textAlign: TextAlign.left,
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(fontStyle: FontStyle.italic),
-          ),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 16, 0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).accentColor),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Text(
+                  strikes,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+              ),
+            ),
+            Text(
+              "Today Trained: ${trainedStatistic(todayTrained)}",
+              textAlign: TextAlign.left,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .copyWith(fontStyle: FontStyle.italic),
+            ),
+          ]),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
