@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
+import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
 
 class ToReviewPanel extends StatelessWidget {
   final List<LabelWithStatistic> labels;
-
+  final List<TrainLog> trainLog;
   final Function(LabelWithStatistic label) startTraining;
 
   const ToReviewPanel({
     Key? key,
     required this.labels,
     required this.startTraining,
+    required this.trainLog,
   }) : super(key: key);
 
   @override
@@ -19,7 +21,14 @@ class ToReviewPanel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-          child: Text("Labels to train", textAlign: TextAlign.left),
+          child: Text(
+            "Today Trained: ${trainedStatistic(trainLog)}",
+            textAlign: TextAlign.left,
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(fontStyle: FontStyle.italic),
+          ),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -36,6 +45,13 @@ class ToReviewPanel extends StatelessWidget {
       ],
     );
   }
+}
+
+String trainedStatistic(List<TrainLog> trained) {
+  if (trained.length > 10) {
+    return "${trained.length} 🎉";
+  }
+  return "${trained.length}";
 }
 
 class ToReviewCard extends StatelessWidget {

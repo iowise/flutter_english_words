@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:word_trainer/components/LabelList.dart';
 import 'package:word_trainer/components/ToReviewPanel.dart';
+import 'package:word_trainer/models/blocs/TrainLogCubit.dart';
 import '../components/Drawer.dart';
 import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
@@ -33,10 +34,11 @@ class _LabelsPageState extends State<LabelsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scaffoldWrapper = (w) => BlocProvider.value(
-          value: GetIt.I.get<WordEntryCubit>(),
-          child: w,
-        );
+    final scaffoldWrapper = (w) =>
+        MultiBlocProvider(providers: [
+          BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
+          BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+        ], child: w);
 
     return scaffoldWrapper(
       Scaffold(
@@ -77,10 +79,12 @@ class _LabelsPageState extends State<LabelsPage> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) {
         final labelsForReviewPanel =
-            generateLabelsForReviewPanel(state.labelsStatistics);
+        generateLabelsForReviewPanel(state.labelsStatistics);
         return ToReviewPanel(
             labels: labelsForReviewPanel,
-            startTraining: (label) => _startTraining(label, context));
+            startTraining: (label) => _startTraining(label, context),
+            trainLog: context.read<TrainLogCubit>().state.todayTrained,
+        );
       },
     );
   }
@@ -95,7 +99,7 @@ class _LabelsPageState extends State<LabelsPage> {
     final bloc = context.read<WordEntryCubit>();
     bloc.useLabel(row.label);
     final wordsToReview =
-        trainRepository!.getToReviewToday(bloc.state.wordsToReview);
+    trainRepository!.getToReviewToday(bloc.state.wordsToReview);
 
     Navigator.pushNamed(
       context,
