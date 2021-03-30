@@ -105,13 +105,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (_, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
         builder: (_, trainLogState) {
-          List details;
-          if (entryInput.arg?.dueToLearnAfter == null) {
-            details = [];
-          } else {
+          List details = [];
+          if (entryInput.arg?.dueToLearnAfter != null) {
+            final logs = (entryInput.arg?.id == null)
+                ? List<TrainLog>.empty(growable: false)
+                : trainLogState.getLogs(entryInput.arg!.id!);
             details = [
               buildWordDetails(context),
-              ...buildTrainLogs(trainLogState.logs),
+              ...buildTrainLogs(logs),
             ];
           }
           final allLabels = state.labelsStatistics.labels;
@@ -125,13 +126,6 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         },
       ),
     );
-  }
-
-  Future<LogsAndLabels> getLogs(
-    TrainLogRepository trainLog,
-  ) async {
-    final logsFuture = trainLog.getLogs(entryInput.arg!.id!);
-    return LogsAndLabels(await logsFuture, []);
   }
 
   Widget buildWordDetails(BuildContext context) {
