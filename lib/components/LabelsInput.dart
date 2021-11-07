@@ -60,14 +60,17 @@ class _LabelsInputState extends State<LabelsInput> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _LabelChips(selected: selected, onDelete: this.onDelete),
           TypeAheadFormField<Label>(
             textFieldConfiguration: TextFieldConfiguration(
               controller: this._typeAheadController,
+              decoration: const InputDecoration(
+                filled: true,
+                labelText: 'Labels',
+              )
             ),
             suggestionsCallback: findSuggestions,
             autoFlipDirection: true,
@@ -81,6 +84,7 @@ class _LabelsInputState extends State<LabelsInput> {
               addLabel(suggestion);
             },
           ),
+          _LabelChips(selected: selected, onDelete: this.onDelete),
         ],
       ),
     );

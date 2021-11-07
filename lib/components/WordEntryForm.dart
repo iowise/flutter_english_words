@@ -50,7 +50,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.word = value;
+                      widget.entry.word = value.breakSpaces;
                     });
                   },
                 ),
@@ -63,7 +63,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Translation',
                   ),
                   onChange: (value) {
-                    widget.entry.translation = value;
+                    widget.entry.translation = value.breakSpaces;
                   },
                   getSuggestions: getTranslations,
                 ),
@@ -76,7 +76,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Definition',
                   ),
                   onChange: (value) {
-                    widget.entry.definition = value;
+                    widget.entry.definition = value.breakSpaces;
                   },
                   getSuggestions: getDefinitions,
                 ),
@@ -85,7 +85,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   controller: wordContextController,
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.context = value;
+                      widget.entry.context = value.breakSpaces;
+                      wordContextController.breakSpacesWhenNeeded(value);
                     });
                   },
                 ),
@@ -98,7 +99,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.synonyms = value;
+                      widget.entry.synonyms = value.breakSpaces;
                     });
                   },
                 ),
@@ -111,7 +112,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.antonyms = value;
+                      widget.entry.antonyms = value.breakSpaces;
                     });
                   },
                 ),
@@ -199,5 +200,20 @@ class WordEntryInput extends WordContextInput {
       antonyms: "",
       labels: defaultLabel == null ? [] : [defaultLabel],
     );
+  }
+}
+
+const $nbsp = 0x00A0;
+var nonBreakSpace = String.fromCharCode($nbsp);
+
+extension StringExtension on String {
+  String get breakSpaces => replaceAll(nonBreakSpace, ' ');
+}
+
+extension BreakSpacesTextEditingController on TextEditingController {
+  breakSpacesWhenNeeded(String newText) {
+    if (newText.contains(nonBreakSpace)) {
+      value = value.copyWith(text: newText.breakSpaces);
+    }
   }
 }
