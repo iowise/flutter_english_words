@@ -45,7 +45,9 @@ class TranslationTextInput extends StatelessWidget {
         );
       },
       onSaved: (value) {
-        concatenateTranslation(value);
+        if (value != null) {
+          concatenateTranslation(value);
+        }
       },
       onSuggestionSelected: (suggestion) {
         concatenateTranslation(suggestion.text);
