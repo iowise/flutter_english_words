@@ -38,7 +38,8 @@ class WordContextTextFormField extends StatelessWidget {
               controller.text = wordContexts[0];
               onChanged(wordContexts[0]);
             },
-          )),
+          ),
+      ),
       onChanged: onChanged,
     );
   }
