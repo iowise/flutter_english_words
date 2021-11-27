@@ -142,7 +142,7 @@ class WordEntry extends Equatable {
 class WordEntryRepository {
   CollectionReference? _words;
 
-  get words {
+  CollectionReference? get words {
     if (FirebaseAuth.instance.currentUser == null) return null;
 
     _words ??= FirebaseFirestore.instance
@@ -155,23 +155,29 @@ class WordEntryRepository {
   get isReady => words != null;
 
   Future<WordEntry> insert(WordEntry entry) async {
-    final reference = await words.add(entry.toMap());
+    if (words == null) return Future.error("User not loaded");
+
+    final reference = await words!.add(entry.toMap());
     entry.id = reference.id;
     return entry;
   }
 
   Future<WordEntry?> getWordEntry(String id) async {
-    final snapshot = await words.doc(id).get();
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!.doc(id).get();
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
-  Future<List<WordEntry>> getAllWordEntries() async {
-    final snapshot = await words.get();
+  Future<List<WordEntry>> getAllWordEntries(bool fromCache) async {
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!.get(fromCache ? const GetOptions(source: Source.cache) : null);
     return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
   Future<List<WordEntry>> getWordEntries({final String? label}) async {
-    final entries = await getAllWordEntries();
+    final entries = await getAllWordEntries(true);
     final filtered =
         entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -181,7 +187,9 @@ class WordEntryRepository {
   Stream<WordEntry> query({
     required bool Function(WordEntry word) where,
   }) async* {
-    final snapshot = await words.get();
+    if (words == null) return;
+
+    final snapshot = await words!.get();
     for (final doc in snapshot.docs) {
       final word = WordEntry.fromDocument(doc);
       if (where(word)) {
@@ -191,11 +199,13 @@ class WordEntryRepository {
   }
 
   Future delete(String id) async {
-    await words.doc(id).delete();
+    if (words == null) return;
+    await words!.doc(id).delete();
   }
 
   Future update(WordEntry entry) async {
-    await words.doc(entry.id).update(entry.toMap());
+    if (words == null) return;
+    await words!.doc(entry.id).update(entry.toMap());
   }
 
   Future save(WordEntry entry) {
@@ -207,7 +217,9 @@ class WordEntryRepository {
   }
 
   Future<WordEntry?> findCopy(String word) async {
-    final snapshot = await words.where(_columnWord, isEqualTo: word).get();
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!.where(_columnWord, isEqualTo: word).get();
 
     return snapshot.docs.isNotEmpty
         ? WordEntry.fromDocument(snapshot.docs[0])

@@ -71,7 +71,7 @@ class TrainLogCubit extends Cubit<TrainLogState> {
       if (!repository.isReady || cubit.mutex.isLocked) return;
 
       Fluttertoast.showToast(msg: "Loading logs");
-      final logs = await repository.dumpLogs();
+      final logs = await repository.dumpLogs(true);
       Fluttertoast.showToast(msg: "Processing logs");
       cubit.emit(TrainLogState(logs: logs, isConfigured: true));
       Fluttertoast.showToast(msg: "Loaded logs");
@@ -87,12 +87,14 @@ class TrainLogCubit extends Cubit<TrainLogState> {
   }
 
   Future insert(TrainLog log) async {
+    // Don't wait for storing word on the cloud side.
     await repository.insert(log);
 
     emit(state.copy(logs: [...state.logs, log]));
   }
 
   Future deleteLogsForWord(wordId) async {
+    // Don't wait for storing word on the cloud side.
     await repository.deleteLogsForWord(wordId);
 
     final prunedLogs = state.logs.where((e) => e.wordId != wordId);

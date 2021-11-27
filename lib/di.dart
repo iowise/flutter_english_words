@@ -24,7 +24,6 @@ void setup() {
     final app = await Firebase.initializeApp();
     FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
 
-    await FirebaseFirestore.instance.disableNetwork();
     await setupCrashLytics();
     return app;
   });

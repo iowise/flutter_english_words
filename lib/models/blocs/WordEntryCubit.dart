@@ -97,7 +97,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
       if (!repository.isReady || cubit.mutex.isLocked) return;
 
       Fluttertoast.showToast(msg: "Loading words");
-      final words = await repository.getAllWordEntries();
+      final words = await repository.getAllWordEntries(true);
       Fluttertoast.showToast(msg: "Processing words");
       cubit.emit(cubit.state.copy(words: words, isConfigured: true));
       Fluttertoast.showToast(msg: "Loaded words");
@@ -131,6 +131,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
   }
 
   Future create(WordEntry word) async {
+    // Don't wait for storing word on the cloud side.
     await repository.insert(word);
 
     final newState =
@@ -147,6 +148,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
   Future delete(WordEntry word) async {
     final wordId = word.id!;
+    // Don't wait for storing word on the cloud side.
     await this.repository.delete(wordId);
     final words = state.allWords.where((element) => element.id! != wordId);
 
