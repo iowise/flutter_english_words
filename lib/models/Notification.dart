@@ -15,7 +15,7 @@ Future<void> showNotification() async {
   final androidNotificationDetails = AndroidNotificationDetails(
     'repeatDailyAtTime channel id',
     'repeatDailyAtTime channel name',
-    'repeatDailyAtTime description',
+    channelDescription: 'repeatDailyAtTime description',
   );
   final iOSNotificationDetails = IOSNotificationDetails();
   final platformChannelSpecifics = NotificationDetails(

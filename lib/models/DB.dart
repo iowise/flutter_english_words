@@ -12,7 +12,7 @@ exportDB(WordEntryRepository wordEntryRepository,
   final externalDir = (await getExternalStorageDirectory())!.path;
   File file = File(externalDir + 'word.train.export.data.json');
   final logs =
-      List.of([for (var i in await trainLogRepository.dumpLogs()) i.toMap()]);
+      List.of([for (var i in await trainLogRepository.dumpLogs(true)) i.toMap()]);
   final words = List.of(
       [for (var i in await wordEntryRepository.getWordEntries()) i.toMap()]);
   Map<String, dynamic> exportMaps = {'words': words, 'logs': logs};

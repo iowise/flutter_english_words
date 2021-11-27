@@ -1,5 +1,6 @@
 import 'dart:isolate';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ void setup() {
   GetIt.I.registerSingletonAsync<FirebaseApp>(() async {
     await showNotification();
     final app = await Firebase.initializeApp();
+    FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+
     await setupCrashLytics();
     return app;
   });
