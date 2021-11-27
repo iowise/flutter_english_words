@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mutex/mutex.dart';
+
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {
@@ -79,6 +82,7 @@ class WordEntryListState extends Equatable {
 
 class WordEntryCubit extends Cubit<WordEntryListState> {
   final WordEntryRepository repository;
+  final mutex = Mutex();
 
   WordEntryCubit(this.repository)
       : super(new WordEntryListState(
@@ -87,18 +91,22 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
         ));
 
   factory WordEntryCubit.setup(WordEntryRepository repository) {
+    Fluttertoast.showToast(msg: "Start setup words");
     final cubit = WordEntryCubit(repository);
     final refreshWords = () async {
-      if (!repository.isReady) return;
+      if (!repository.isReady || cubit.mutex.isLocked) return;
 
+      Fluttertoast.showToast(msg: "Loading words");
       final words = await repository.getAllWordEntries();
+      Fluttertoast.showToast(msg: "Processing words");
       cubit.emit(cubit.state.copy(words: words, isConfigured: true));
+      Fluttertoast.showToast(msg: "Loaded words");
     };
     Firebase.initializeApp().whenComplete(() {
       FirebaseAuth.instance.userChanges().listen((_) => refreshWords());
     });
 
-    if (repository.isReady) refreshWords();
+    if (repository.isReady) cubit.mutex.protect(refreshWords);
     return cubit;
   }
 

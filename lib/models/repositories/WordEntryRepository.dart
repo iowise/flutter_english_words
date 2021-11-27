@@ -113,7 +113,7 @@ class WordEntry extends Equatable {
   }
 
   factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
-    final entry = WordEntry.fromMap(snapshot.data()!);
+    final entry = WordEntry.fromMap(snapshot.data() as Map<String, dynamic>);
     entry.id = snapshot.reference.id;
     return entry;
   }

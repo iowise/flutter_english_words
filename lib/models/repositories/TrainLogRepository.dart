@@ -47,7 +47,7 @@ class TrainLog extends Equatable {
   }
 
   factory TrainLog.fromDocument(DocumentSnapshot snapshot) {
-    final log = TrainLog.fromMap(snapshot.data()!);
+    final log = TrainLog.fromMap(snapshot.data() as Map<String, dynamic>);
     log.id = snapshot.reference.id;
     return log;
   }
