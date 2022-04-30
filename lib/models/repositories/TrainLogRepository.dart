@@ -76,16 +76,6 @@ class TrainLogRepository extends ChangeNotifier {
 
   get isReady => logs != null;
 
-  static String get createSqlScript => '''
-create table $_table (
-  $_columnWordId int not null,
-  $_columnScore int not null,
-  $_columnTrainedAt datatime not null,
-  $_columnId integer primary key autoincrement,
-  FOREIGN KEY($_columnWordId) REFERENCES $WORDS_TABLE($_columnId)
-)
-''';
-
   Future<TrainLog> insert(TrainLog log) async {
     if (logs == null) return Future.error("User not loaded");
 
