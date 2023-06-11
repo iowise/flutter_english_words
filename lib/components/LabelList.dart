@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
+import '../models/blocs/WordEntryCubit.dart';
 
 class LabelList extends StatelessWidget {
   final void Function(LabelWithStatistic label) showWords;

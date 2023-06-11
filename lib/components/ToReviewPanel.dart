@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
-import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
+import '../models/blocs/WordEntryCubit.dart';
+import '../models/repositories/TrainLogRepository.dart';
 
 class ToReviewPanel extends StatelessWidget {
   final List<LabelWithStatistic> labels;
@@ -29,7 +29,7 @@ class ToReviewPanel extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).accentColor),
+                  border: Border.all(color: Theme.of(context).colorScheme.secondary),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(

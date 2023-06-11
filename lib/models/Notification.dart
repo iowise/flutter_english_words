@@ -17,7 +17,7 @@ Future<void> showNotification() async {
     'repeatDailyAtTime channel name',
     channelDescription: 'repeatDailyAtTime description',
   );
-  final iOSNotificationDetails = IOSNotificationDetails();
+  final iOSNotificationDetails = DarwinNotificationDetails();
   final platformChannelSpecifics = NotificationDetails(
     android: androidNotificationDetails,
     iOS: iOSNotificationDetails,
@@ -41,20 +41,17 @@ Future<FlutterLocalNotificationsPlugin> _createPlugin() async {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final initializationSettingsAndroid =
       AndroidInitializationSettings('ic_stat_name');
-  final initializationSettingsIOS = IOSInitializationSettings(
+  final initializationSettingsIOS = DarwinInitializationSettings(
       onDidReceiveLocalNotification: onDidReceiveLocalNotification);
   final initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: selectNotification);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   return flutterLocalNotificationsPlugin;
 }
 
 Future<void> onDidReceiveLocalNotification(
         int id, String? title, String? body, String? payload) =>
     Future.value();
-
-Future<void> selectNotification(String? payload) => Future.value();
 
 tz.TZDateTime time(int hour, [int minutes=0, int seconds=0]) {
   final time = tz.TZDateTime.now(tzEnv.local);

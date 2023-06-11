@@ -59,7 +59,6 @@ class _WordsPageState extends State<WordsPage> {
                 return IconButton(
                   icon: Icon(Icons.sort),
                   onPressed: () {
-                    if (repository == null) return;
                     _showSortingAndFilter(
                         context.read<WordEntryCubit>(), context);
                   },
@@ -70,7 +69,6 @@ class _WordsPageState extends State<WordsPage> {
                 return IconButton(
                   icon: Icon(Icons.search),
                   onPressed: () {
-                    if (repository == null) return;
                     showSearch(
                       context: context,
                       delegate:
@@ -97,8 +95,6 @@ class _WordsPageState extends State<WordsPage> {
   }
 
   Widget buildTitle() {
-    if (repository == null) return Text("Words");
-
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (context, state) {
         return Text(state.selectedLabel ?? 'Inbox');
@@ -136,8 +132,8 @@ class _WordsPageState extends State<WordsPage> {
   void _showSortingAndFilter(WordEntryCubit bloc, BuildContext context) {
     final selectedStyle = Theme.of(context)
         .textTheme
-        .bodyText2!
-        .copyWith(color: Theme.of(context).accentColor);
+        .bodyMedium!
+        .copyWith(color: Theme.of(context).colorScheme.secondary);
     final selectedOrNull =
         (value, option) => (value == option ? selectedStyle : null);
     final makeOption = ({text, option, current}) => SimpleDialogOption(

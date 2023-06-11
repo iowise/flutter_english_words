@@ -4,10 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'WordEntryRepository.dart';
-
-const String _table = '_train_log';
-
 const String _columnId = '_id';
 const String _columnWordId = 'word_id';
 const String _columnScore = 'score';
