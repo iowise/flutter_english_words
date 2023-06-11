@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
@@ -32,7 +31,6 @@ class _WordsPageState extends State<WordsPage> {
       setState(() {
         trainRepository = GetIt.I.get<TrainService>();
       });
-      GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
   }
 

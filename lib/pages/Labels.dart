@@ -7,7 +7,6 @@ import '../components/LabelList.dart';
 import '../components/ToReviewPanel.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../components/Drawer.dart';
-import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
@@ -28,7 +27,6 @@ class _LabelsPageState extends State<LabelsPage> {
       setState(() {
         trainRepository = GetIt.I.get<TrainService>();
       });
-      GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
   }
 

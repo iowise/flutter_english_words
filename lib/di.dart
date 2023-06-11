@@ -6,8 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import './models/SharedWords.dart';
-import './pages/WordDetails.dart';
 import './models/repositories/WordEntryRepository.dart';
 import './models/SpaceRepetitionScheduler.dart';
 import './models/repositories/TrainLogRepository.dart';
