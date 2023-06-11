@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:word_trainer/models/tranlsatorsAndDictionaries/MerriamWebster.dart';
 import './reverso.dart';
 import './googleTranslation.dart';

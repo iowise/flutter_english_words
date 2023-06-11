@@ -44,16 +44,6 @@ void setup() {
         GetIt.I.get<WordEntryCubit>(), GetIt.I.get<TrainLogCubit>()),
     dependsOn: [TrainLogCubit, WordEntryCubit, FirebaseApp],
   );
-
-  GetIt.I.registerSingletonWithDependencies<SharedWordsService>(() {
-    final service = SharedWordsService((word) {
-      final navigatorObj = GetIt.I.get(instanceName: 'Navigator');
-      final navigator = navigatorObj as GlobalKey<NavigatorState>;
-      navigator.currentState?.pushNamed("/word/create",
-          arguments: WordDetailsArguments(word: word));
-    });
-    return service;
-  }, dependsOn: [TrainService]);
 }
 
 Future setupCrashLytics() async {

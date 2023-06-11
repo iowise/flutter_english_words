@@ -1,10 +1,9 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:word_trainer/components/SplashScreen.dart';
-import 'package:word_trainer/pages/Labels.dart';
-import 'package:word_trainer/pages/SentenceTrain.dart';
+import './components/SplashScreen.dart';
+import './pages/Labels.dart';
+import './pages/SentenceTrain.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
 import './pages/WordTrain.dart';
@@ -12,7 +11,6 @@ import './di.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   setup();
   runApp(MyApp());
 }

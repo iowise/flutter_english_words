@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/tranlsatorsAndDictionaries/reverso.dart';
+import '../models/tranlsatorsAndDictionaries/reverso.dart';
 
 abstract class WordContextInput {
   String word;

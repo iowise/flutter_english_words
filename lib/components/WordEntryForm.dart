@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
+import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
-import 'LabelsInput.dart';
-import 'WordContextTextFormField.dart';
+import './LabelsInput.dart';
+import './WordContextTextFormField.dart';
 
 class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;

@@ -48,7 +48,7 @@ class TrainService extends ChangeNotifier {
 /// Based on [a gist](https://gist.github.com/doctorpangloss/13ab29abd087dc1927475e560f876797)
 ///
 int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
-    {a: 6.0, b: -0.8, c: 0.28, d: 0.02, theta: 0.2}) {
+    {a = 6.0, b = -0.8, c = 0.28, d = 0.02, theta = 0.2}) {
   if (recent < 4) {
     return 1;
   }
@@ -79,7 +79,7 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
 
 const MAX_TO_LEARN = 10;
 
-List<T> makeListToLearn<T>(List<T> list) {
+List<T> makeListToLearn<T>(List<T>? list) {
   final now = DateTime.now().microsecondsSinceEpoch / 1000 /1000;
   final daysSinceEpoch = now ~/ 3600 ~/ 24;
   list = List.from(list == null ? [] : list);

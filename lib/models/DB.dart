@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-// import 'package:file_picker/file_picker.dart';
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
-import 'repositories/TrainLogRepository.dart';
-import 'repositories/WordEntryRepository.dart';
+import './repositories/TrainLogRepository.dart';
+import './repositories/WordEntryRepository.dart';
 
 exportDB(WordEntryRepository wordEntryRepository,
     TrainLogRepository trainLogRepository) async {

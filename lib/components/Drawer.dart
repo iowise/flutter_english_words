@@ -16,7 +16,7 @@ class AppDrawer extends StatelessWidget {
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
             ),
             child: provider.ChangeNotifierProvider(
               create: (context) => UserChanged(),

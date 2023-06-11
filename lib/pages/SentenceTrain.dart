@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../components/TrainCard.dart';
@@ -14,7 +13,7 @@ class EnterSentenceTrainPage extends StatefulWidget {
 class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   bool isCheck = false;
   var trainIndex = 0;
-  late List<WordEntry> wordsToLearn;
+  late List<WordEntry>? wordsToLearn;
   late TextEditingController sentenceController = TextEditingController();
 
   _EnterSentenceTrainPageState();
@@ -34,8 +33,8 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   }
 
   _checkTheWord() async {
-    if (isCheck) {
-      var isEnd = trainIndex >= wordsToLearn.length - 1;
+    if (isCheck && wordsToLearn != null) {
+      var isEnd = trainIndex >= wordsToLearn!.length - 1;
       if (isEnd) {
         Navigator.pop(context);
         return;
@@ -72,7 +71,7 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
 
   Widget buildTraining() {
     return TrainSentence(
-      word: wordsToLearn[trainIndex],
+      word: wordsToLearn![trainIndex],
       isCheck: isCheck,
       onSubmit: _checkTheWord,
       sentenceController: sentenceController,
