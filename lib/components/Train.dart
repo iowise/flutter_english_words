@@ -68,7 +68,10 @@ class _TrainState extends State<Train> {
       key: _formKey,
       child: ListView(
         children: <Widget>[
-          TrainCard(entry: widget.entry, text: widget.getInputForTraining(widget.entry)),
+          TrainCard(
+              entry: widget.entry,
+              text: widget.getInputForTraining(widget.entry)),
+          ...(buildDefinitionCard(context, widget.entry)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
@@ -95,6 +98,30 @@ class _TrainState extends State<Train> {
         ],
       ),
     );
+  }
+
+  List<Widget> buildDefinitionCard(BuildContext context, WordEntry entry) {
+    if (entry.definition.isEmpty) {
+      return [];
+    }
+    return [
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                entry.definition,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      )
+    ];
   }
 }
 
