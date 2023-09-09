@@ -28,7 +28,7 @@ dependencies:
   cloud_firestore: ^4.8.0
   firebase_crashlytics: ^3.3.2
 
-  flutter_local_notifications: ^14.1.1
+  flutter_local_notifications: ^15.1.0
   permission_handler: ^10.3.0
   path_provider: ^2.0.1
   share: ^2.0.0
@@ -40,7 +40,7 @@ dependencies:
   equatable: ^2.0.3
 
   timezone: ^0.9.2
-  flutter_native_timezone: ^2.0.0
+  flutter_timezone: ^1.0.7
 
 
 dev_dependencies:
