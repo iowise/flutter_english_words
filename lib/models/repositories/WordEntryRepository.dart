@@ -152,7 +152,7 @@ class WordEntryRepository {
     return _words;
   }
 
-  get isReady => words != null;
+  get isReady => FirebaseAuth.instance.currentUser == null;
 
   Future<WordEntry> insert(WordEntry entry) async {
     if (words == null) return Future.error("User not loaded");
