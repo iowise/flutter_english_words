@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/standalone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/src/env.dart' as tzEnv;
 
 Future<void> showNotification() async {
   tz.initializeTimeZones();
-  final _timezone = await FlutterNativeTimezone.getLocalTimezone();
+  final _timezone = await FlutterTimezone.getLocalTimezone();
   tz.setLocalLocation(tz.getLocation(_timezone));
 
   final androidNotificationDetails = AndroidNotificationDetails(

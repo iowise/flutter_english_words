@@ -1,8 +1,13 @@
 package com.iowise.app.wordtrainer
 
+import android.os.Bundle
 import android.content.Intent
+
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.GeneratedPluginRegistrant
+
 
 class MainActivity : FlutterActivity() {
   val sharedData = HashMap<String, String>()
@@ -13,9 +18,9 @@ class MainActivity : FlutterActivity() {
     handleSendIntent(getIntent());
   }
 
-  override fun configureFlutterEngine(@NonNull  flutterEngine: FlutterEngine) {
+  override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     GeneratedPluginRegistrant.registerWith(flutterEngine)
-    MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger, CHANNEL).setMethodCallHandler shared@{ call, result ->
+    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler shared@{ call, result ->
       if (call.method == "getSharedData") {
         result.success(sharedData);
         sharedData.clear();
@@ -32,11 +37,14 @@ class MainActivity : FlutterActivity() {
     val action = intent.action
     val type = intent.type
 
-    if (Intent.ACTION_SEND == action && type != null) {
-      if ("text/plain".equals(type)) {
-        sharedData.put("subject", intent.getStringExtra(Intent.EXTRA_SUBJECT));
-        sharedData.put("text", intent.getStringExtra(Intent.EXTRA_TEXT));
+    if (Intent.ACTION_SEND == action && "text/plain" == type) {
+      intent.getStringExtra(Intent.EXTRA_SUBJECT)?.let { subject ->
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { text ->
+          sharedData.put("subject", subject);
+          sharedData.put("text", text);
+        }
       }
+
     }
   }
 }

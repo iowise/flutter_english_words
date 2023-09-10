@@ -62,8 +62,7 @@ class WordEntryListState extends Equatable {
     return WordEntryListState(
       sorting: sorting ?? this.sorting,
       filtering: filtering ?? this.filtering,
-      selectedLabel:
-          selectedLabel ?? this.selectedLabel,
+      selectedLabel: selectedLabel ?? this.selectedLabel,
       allWords: words ?? allWords,
       isConfigured: isConfigured ?? this.isConfigured,
     );
@@ -94,7 +93,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
     Fluttertoast.showToast(msg: "Start setup words");
     final cubit = WordEntryCubit(repository);
     final refreshWords = () async {
-      if (!repository.isReady || cubit.mutex.isLocked) return;
+      if (cubit.mutex.isLocked) return;
 
       Fluttertoast.showToast(msg: "Loading words");
       final words = await repository.getAllWordEntries(true);
@@ -103,7 +102,9 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
       Fluttertoast.showToast(msg: "Loaded words");
     };
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance.userChanges().listen((_) => refreshWords());
+      FirebaseAuth.instance
+          .userChanges()
+          .listen((user) => {if (user != null) refreshWords()});
     });
 
     if (repository.isReady) cubit.mutex.protect(refreshWords);
@@ -188,8 +189,10 @@ class LabelsStatistic extends Iterable<LabelWithStatistic> {
 
   List<String>? _labels;
 
-  List<String> get labels =>
-      _labels ??= _list.where((e) => e.label != '').map((e) => e.label).toList(growable: true);
+  List<String> get labels => _labels ??= _list
+      .where((e) => e.label != '')
+      .map((e) => e.label)
+      .toList(growable: true);
 
   @override
   Iterator<LabelWithStatistic> get iterator => _list.iterator;
