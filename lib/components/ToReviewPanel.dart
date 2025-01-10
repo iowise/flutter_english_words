@@ -34,7 +34,7 @@ class ToReviewPanel extends StatelessWidget {
                 ),
                 child: Text(
                   strikes,
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ),
@@ -43,7 +43,7 @@ class ToReviewPanel extends StatelessWidget {
               textAlign: TextAlign.left,
               style: Theme.of(context)
                   .textTheme
-                  .bodyText1!
+                  .bodyMedium!
                   .copyWith(fontStyle: FontStyle.italic),
             ),
           ]),

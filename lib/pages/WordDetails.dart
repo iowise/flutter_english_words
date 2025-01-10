@@ -133,7 +133,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     final nextTrainDate = formatter.format(entryInput.arg!.dueToLearnAfter!);
     return ListTile(
       title: Text("Next train on: $nextTrainDate",
-          style: Theme.of(context).textTheme.bodyText1),
+          style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
@@ -144,7 +144,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         .map(
           (e) => ListTile(
             title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                style: Theme.of(context).textTheme.bodyText2),
+                style: Theme.of(context).textTheme.bodySmall),
           ),
         )
         .toList();

@@ -83,7 +83,7 @@ class _TrainState extends State<Train> {
               keyboardType: TextInputType.visiblePassword,
               enableSuggestions: false,
               readOnly: widget.isCheck,
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
               controller: widget.enteredWordController,
               decoration: InputDecoration(
                 filled: true,
@@ -157,14 +157,14 @@ class _TrainResult extends StatelessWidget {
                   buildFeedbackText(),
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1!
+                      .bodyMedium!
                       .copyWith(color: Colors.white),
                 ),
                 Text(
                   word,
                   style: Theme.of(context)
                       .textTheme
-                      .headline4!
+                      .headlineMedium!
                       .copyWith(color: Colors.white),
                   textAlign: TextAlign.center,
                 ),

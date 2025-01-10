@@ -108,7 +108,7 @@ class TrainSentence extends StatelessWidget {
             maxLines: null,
             controller: sentenceController,
             readOnly: isCheck,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
             decoration: InputDecoration(
               filled: true,
               hintText: isCheck ? "" : 'Enter a sentence...',

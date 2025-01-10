@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 import './repositories/TrainLogRepository.dart';
 import './repositories/WordEntryRepository.dart';
@@ -17,10 +16,10 @@ exportDB(WordEntryRepository wordEntryRepository,
   Map<String, dynamic> exportMaps = {'words': words, 'logs': logs};
   file.writeAsString(jsonEncode(exportMaps));
 
-  await Share.shareFiles(
-    [file.path],
-    text: 'Example share text',
-  );
+  // await Share.shareFiles(
+    // [file.path],
+    // text: 'Example share text',
+  // );
 }
 
 importDB(WordEntryRepository wordEntryRepository,

@@ -27,10 +27,10 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme.copyWith(
-                headline1: TextStyle(fontSize: 72.0),
-                headline4: TextStyle(fontSize: 36.0),
-                bodyText1: TextStyle(fontSize: 20.0),
-                bodyText2: TextStyle(fontSize: 16.0),
+                headlineLarge: TextStyle(fontSize: 72.0),
+                headlineMedium: TextStyle(fontSize: 36.0),
+                bodyMedium: TextStyle(fontSize: 20.0),
+                bodySmall: TextStyle(fontSize: 16.0),
               ),
         ),
       ),

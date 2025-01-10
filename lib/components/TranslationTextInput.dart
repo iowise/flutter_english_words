@@ -3,14 +3,15 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 class TranslationTextInput extends StatelessWidget {
-  TranslationTextInput({
-    Key? key,
-    required this.word,
-    required this.decoration,
-    required this.initialValue,
-    required this.onChange,
-    required this.getSuggestions
-  }) : _typeAheadController = TextEditingController(text: initialValue), super(key: key) {
+  TranslationTextInput(
+      {Key? key,
+      required this.word,
+      required this.decoration,
+      required this.initialValue,
+      required this.onChange,
+      required this.getSuggestions})
+      : _typeAheadController = TextEditingController(text: initialValue),
+        super(key: key) {
     _typeAheadController.addListener(() {
       this.onChange(_typeAheadController.text);
     });
@@ -25,17 +26,20 @@ class TranslationTextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadFormField<DictionaryItem>(
-      textFieldConfiguration: TextFieldConfiguration(
+    return TypeAheadField<DictionaryItem>(
+      builder: (
+        BuildContext context,
+        TextEditingController controller,
+        FocusNode focusNode,
+      ) =>
+          TextField(
         controller: this._typeAheadController,
         decoration: this.decoration.copyWith(
-          suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: () {
-              onClear();
-            },
-          ),
-        ),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () => onClear(),
+              ),
+            ),
       ),
       suggestionsCallback: (_pattern) => getSuggestions(word),
       itemBuilder: (context, suggestion) {
@@ -44,12 +48,7 @@ class TranslationTextInput extends StatelessWidget {
           title: Text(suggestion.text),
         );
       },
-      onSaved: (value) {
-        if (value != null) {
-          concatenateTranslation(value);
-        }
-      },
-      onSuggestionSelected: (suggestion) {
+      onSelected: (suggestion) {
         concatenateTranslation(suggestion.text);
       },
     );
