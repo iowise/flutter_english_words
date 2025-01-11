@@ -29,7 +29,6 @@ dependencies:
 
   flutter_local_notifications: ^18.0.1
   permission_handler: ^11.3.1
-  path_provider: ^2.0.1
 
   flutter_markdown: ^0.7.5
 
