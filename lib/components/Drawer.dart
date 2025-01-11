@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart' as provider;
@@ -25,12 +26,12 @@ class AppDrawer extends StatelessWidget {
                 title: provider.Consumer<UserChanged>(
                   builder: (context, userChanged, child) {
                     final user = userChanged.user;
-                    return user == null ? Text('Sign in') : Text(user.email!);
+                    return user == null
+                        ? Text('Sign in')
+                        : SignedInHeader(user: user);
                   },
                 ),
-                onTap: () {
-                  signIn();
-                },
+                onTap: () => signIn(),
               ),
             ),
           ),
@@ -41,6 +42,25 @@ class AppDrawer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SignedInHeader extends StatelessWidget {
+  final User user;
+  SignedInHeader({Key? key, required this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(user.email!),
+        OutlinedButton(
+          child: Text("LogOut"),
+          onPressed: () => signOut(),
+          style: OutlinedButton.styleFrom(foregroundColor: Colors.black),
+        )
+      ],
     );
   }
 }

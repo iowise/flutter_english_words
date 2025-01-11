@@ -5,7 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 Future<UserCredential> signIn() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
 
   // Create a new credential
   final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -17,14 +18,15 @@ Future<UserCredential> signIn() async {
   return await FirebaseAuth.instance.signInWithCredential(credential);
 }
 
+Future signOut() {
+  return FirebaseAuth.instance.signOut();
+}
 
 class UserChanged extends ChangeNotifier {
   final stream = FirebaseAuth.instance.userChanges();
   User? get user => FirebaseAuth.instance.currentUser;
 
   UserChanged() {
-    stream.listen((event) {
-      notifyListeners();
-    });
+    stream.listen((event) => notifyListeners());
   }
 }
