@@ -7,14 +7,6 @@ class WordList extends StatelessWidget {
 
   final List<WordEntry> words;
 
-  Widget _buildRow(WordEntry row, BuildContext context) {
-    return ListTile(
-      title: Text(row.word),
-      subtitle: Text(row.translation),
-      onTap: () => this._showDetails(row, context),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (words.length == 0) {
@@ -30,6 +22,14 @@ class WordList extends StatelessWidget {
         return _buildRow(words[index], context);
       },
       itemCount: words.length * 2 - 1,
+    );
+  }
+
+  Widget _buildRow(WordEntry row, BuildContext context) {
+    return ListTile(
+      title: Text(row.word),
+      subtitle: Text(row.translation),
+      onTap: () => this._showDetails(row, context),
     );
   }
 

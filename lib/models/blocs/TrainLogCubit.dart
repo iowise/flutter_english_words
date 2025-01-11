@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mutex/mutex.dart';
 
+import '../CacheOptions.dart';
 import '../repositories/TrainLogRepository.dart';
 
 class TrainLogState extends Equatable {
@@ -59,29 +60,35 @@ String strikeKey(DateTime date) => "${date.year}-${date.month}-${date.day}";
 
 class TrainLogCubit extends Cubit<TrainLogState> {
   final TrainLogRepository repository;
+  final CacheOptions cacheOptions;
   final mutex = Mutex();
 
-  TrainLogCubit(this.repository)
+  TrainLogCubit(this.repository, this.cacheOptions)
       : super(new TrainLogState(logs: List<TrainLog>.empty()));
 
-  factory TrainLogCubit.setup(TrainLogRepository repository) {
+  factory TrainLogCubit.setup(
+      TrainLogRepository repository, CacheOptions cacheOptions) {
     Fluttertoast.showToast(msg: "Start setup logs");
-    final cubit = TrainLogCubit(repository);
-    final refreshLogs = () async {
-      if (!repository.isReady || cubit.mutex.isLocked) return;
+    final cubit = TrainLogCubit(repository, cacheOptions);
+    final refreshLogs = ({bool firstRun = true}) async {
+      if (!repository.isReady || (!firstRun && cubit.mutex.isLocked)) return;
 
       Fluttertoast.showToast(msg: "Loading logs");
-      final logs = await repository.dumpLogs(true);
+      final logs = await repository.dumpLogs(cacheOptions.hasCacheConfigured);
       Fluttertoast.showToast(msg: "Processing logs");
       cubit.emit(TrainLogState(logs: logs, isConfigured: true));
       Fluttertoast.showToast(msg: "Loaded logs");
     };
 
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance.userChanges().listen((_) => refreshLogs());
+      FirebaseAuth.instance
+          .userChanges()
+          .listen((_) => refreshLogs(firstRun: false));
     });
 
-    if (repository.isReady) cubit.mutex.protect(refreshLogs);
+    if (repository.isReady) {
+      cubit.mutex.protect(refreshLogs);
+    }
 
     return cubit;
   }

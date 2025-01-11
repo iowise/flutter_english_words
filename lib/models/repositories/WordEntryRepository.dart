@@ -121,7 +121,8 @@ class WordEntry extends Equatable {
   bool hasLabel(String? label) =>
       label == null ? labels.isEmpty : labels.contains(label);
 
-  bool isForLearn(DateTime now) => dueToLearnAfter == null || dueToLearnAfter!.isBefore(now);
+  bool isForLearn(DateTime now) =>
+      dueToLearnAfter == null || dueToLearnAfter!.isBefore(now);
 
   @override
   List<Object?> get props => [
@@ -172,7 +173,8 @@ class WordEntryRepository {
   Future<List<WordEntry>> getAllWordEntries(bool fromCache) async {
     if (words == null) return Future.error("User not loaded");
 
-    final snapshot = await words!.get(fromCache ? const GetOptions(source: Source.cache) : null);
+    final snapshot = await words!
+        .get(fromCache ? const GetOptions(source: Source.cache) : null);
     return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 

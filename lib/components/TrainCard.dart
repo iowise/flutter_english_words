@@ -22,7 +22,7 @@ class TrainCard extends StatelessWidget {
           children: [
             Text(
               text,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             ...(buildSynonyms(context)),
@@ -40,7 +40,7 @@ class TrainCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10),
               child: Text(
                 text,
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
             ),

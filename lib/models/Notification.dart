@@ -29,7 +29,7 @@ Future<void> showNotification() async {
     "It's a good time to train your words",
     time(7),
     platformChannelSpecifics,
-    androidAllowWhileIdle: true,
+    androidScheduleMode: AndroidScheduleMode.alarmClock,
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.wallClockTime,
     matchDateTimeComponents: DateTimeComponents.time,
@@ -41,17 +41,12 @@ Future<FlutterLocalNotificationsPlugin> _createPlugin() async {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final initializationSettingsAndroid =
       AndroidInitializationSettings('ic_stat_name');
-  final initializationSettingsIOS = DarwinInitializationSettings(
-      onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+  final initializationSettingsIOS = DarwinInitializationSettings();
   final initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   return flutterLocalNotificationsPlugin;
 }
-
-Future<void> onDidReceiveLocalNotification(
-        int id, String? title, String? body, String? payload) =>
-    Future.value();
 
 tz.TZDateTime time(int hour, [int minutes=0, int seconds=0]) {
   final time = tz.TZDateTime.now(tzEnv.local);

@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mutex/mutex.dart';
 
+import '../CacheOptions.dart';
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {
@@ -81,30 +82,33 @@ class WordEntryListState extends Equatable {
 
 class WordEntryCubit extends Cubit<WordEntryListState> {
   final WordEntryRepository repository;
+  final CacheOptions cacheOptions;
   final mutex = Mutex();
 
-  WordEntryCubit(this.repository)
+  WordEntryCubit(this.repository, this.cacheOptions)
       : super(new WordEntryListState(
           allWords: List<WordEntry>.empty(growable: false),
           selectedLabel: null,
         ));
 
-  factory WordEntryCubit.setup(WordEntryRepository repository) {
+  factory WordEntryCubit.setup(
+      WordEntryRepository repository, CacheOptions cacheOptions) {
     Fluttertoast.showToast(msg: "Start setup words");
-    final cubit = WordEntryCubit(repository);
+    final cubit = WordEntryCubit(repository, cacheOptions);
     final refreshWords = () async {
       if (cubit.mutex.isLocked) return;
 
       Fluttertoast.showToast(msg: "Loading words");
-      final words = await repository.getAllWordEntries(true);
+      final words =
+          await repository.getAllWordEntries(cacheOptions.hasCacheConfigured);
       Fluttertoast.showToast(msg: "Processing words");
       cubit.emit(cubit.state.copy(words: words, isConfigured: true));
       Fluttertoast.showToast(msg: "Loaded words");
     };
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance
-          .userChanges()
-          .listen((user) => {if (user != null) refreshWords()});
+      FirebaseAuth.instance.userChanges().listen((user) {
+        if (user != null) refreshWords();
+      });
     });
 
     if (repository.isReady) cubit.mutex.protect(refreshWords);

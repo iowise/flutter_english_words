@@ -64,13 +64,16 @@ class _LabelsInputState extends State<LabelsInput> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TypeAheadFormField<Label>(
-            textFieldConfiguration: TextFieldConfiguration(
+          TypeAheadField<Label>(
+            builder: (
+              BuildContext context,
+              TextEditingController controller,
+              FocusNode focusNode,
+            ) =>
+                TextField(
               controller: this._typeAheadController,
-              decoration: const InputDecoration(
-                filled: true,
-                labelText: 'Labels',
-              )
+              decoration:
+                  const InputDecoration(filled: true, labelText: 'Labels'),
             ),
             suggestionsCallback: findSuggestions,
             autoFlipDirection: true,
@@ -80,7 +83,7 @@ class _LabelsInputState extends State<LabelsInput> {
                 title: Text(label.text),
               );
             },
-            onSuggestionSelected: (suggestion) {
+            onSelected: (suggestion) {
               addLabel(suggestion);
             },
           ),
