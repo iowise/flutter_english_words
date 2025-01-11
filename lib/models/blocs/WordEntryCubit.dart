@@ -102,9 +102,9 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
       Fluttertoast.showToast(msg: "Loaded words");
     };
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance
-          .userChanges()
-          .listen((user) => {if (user != null) refreshWords()});
+      FirebaseAuth.instance.userChanges().listen((user) {
+        if (user != null) refreshWords();
+      });
     });
 
     if (repository.isReady) cubit.mutex.protect(refreshWords);

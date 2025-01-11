@@ -23,7 +23,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: GetIt.I.get(instanceName: 'Navigator'),
       theme: ThemeData(
-        primarySwatch: Colors.amber,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.amber,
+          primary: Colors.amber,
+          secondary: Colors.amberAccent,
+        ),
+        // primaryColor: Colors.amber,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme.copyWith(
@@ -35,7 +41,8 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => SplashScreen(builder: () => LabelsPage()),
+        '/': (BuildContext context) =>
+            SplashScreen(builder: () => LabelsPage()),
         '/train/word/translation/': (BuildContext context) => TrainPage(
               title: 'Train a word',
               hintType: HintTypes.translation,

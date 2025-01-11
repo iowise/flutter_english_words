@@ -41,11 +41,10 @@ class _LabelsPageState extends State<LabelsPage> {
       Scaffold(
         appBar: AppBar(
           title: Text("Labels"),
+          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
         drawer: AppDrawer(),
-        body: Center(
-          child: _buildList(),
-        ),
+        body: Center(child: _buildList()),
       ),
     );
   }

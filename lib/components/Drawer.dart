@@ -16,7 +16,7 @@ class AppDrawer extends StatelessWidget {
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             child: provider.ChangeNotifierProvider(
               create: (context) => UserChanged(),
@@ -33,15 +33,6 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.file_upload),
-            title: Text('Export'),
-            onTap: () async {
-              final wordEntryRepository = GetIt.I.get<WordEntryRepository>();
-              final trainLogRepository = GetIt.I.get<TrainLogRepository>();
-              await exportDB(wordEntryRepository, trainLogRepository);
-            },
           ),
           ListTile(
             leading: Icon(Icons.edit),
