@@ -35,8 +35,10 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme.copyWith(
                 headlineLarge: TextStyle(fontSize: 72.0),
                 headlineMedium: TextStyle(fontSize: 36.0),
-                bodyMedium: TextStyle(fontSize: 20.0),
-                bodySmall: TextStyle(fontSize: 16.0),
+                headlineSmall: TextStyle(fontSize: 32.0),
+                bodyLarge: TextStyle(fontSize: 20.0),
+                bodyMedium: TextStyle(fontSize: 16.0),
+                bodySmall: TextStyle(fontSize: 14.0),
               ),
         ),
       ),
