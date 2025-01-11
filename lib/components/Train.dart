@@ -7,6 +7,7 @@ import './TrainCard.dart';
 typedef ResultCallback = void Function();
 
 final RegExp punctuation = RegExp(r'[?.,!;/=()@+]');
+final RegExp quotes = RegExp(r'["”‘«»‘’‛“”„‟‹›❛❜❝❞〝〞〟〃＂＇′″`ˊ´]');
 
 class TrainController extends TextEditingController {
   final WordEntry entry;
@@ -20,8 +21,11 @@ class TrainController extends TextEditingController {
     attempt += 1;
   }
 
-  _clean(final String str) =>
-      str.trim().replaceAll(punctuation, '').toLowerCase();
+  _clean(final String str) => str
+      .trim()
+      .replaceAll(punctuation, '')
+      .replaceAll(quotes, "'")
+      .toLowerCase();
 }
 
 class Train extends StatefulWidget {

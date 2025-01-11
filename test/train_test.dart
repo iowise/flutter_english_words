@@ -13,6 +13,15 @@ void main() {
         definition: '',
         labels: [],
       ));
+  createControllerWithQuotes() => TrainController(WordEntry.create(
+        word: "'test'",
+        translation: '',
+        context: '',
+        synonyms: '',
+        antonyms: '',
+        definition: '',
+        labels: [],
+      ));
   test('Train case insensitive', () {
     final controller = createController();
     controller.text = 'Test';
@@ -21,6 +30,26 @@ void main() {
   test('Train trimmed', () {
     final controller = createController();
     controller.text = '  test  ';
+    expect(controller.isCorrect, isTrue);
+  });
+  test('Train with double-quotes', () {
+    final controller = createControllerWithQuotes();
+    controller.text = '  "test"  ';
+    expect(controller.isCorrect, isTrue);
+  });
+  test('Train with apostroph', () {
+    final controller = createControllerWithQuotes();
+    controller.text = '  ’test’  ';
+    expect(controller.isCorrect, isTrue);
+  });
+  test('Train with apostroph', () {
+    final controller = createControllerWithQuotes();
+    controller.text = '  ’test’  ';
+    expect(controller.isCorrect, isTrue);
+  });
+  test('Train with single-quotation', () {
+    final controller = createControllerWithQuotes();
+    controller.text = '  ‘test’  ';
     expect(controller.isCorrect, isTrue);
   });
 }
