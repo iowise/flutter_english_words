@@ -95,7 +95,8 @@ class TrainLogRepository extends ChangeNotifier {
   Future<List<TrainLog>> dumpLogs(bool fromCache) async {
     if (logs == null) return Future.error("User not loaded");
 
-    final snapshot = await logs!.get(fromCache ? const GetOptions(source: Source.cache) : null);
+    final snapshot = await logs!
+        .get(fromCache ? const GetOptions(source: Source.cache) : null);
 
     return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
   }
@@ -105,7 +106,9 @@ class TrainLogRepository extends ChangeNotifier {
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    final snapshot = await logs!.where(_columnWordId, isEqualTo: wordId).get(const GetOptions(source: Source.cache));
+    final snapshot = await logs!
+        .where(_columnWordId, isEqualTo: wordId)
+        .get(const GetOptions(source: Source.cache));
     for (final element in snapshot.docs) {
       batch.delete(element.reference);
     }
