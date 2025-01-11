@@ -29,7 +29,9 @@ class ToReviewPanel extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.secondary),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
@@ -90,10 +92,7 @@ class ToReviewCard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 5),
         child: OutlinedButton(
-          child: Text(
-            label.labelText,
-            maxLines: 3,
-          ),
+          child: Text(label.labelText, maxLines: 3),
           onPressed: () => startTraining(label),
         ),
       ),

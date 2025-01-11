@@ -1,11 +1,13 @@
 import 'dart:isolate';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import './models/CacheOptions.dart';
 import './models/repositories/WordEntryRepository.dart';
 import './models/SpaceRepetitionScheduler.dart';
 import './models/repositories/TrainLogRepository.dart';
@@ -20,20 +22,27 @@ void setup() {
   GetIt.I.registerSingletonAsync<FirebaseApp>(() async {
     await showNotification();
     final app = await Firebase.initializeApp();
-    FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+    FirebaseFirestore.instance.settings =
+        Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
 
     await setupCrashLytics();
     return app;
   });
+  GetIt.I.registerSingletonWithDependencies<CacheOptions>(
+    () => CacheOptions(FirebaseAuth.instance.currentUser != null),
+    dependsOn: [FirebaseApp],
+  );
   GetIt.I.registerSingleton<WordEntryRepository>(WordEntryRepository());
   GetIt.I.registerSingletonAsync<WordEntryCubit>(
-    () async => WordEntryCubit.setup(GetIt.I.get<WordEntryRepository>()),
+    () async => WordEntryCubit.setup(
+        GetIt.I.get<WordEntryRepository>(), GetIt.I.get<CacheOptions>()),
     dependsOn: [FirebaseApp],
   );
 
   GetIt.I.registerSingleton<TrainLogRepository>(TrainLogRepository());
   GetIt.I.registerSingletonAsync<TrainLogCubit>(
-    () async => TrainLogCubit.setup(GetIt.I.get<TrainLogRepository>()),
+    () async => TrainLogCubit.setup(
+        GetIt.I.get<TrainLogRepository>(), GetIt.I.get<CacheOptions>()),
     dependsOn: [FirebaseApp],
   );
 
@@ -45,8 +54,7 @@ void setup() {
 }
 
 Future setupCrashLytics() async {
-  await FirebaseCrashlytics.instance
-      .setCrashlyticsCollectionEnabled(true);
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
     final List<dynamic> errorAndStacktrace = pair;

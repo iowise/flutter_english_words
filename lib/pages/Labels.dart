@@ -32,10 +32,13 @@ class _LabelsPageState extends State<LabelsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scaffoldWrapper = (w) => MultiBlocProvider(providers: [
-          BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
-          BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
-        ], child: w);
+    final scaffoldWrapper = (w) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
+            BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+          ],
+          child: w,
+        );
 
     return scaffoldWrapper(
       Scaffold(
