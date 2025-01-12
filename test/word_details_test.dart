@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:word_trainer/components/WordContextTextFormField.dart';
+import 'package:word_trainer/models/CacheOptions.dart';
 import 'package:word_trainer/models/blocs/TrainLogCubit.dart';
 import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
 import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
 import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
-
 import 'package:word_trainer/pages/WordDetails.dart';
 
 import 'fakes.dart';
@@ -20,8 +20,10 @@ void main() {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
-      final wordEntryCubit = WordEntryCubit(wordEntryRepository);
-      final trainLogCubit = TrainLogCubit(trainLogRepository);
+      final wordEntryCubit =
+          WordEntryCubit(wordEntryRepository, CacheOptions(false));
+      final trainLogCubit =
+          TrainLogCubit(trainLogRepository, CacheOptions(false));
 
       // when(trainLogRepository.getLogs("null"))
       //     .thenAnswer((realInvocation) => Future.value([]));
@@ -114,7 +116,8 @@ void main() {
     });
 
     testWidgets("Replace nonbreaking space", (WidgetTester tester) async {
-      const text = "Are you sure that I can follow this diet without detriment to my health?";
+      const text =
+          "Are you sure that I can follow this diet without detriment to my health?";
       await pumpArgumentWidget(
         tester,
         child: WordDetails(title: "Create a word"),
@@ -134,19 +137,23 @@ void main() {
       expect(editContext, findsOneWidget);
 
       await tester.enterText(find.byType(WordContextTextFormField), text);
-      await tester.pump(Duration(milliseconds:400));
+      await tester.pump(Duration(milliseconds: 400));
 
-      expect(find.text("Are you sure that I can follow this diet without detriment to my health?"), findsOneWidget);
+      expect(
+          find.text(
+              "Are you sure that I can follow this diet without detriment to my health?"),
+          findsOneWidget);
     });
   });
 
   group("Edit word with logs", () {
     setUp(() {
-
       final wordEntryRepository = FakeWordEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
-      final wordEntryCubit = WordEntryCubit(wordEntryRepository);
-      final trainLogCubit = TrainLogCubit(trainLogRepository);
+      final wordEntryCubit =
+          WordEntryCubit(wordEntryRepository, CacheOptions(false));
+      final trainLogCubit =
+          TrainLogCubit(trainLogRepository, CacheOptions(false));
 
       // when(trainLogRepository.getLogs("null"))
       //     .thenAnswer((realInvocation) => Future.value([TrainLog("null", 10)]));

@@ -25,7 +25,7 @@ class WordDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Object? argObj = ModalRoute.of(context)?.settings.arguments;
-    final WordDetailsArguments? arg = argObj as WordDetailsArguments;
+    final WordDetailsArguments? arg = argObj as WordDetailsArguments?;
     final entryInput = arg?.entry == null
         ? WordEntryInput.empty(defaultLabel: arg?.label)
         : WordEntryInput.fromWordEntry(arg!.entry!);

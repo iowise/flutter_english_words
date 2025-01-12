@@ -10,7 +10,8 @@ enum HintTypes {
 }
 
 class TrainPage extends StatelessWidget {
-  TrainPage({Key? key, required this.title, required this.hintType}) : super(key: key);
+  TrainPage({Key? key, required this.title, required this.hintType})
+      : super(key: key);
 
   final String title;
   final HintTypes hintType;
@@ -24,8 +25,12 @@ class TrainPage extends StatelessWidget {
 }
 
 class TrainWords extends StatefulWidget {
-  TrainWords({Key? key, required this.title, required this.wordsToLearn, required this.hintType})
-      : super(key: key);
+  TrainWords({
+    Key? key,
+    required this.title,
+    required this.wordsToLearn,
+    required this.hintType,
+  }) : super(key: key);
 
   final String title;
   final HintTypes hintType;
@@ -65,7 +70,8 @@ class _TrainWordsState extends State<TrainWords> {
         trainController = createTrainController();
       });
     } else {
-      if (!trainController.isCorrect && trainController.attempt < MAX_ATTEMPTS) {
+      if (!trainController.isCorrect &&
+          trainController.attempt < MAX_ATTEMPTS) {
         setState(() {
           trainController.newAttempt();
         });
@@ -85,8 +91,9 @@ class _TrainWordsState extends State<TrainWords> {
 
   @override
   Widget build(BuildContext context) {
-    final trainingHint =
-        widget.hintType == HintTypes.definition ? _getDefinition : _getTranslation;
+    final trainingHint = widget.hintType == HintTypes.definition
+        ? _getDefinition
+        : _getTranslation;
 
     return Scaffold(
       appBar: AppBar(
