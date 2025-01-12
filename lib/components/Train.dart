@@ -59,14 +59,18 @@ class _TrainState extends State<Train> {
         ? [
             _TrainResult(
               word: widget.entry.word,
+              extraToSpeak: widget.entry.context,
               isCorrect: widget.enteredWordController.isCorrect,
               attempt: widget.enteredWordController.attempt,
             ),
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: MarkdownBody(
-                shrinkWrap: false,
-                data: widget.entry.context,
+            InkWell(
+              onTap: () => speak(widget.entry.context),
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: MarkdownBody(
+                  shrinkWrap: false,
+                  data: widget.entry.context,
+                ),
               ),
             ),
           ]
@@ -134,12 +138,14 @@ class _TrainState extends State<Train> {
 
 class _TrainResult extends StatelessWidget {
   final String word;
+  final String extraToSpeak;
   final bool isCorrect;
   final int attempt;
 
   const _TrainResult({
     Key? key,
     required this.word,
+    required this.extraToSpeak,
     required this.isCorrect,
     required this.attempt,
   }) : super(key: key);
@@ -190,7 +196,18 @@ class _TrainResult extends StatelessWidget {
   }
 }
 
-Future speak(word) async {
+Future speak(final String word) async {
   FlutterTts flutterTts = FlutterTts();
+  await flutterTts.setIosAudioCategory(
+    IosTextToSpeechAudioCategory.playback,
+    [
+      IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+      IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+      IosTextToSpeechAudioCategoryOptions.mixWithOthers
+    ],
+    IosTextToSpeechAudioMode.voicePrompt,
+  );
+  await flutterTts.setSpeechRate(0.3);
+
   await flutterTts.speak(word);
 }

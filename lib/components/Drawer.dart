@@ -1,11 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart' as provider;
 import '../models/auth.dart';
-import '../models/DB.dart';
-import '../models/repositories/TrainLogRepository.dart';
-import '../models/repositories/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
