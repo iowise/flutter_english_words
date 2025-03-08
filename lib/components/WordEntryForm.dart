@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:openai_dart/openai_dart.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/TranslationTextInput.dart';
@@ -22,9 +24,14 @@ class WordEntryForm extends StatefulWidget {
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController wordContextController;
+  final TextEditingController wordSynonymsController;
+  final TextEditingController wordAntonymsController;
 
   _WordEntryFormState(final WordEntryInput entry)
-      : wordContextController = TextEditingController(text: entry.context);
+      : wordContextController = TextEditingController(text: entry.context),
+        wordSynonymsController = TextEditingController(text: entry.synonyms),
+        wordAntonymsController = TextEditingController(text: entry.antonyms)
+  ;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +54,10 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     filled: true,
                     hintText: 'Enter a word...',
                     labelText: 'Word',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.rocket_launch),
+                      onPressed: () => callOpenAI(),
+                    ),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -63,7 +74,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Translation',
                   ),
                   onChange: (value) {
-                    widget.entry.translation = value.breakSpaces;
+                    setState(() {
+                      widget.entry.translation = value.breakSpaces;
+                    });
                   },
                   getSuggestions: getTranslations,
                 ),
@@ -91,7 +104,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   },
                 ),
                 TextFormField(
-                  initialValue: widget.entry.synonyms,
+                  controller: wordSynonymsController,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: 'Enter a synonyms...',
@@ -104,7 +117,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   },
                 ),
                 TextFormField(
-                  initialValue: widget.entry.antonyms,
+                  controller: wordAntonymsController,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: 'Enter a antonyms...',
@@ -119,7 +132,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                 LabelsInput.fromStrings(
                   initialValue: widget.entry.labels,
                   onChange: (List<String> value) {
-                    widget.entry.labels = value;
+                    setState(() {
+                      widget.entry.labels = value;
+                    });
                   },
                   allLabels: widget.allLabels,
                 ),
@@ -130,75 +145,39 @@ class _WordEntryFormState extends State<WordEntryForm> {
       ),
     );
   }
-}
 
-class WordEntryInput extends WordContextInput {
-  int? id;
-  String translation;
-  String definition;
-  String synonyms;
-  String antonyms;
-  List<String> labels;
+  callOpenAI() {
+    openAIWordEntry(
+      entry: widget.entry,
+      client: GetIt.I.get<OpenAIClient>(),
+      onUpdateEntry: (newEntry) {
+        setState(() {
+          if (widget.entry.translation.isEmpty) {
+            widget.entry.translation = newEntry.translation;
+          }
+          if (widget.entry.definition.isEmpty) {
+            widget.entry.definition = newEntry.definition;
+          }
 
-  WordEntry? arg;
+          if (widget.entry.context.isEmpty) {
+            wordContextController.breakSpacesWhenNeeded(newEntry.context);
+            wordContextController.text = newEntry.context;
+            widget.entry.context = newEntry.context;
+          }
 
-  WordEntryInput({
-    @required word,
-    @required context,
-    required this.translation,
-    required this.definition,
-    required this.synonyms,
-    required this.antonyms,
-    required this.labels,
-    this.arg,
-  }) : super(word, context);
+          if (widget.entry.synonyms.isEmpty) {
+            wordSynonymsController.breakSpacesWhenNeeded(newEntry.synonyms);
+            wordSynonymsController.text = newEntry.synonyms;
+            widget.entry.synonyms = newEntry.synonyms;
+          }
 
-  toEntry() {
-    if (arg != null) {
-      return WordEntry.copy(
-        arg!,
-        word: word.trim(),
-        translation: translation.trim(),
-        definition: definition.trim(),
-        context: context.trim(),
-        synonyms: synonyms.trim(),
-        antonyms: antonyms.trim(),
-        labels: labels,
-      );
-    }
-    return WordEntry.create(
-      word: word.trim(),
-      translation: translation.trim(),
-      definition: definition.trim(),
-      context: context.trim(),
-      synonyms: synonyms.trim(),
-      antonyms: antonyms.trim(),
-      labels: labels,
-    );
-  }
-
-  static WordEntryInput fromWordEntry(WordEntry arg) {
-    return WordEntryInput(
-      word: arg.word,
-      translation: arg.translation,
-      definition: arg.definition,
-      context: arg.context,
-      synonyms: arg.synonyms,
-      antonyms: arg.antonyms,
-      labels: arg.labels,
-      arg: arg,
-    );
-  }
-
-  static WordEntryInput empty({String? defaultLabel}) {
-    return WordEntryInput(
-      word: "",
-      translation: "",
-      definition: "",
-      context: "",
-      synonyms: "",
-      antonyms: "",
-      labels: defaultLabel == null ? [] : [defaultLabel],
+          if (widget.entry.antonyms.isEmpty) {
+            wordAntonymsController.breakSpacesWhenNeeded(newEntry.antonyms);
+            wordAntonymsController.text = newEntry.antonyms;
+            widget.entry.antonyms = newEntry.antonyms;
+          }
+        });
+      },
     );
   }
 }
