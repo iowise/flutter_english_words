@@ -33,7 +33,8 @@ class TranslationTextInput extends StatelessWidget {
         FocusNode focusNode,
       ) =>
           TextField(
-        controller: this._typeAheadController,
+        controller: controller,
+        focusNode: focusNode,
         decoration: this.decoration.copyWith(
               suffixIcon: IconButton(
                 icon: Icon(Icons.clear),
@@ -41,6 +42,7 @@ class TranslationTextInput extends StatelessWidget {
               ),
             ),
       ),
+      controller: this._typeAheadController,
       suggestionsCallback: (_pattern) => getSuggestions(word),
       itemBuilder: (context, suggestion) {
         return ListTile(

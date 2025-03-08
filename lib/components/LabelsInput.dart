@@ -69,23 +69,20 @@ class _LabelsInputState extends State<LabelsInput> {
               BuildContext context,
               TextEditingController controller,
               FocusNode focusNode,
-            ) =>
-                TextField(
-              controller: this._typeAheadController,
-              decoration:
-                  const InputDecoration(filled: true, labelText: 'Labels'),
+            ) => TextField(
+              focusNode: focusNode,
+              controller: controller,
+              decoration: const InputDecoration(filled: true, labelText: 'Labels'),
             ),
+            controller: this._typeAheadController,
             suggestionsCallback: findSuggestions,
             autoFlipDirection: true,
-            itemBuilder: (context, label) {
-              return ListTile(
+            onSelected: addLabel,
+            itemBuilder: (context, label) =>
+              ListTile(
                 leading: !label.existing ? Icon(Icons.add) : null,
                 title: Text(label.text),
-              );
-            },
-            onSelected: (suggestion) {
-              addLabel(suggestion);
-            },
+              ),
           ),
           _LabelChips(selected: selected, onDelete: this.onDelete),
         ],
