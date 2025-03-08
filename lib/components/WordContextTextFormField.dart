@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/tranlsatorsAndDictionaries/reverso.dart';
+import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
-abstract class WordContextInput {
-  String word;
-  String context;
-
-  WordContextInput(this.word, this.context);
-}
 
 class WordContextTextFormField extends StatelessWidget {
   final Function(String) onChanged;
