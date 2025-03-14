@@ -8,6 +8,7 @@ typedef ResultCallback = void Function();
 
 final RegExp punctuation = RegExp(r'[?.,!;/=()@+]');
 final RegExp quotes = RegExp(r'["”‘«»‘’‛“”„‟‹›❛❜❝❞〝〞〟〃＂＇′″`ˊ´]');
+final RegExp articleAndParticles = RegExp(r'^(a|an|the|to) ', multiLine: true);
 
 class TrainController extends TextEditingController {
   final WordEntry entry;
@@ -25,6 +26,7 @@ class TrainController extends TextEditingController {
       .trim()
       .replaceAll(punctuation, '')
       .replaceAll(quotes, "'")
+      .replaceAll(articleAndParticles, '')
       .toLowerCase();
 }
 
