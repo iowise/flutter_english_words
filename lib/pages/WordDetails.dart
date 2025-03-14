@@ -7,6 +7,7 @@ import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
+import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 @immutable
 class WordDetailsArguments {
