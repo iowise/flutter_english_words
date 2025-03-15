@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import '../components/Search.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
@@ -53,50 +54,32 @@ class _WordsPageState extends State<WordsPage> {
             title: buildTitle(),
             actions: <Widget>[
               BlocBuilder<WordEntryCubit, WordEntryListState>(
-                  builder: (context, _) {
-                return IconButton(
+                builder: (context, _) => IconButton(
                   icon: Icon(Icons.sort),
                   onPressed: () {
                     _showSortingAndFilter(
                         context.read<WordEntryCubit>(), context);
                   },
-                );
-              }),
-              BlocBuilder<WordEntryCubit, WordEntryListState>(
-                  builder: (context, _) {
-                return IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate:
-                          CustomSearchDelegate(context.read<WordEntryCubit>()),
-                    );
-                  },
-                );
-              })
+                ),
+              ),
+              SearchButton(),
             ],
           ),
-          body: Center(
-            child: _buildList(),
-          ),
+          body: Center(child: _buildList()),
           floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
-              builder: (context, state) {
-            return FloatingActionButton(
+            builder: (context, state) => FloatingActionButton(
               tooltip: 'Add a word',
               child: Icon(Icons.add),
               onPressed: () => Navigator.pushNamed(context, '/word/create',
                   arguments: WordDetailsArguments(label: state.selectedLabel)),
-            );
-          })),
+            ),
+          )),
     );
   }
 
   Widget buildTitle() {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) {
-        return Text(state.selectedLabel ?? 'Inbox');
-      },
+      builder: (context, state) => Text(state.selectedLabel ?? 'Inbox'),
     );
   }
 
@@ -147,82 +130,32 @@ class _WordsPageState extends State<WordsPage> {
         );
     final state = bloc.state;
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Select Sorting and Filtering'),
-            children: <Widget>[
-              makeOption(
-                text: 'Sort by word',
-                option: Sorting.byWord,
-                current: state.sorting,
-              ),
-              makeOption(
-                text: 'Sort by date',
-                option: Sorting.byDate,
-                current: state.sorting,
-              ),
-              makeOption(
-                text: 'Show not trained',
-                option: Filtering.unTrained,
-                current: state.filtering,
-              ),
-              makeOption(
-                text: 'Show all',
-                option: Filtering.all,
-                current: state.filtering,
-              ),
-            ],
-          );
-        });
-  }
-}
-
-class CustomSearchDelegate extends SearchDelegate {
-  final WordEntryCubit bloc;
-
-  CustomSearchDelegate(this.bloc);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Select Sorting and Filtering'),
+        children: <Widget>[
+          makeOption(
+            text: 'Sort by word',
+            option: Sorting.byWord,
+            current: state.sorting,
+          ),
+          makeOption(
+            text: 'Sort by date',
+            option: Sorting.byDate,
+            current: state.sorting,
+          ),
+          makeOption(
+            text: 'Show not trained',
+            option: Filtering.unTrained,
+            current: state.filtering,
+          ),
+          makeOption(
+            text: 'Show all',
+            option: Filtering.all,
+            current: state.filtering,
+          ),
+        ],
       ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
     );
   }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final filtered = filterWords(bloc.state.allWords);
-    if (filtered.isEmpty) {
-      return Center(child: Text('Nothing is found'));
-    }
-    return WordList(words: filtered);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return buildResults(context);
-  }
-
-  List<WordEntry> filterWords(List<WordEntry> data) => data
-      .where((element) =>
-          element.word.contains(query) ||
-          element.translation.contains(query) ||
-          element.definition.contains(query))
-      .toList();
 }

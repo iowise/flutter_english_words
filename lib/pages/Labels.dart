@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../components/LabelList.dart';
+import '../components/Search.dart';
 import '../components/ToReviewPanel.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../components/Drawer.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
+import './WordDetails.dart';
 
 class LabelsPage extends StatefulWidget {
   @override
@@ -42,13 +44,24 @@ class _LabelsPageState extends State<LabelsPage> {
 
     return scaffoldWrapper(
       Scaffold(
-        appBar: AppBar(
-          title: Text("Labels"),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-        drawer: AppDrawer(),
-        body: Center(child: _buildList()),
-      ),
+          appBar: AppBar(
+            title: Text("Labels"),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            actions: <Widget>[SearchButton()],
+          ),
+          drawer: AppDrawer(),
+          body: Center(child: _buildList()),
+          floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
+            builder: (context, state) {
+              return FloatingActionButton(
+                tooltip: 'Add a word',
+                child: Icon(Icons.add),
+                onPressed: () => Navigator.pushNamed(context, '/word/create',
+                    arguments:
+                        WordDetailsArguments(label: state.selectedLabel)),
+              );
+            },
+          )),
     );
   }
 

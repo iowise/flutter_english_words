@@ -188,10 +188,9 @@ class LabelWithStatistic extends Equatable {
 @immutable
 class LabelsStatistic extends Iterable<LabelWithStatistic> {
   final List<LabelWithStatistic> _list;
+  List<String>? _labels;
 
   LabelsStatistic(this._list);
-
-  List<String>? _labels;
 
   List<String> get labels => _labels ??= _list
       .where((e) => e.label != '')

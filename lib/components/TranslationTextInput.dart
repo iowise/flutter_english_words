@@ -22,7 +22,7 @@ class TranslationTextInput extends StatelessWidget {
   final String initialValue;
   final InputDecoration decoration;
   final Future<List<DictionaryItem>> Function(String text) getSuggestions;
-  TextEditingController _typeAheadController;
+  final TextEditingController _typeAheadController;
 
   @override
   Widget build(BuildContext context) {
