@@ -88,7 +88,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Definition',
                   ),
                   onChange: (value) {
-                    widget.entry.definition = value.breakSpaces;
+                    setState(() {
+                      widget.entry.definition = value.breakSpaces;
+                    });
                   },
                   getSuggestions: getDefinitions,
                 ),
