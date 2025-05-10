@@ -73,6 +73,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Translation',
                   ),
                   onChange: (value) {
+                    widget.entry.translation = value.breakSpaces;
+                  },
+                  onSelectSuggestion: (value) {
                     setState(() {
                       widget.entry.translation = value.breakSpaces;
                     });
@@ -88,6 +91,9 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     labelText: 'Definition',
                   ),
                   onChange: (value) {
+                    widget.entry.definition = value.breakSpaces;
+                  },
+                  onSelectSuggestion: (value) {
                     setState(() {
                       widget.entry.definition = value.breakSpaces;
                     });
