@@ -60,11 +60,14 @@ class WordEntryListState extends Equatable {
     List<WordEntry>? words,
     bool? isConfigured,
   }) {
+    final uniqueIds = words?.map((i) => i.id).toSet() ?? {};
+    final uniqueWords =
+        words?.where((i) => uniqueIds.remove(i.id)).toList(growable: false);
     return WordEntryListState(
       sorting: sorting ?? this.sorting,
       filtering: filtering ?? this.filtering,
       selectedLabel: selectedLabel ?? this.selectedLabel,
-      allWords: words ?? allWords,
+      allWords: uniqueWords ?? allWords,
       isConfigured: isConfigured ?? this.isConfigured,
     );
   }
@@ -141,6 +144,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
     final newState =
         state.copy(words: [...state.allWords, word].toList(growable: false));
+    // print("new state ${newState.allWords.map((i)=> i.word)}");
     emit(newState);
   }
 
