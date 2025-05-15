@@ -115,10 +115,11 @@ Future<void> openAIWordEntry({
       model: ChatCompletionModel.modelId('gpt-4o'),
       messages: [
         const ChatCompletionMessage.system(
-            content:
-                'You are an helpful and kind english assistant for creating records '
-                'in non-native English learner dictionary. The learner knows Russian. '
-                'User provides you enlighs phrases or words and you generate definitions and examples. '),
+          content:
+              'You are an helpful and kind english assistant for creating records '
+              'in non-native English learner dictionary. The learner knows Russian. '
+              'User provides you enlighs phrases or words and you generate definitions and examples. ',
+        ),
         ChatCompletionMessage.user(
           content: ChatCompletionUserMessageContent.string(entry.word),
         ),
@@ -147,7 +148,7 @@ Future<void> openAIWordEntry({
               'definition': {
                 'type': 'string',
                 'description':
-                    'Plain English explanation of what the word means'
+                    'Plain English explanation of what the word means without using the word'
               },
               'example': {
                 'type': 'string',
