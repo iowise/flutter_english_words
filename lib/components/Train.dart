@@ -90,7 +90,6 @@ class _TrainState extends State<Train> {
             child: TextFormField(
               autofocus: true,
               textAlign: TextAlign.center,
-              keyboardType: TextInputType.visiblePassword,
               enableSuggestions: false,
               readOnly: widget.isCheck,
               style: Theme.of(context).textTheme.headlineSmall,
