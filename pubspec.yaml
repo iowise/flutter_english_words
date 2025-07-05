@@ -3,7 +3,7 @@ description: A Flutter application to learn English word for a Russian user.
 
 publish_to: 'none'
 
-version: 1.2.3+1
+version: 1.2.4+1
 
 environment:
   sdk: ">=3.0.0"
@@ -22,10 +22,11 @@ dependencies:
   flutter_tts: ^4.2.1
 
   google_sign_in: ^6.1.4
-  firebase_auth: ^5.4.0
-  firebase_core: ^3.10.0
-  cloud_firestore: ^5.6.1
-  firebase_crashlytics: ^4.3.0
+  firebase_core: ^3.15.1
+  firebase_auth: ^5.6.2
+  cloud_firestore: ^5.6.11
+  firebase_crashlytics: ^4.3.9
+  cloud_functions: ^5.5.2
 
   flutter_local_notifications: ^18.0.1
   permission_handler: ^11.3.1
@@ -38,7 +39,6 @@ dependencies:
 
   timezone: ^0.10.0
   flutter_timezone: ^4.0.0
-  openai_dart: ^0.4.5
   flutter_dotenv: ^5.2.1
 
 dev_dependencies:

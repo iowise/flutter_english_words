@@ -5,9 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
-import 'package:openai_dart/openai_dart.dart';
 
 import './models/CacheOptions.dart';
 import './models/repositories/WordEntryRepository.dart';
@@ -53,9 +51,6 @@ void setup() {
         GetIt.I.get<WordEntryCubit>(), GetIt.I.get<TrainLogCubit>()),
     dependsOn: [TrainLogCubit, WordEntryCubit, FirebaseApp],
   );
-
-  final client = OpenAIClient(apiKey: dotenv.env['OPENAI_API_KEY']);
-  GetIt.I.registerSingleton<OpenAIClient>(client);
 }
 
 Future setupCrashLytics() async {

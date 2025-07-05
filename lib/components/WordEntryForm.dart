@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:openai_dart/openai_dart.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../components/TranslationTextInput.dart';
 import './LabelsInput.dart';
@@ -154,9 +152,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
   }
 
   callOpenAI() {
-    openAIWordEntry(
+    openAIOverFirebaseFunction(
       entry: widget.entry,
-      client: GetIt.I.get<OpenAIClient>(),
       onUpdateEntry: (newEntry) {
         setState(() {
           if (widget.entry.translation.isEmpty) {
