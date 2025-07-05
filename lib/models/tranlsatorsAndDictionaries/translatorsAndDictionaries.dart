@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:openai_dart/openai_dart.dart';
 import 'package:word_trainer/models/tranlsatorsAndDictionaries/MerriamWebster.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../repositories/WordEntryRepository.dart';
 import './reverso.dart';
 import './googleTranslation.dart';
@@ -105,90 +103,33 @@ class WordEntryInput extends WordContextInput {
   }
 }
 
-Future<void> openAIWordEntry({
+Future<void> openAIOverFirebaseFunction({
   required final WordEntryInput entry,
-  required final OpenAIClient client,
-  required void Function(WordEntryInput newEntry) onUpdateEntry,
+  required void Function(WordEntryInput newEntry) onUpdateEntry
 }) async {
-  final res = await client.createChatCompletion(
-    request: CreateChatCompletionRequest(
-      model: ChatCompletionModel.modelId('gpt-4o'),
-      messages: [
-        const ChatCompletionMessage.system(
-          content:
-              'You are an helpful and kind english assistant for creating records '
-              'in non-native English learner dictionary. The learner knows Russian. '
-              'User provides you enlighs phrases or words and you generate definitions and examples. ',
-        ),
-        ChatCompletionMessage.user(
-          content: ChatCompletionUserMessageContent.string(entry.word),
-        ),
-      ],
-      temperature: 0,
-      responseFormat: const ResponseFormat.jsonSchema(
-        jsonSchema: JsonSchemaObject(
-          name: 'DictionaryEntry',
-          description: 'A record in the learner dictionary',
-          strict: true,
-          schema: {
-            'type': 'object',
-            'required': [
-              'translation',
-              'definition',
-              'example',
-              'synonyms',
-              'antonyms'
-            ],
-            'properties': {
-              'translation': {
-                'type': 'array',
-                'items': {'type': 'string'},
-                'description': 'Список значение слова на русском языке',
-              },
-              'definition': {
-                'type': 'string',
-                'description':
-                    'Plain English explanation of what the word means without using the word'
-              },
-              'example': {
-                'type': 'string',
-                'description':
-                    "An example of the phrase or a word. The user word is wrapped with '**'"
-              },
-              'synonyms': {
-                'type': 'array',
-                'items': {'type': 'string'},
-                'description': 'The list of synonyms of the word'
-              },
-              'antonyms': {
-                'type': 'array',
-                'items': {'type': 'string'},
-                'description': 'The list of antonyms of the word'
-              },
-            },
-            'additionalProperties': false,
-          },
-        ),
-      ),
+  HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+    'word_to_training_entry',
+    options: HttpsCallableOptions(
+      timeout: const Duration(minutes: 2),
     ),
   );
+  try {
+    final result = await callable({ 'word': entry.word });
+    final response = result.data as Map<String, dynamic>;
 
-  final content = res.choices.first.message.content;
-  if (content == null) {
-    return;
+    final newEntry = WordEntryInput(
+      word: entry.word,
+      context: response['example'] as String,
+      translation: List<String>.from(response['translation']).join('; '),
+      definition: response['definition'] as String,
+      synonyms: List<String>.from(response['synonyms']).join('; '),
+      antonyms: List<String>.from(response['antonyms']).join('; '),
+      labels: entry.labels,
+    );
+    onUpdateEntry(newEntry);
+  } on FirebaseFunctionsException catch (e) {
+    print(e.message);
   }
-  final response = json.decode(content) as Map<String, dynamic>;
-
-  final newEntry = WordEntryInput(
-    word: entry.word,
-    context: response['example'] as String,
-    translation: List<String>.from(response['translation']).join('; '),
-    definition: response['definition'] as String,
-    synonyms: List<String>.from(response['synonyms']).join('; '),
-    antonyms: List<String>.from(response['antonyms']).join('; '),
-    labels: entry.labels,
-  );
-  onUpdateEntry(newEntry);
 }
 
 Future<List<DictionaryItem>> getDefinitions(String text) async {
