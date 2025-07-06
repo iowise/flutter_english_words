@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import './TrainCard.dart';
@@ -69,7 +69,7 @@ class _TrainState extends State<Train> {
               onTap: () => speak(widget.entry.context),
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: MarkdownBody(
+                child: Markdown(
                   shrinkWrap: false,
                   data: widget.entry.context,
                 ),

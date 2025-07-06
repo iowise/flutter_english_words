@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import './components/SplashScreen.dart';
 import './pages/Labels.dart';
 import './pages/SentenceTrain.dart';
@@ -8,6 +9,7 @@ import './pages/Words.dart';
 import './pages/WordDetails.dart';
 import './pages/WordTrain.dart';
 import './di.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   // await dotenv.load(fileName: ".env");
@@ -21,6 +23,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Word Trainer',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       navigatorKey: GetIt.I.get(instanceName: 'Navigator'),
       theme: ThemeData(

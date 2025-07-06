@@ -30,8 +30,6 @@ Future<void> showNotification() async {
     time(7),
     platformChannelSpecifics,
     androidScheduleMode: AndroidScheduleMode.alarmClock,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime,
     matchDateTimeComponents: DateTimeComponents.time,
   );
 }
