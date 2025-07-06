@@ -66,11 +66,7 @@ class _WordsPageState extends State<WordsPage> {
               SearchButton(),
             ],
           ),
-          body: Localizations.override(
-              context: context,
-              locale: const Locale('ru'),
-              child: Center(child: _buildList()),
-          ),
+          body: Center(child: _buildList()),
           floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
             builder: (context, state) => FloatingActionButton(
               tooltip: 'Add a word',
