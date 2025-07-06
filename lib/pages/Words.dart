@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../components/Search.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
@@ -44,9 +45,9 @@ class _WordsPageState extends State<WordsPage> {
   @override
   Widget build(BuildContext context) {
     final scaffoldWrapper = (w) => BlocProvider.value(
-          value: GetIt.I.get<WordEntryCubit>(),
-          child: w,
-        );
+      value: GetIt.I.get<WordEntryCubit>(),
+      child: w,
+    );
 
     return scaffoldWrapper(
       Scaffold(
@@ -65,7 +66,11 @@ class _WordsPageState extends State<WordsPage> {
               SearchButton(),
             ],
           ),
-          body: Center(child: _buildList()),
+          body: Localizations.override(
+              context: context,
+              locale: const Locale('ru'),
+              child: Center(child: _buildList()),
+          ),
           floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
             builder: (context, state) => FloatingActionButton(
               tooltip: 'Add a word',
@@ -104,7 +109,7 @@ class _WordsPageState extends State<WordsPage> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (_, state) {
         final wordsToReview =
-            trainRepository!.getToReviewToday(state.wordsToReview);
+        trainRepository!.getToReviewToday(state.wordsToReview);
         return ReviewButton(wordsToReview: wordsToReview);
       },
     );
@@ -118,39 +123,40 @@ class _WordsPageState extends State<WordsPage> {
     final selectedOrNull =
         (value, option) => (value == option ? selectedStyle : null);
     final makeOption = ({text, option, current}) => SimpleDialogOption(
-          child: Text(text, style: selectedOrNull(current, option)),
-          onPressed: () {
-            Navigator.pop(context);
-            if (option.runtimeType == Filtering) {
-              bloc.setFiltering(option);
-            } else {
-              bloc.setSorting(option);
-            }
-          },
-        );
+      child: Text(text, style: selectedOrNull(current, option)),
+      onPressed: () {
+        Navigator.pop(context);
+        if (option.runtimeType == Filtering) {
+          bloc.setFiltering(option);
+        } else {
+          bloc.setSorting(option);
+        }
+      },
+    );
     final state = bloc.state;
+    final localization = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
-        title: const Text('Select Sorting and Filtering'),
+        title: Text(localization.sortingSelectSortingAndFiltering),
         children: <Widget>[
           makeOption(
-            text: 'Sort by word',
+            text: localization.sortingSortWord,
             option: Sorting.byWord,
             current: state.sorting,
           ),
           makeOption(
-            text: 'Sort by date',
+            text: localization.sortingSortDate,
             option: Sorting.byDate,
             current: state.sorting,
           ),
           makeOption(
-            text: 'Show not trained',
+            text: localization.sortingShowNotTrained,
             option: Filtering.unTrained,
             current: state.filtering,
           ),
           makeOption(
-            text: 'Show all',
+            text: localization.sortingShowAll,
             option: Filtering.all,
             current: state.filtering,
           ),

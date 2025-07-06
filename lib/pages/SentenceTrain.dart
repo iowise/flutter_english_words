@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../components/TrainCard.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
@@ -55,12 +56,13 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Enter a Sentence"),
+        title: Text(AppLocalizations.of(context)!.trainingEnterSentence),
       ),
       body: Center(
-          child: wordsToLearn == null
-              ? CircularProgressIndicator()
-              : buildTraining()),
+        child: wordsToLearn == null
+            ? CircularProgressIndicator()
+            : buildTraining(),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Check',
         child: Icon(isCheck ? Icons.chevron_right : Icons.check),
@@ -111,7 +113,7 @@ class TrainSentence extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
             decoration: InputDecoration(
               filled: true,
-              hintText: isCheck ? "" : 'Enter a sentence...',
+              hintText: isCheck ? "" : AppLocalizations.of(context)!.trainingEnterSentenceEllipsis,
             ),
             onFieldSubmitted: (_) {
               onSubmit();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../components/TranslationTextInput.dart';
 import './LabelsInput.dart';
@@ -32,6 +33,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: Align(
@@ -49,8 +51,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   autofocus: true,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a word...',
-                    labelText: 'Word',
+                    hintText: localization.editEnterWordHint,
+                    labelText: localization.editEnterWordLabel,
                     suffixIcon: IconButton(
                       icon: Icon(Icons.rocket_launch),
                       onPressed: () => callOpenAI(),
@@ -67,8 +69,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   word: widget.entry.word,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a translation...',
-                    labelText: 'Translation',
+                    hintText: localization.editEnterTranslationHint,
+                    labelText: localization.editEnterTranslationLabel,
                   ),
                   onChange: (value) {
                     widget.entry.translation = value.breakSpaces;
@@ -85,8 +87,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   word: widget.entry.word,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a definition...',
-                    labelText: 'Definition',
+                    hintText: localization.editEnterDefinitionHint,
+                    labelText: localization.editEnterDefinitionLabel,
                   ),
                   onChange: (value) {
                     widget.entry.definition = value.breakSpaces;
@@ -112,8 +114,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   controller: wordSynonymsController,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a synonyms...',
-                    labelText: 'Synonyms',
+                    hintText: localization.editEnterSynonymsHint,
+                    labelText: localization.editEnterSynonymsLabel,
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -125,8 +127,8 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   controller: wordAntonymsController,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a antonyms...',
-                    labelText: 'Antonyms',
+                    hintText: localization.editEnterAntonymsHint,
+                    labelText: localization.editEnterAntonymsLabel,
                   ),
                   onChanged: (value) {
                     setState(() {

@@ -1,6 +1,95 @@
 {
-  "helloWorld": "Hello World!",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  }
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "An action point to login"
+  },
+  "logOut": "Log Out",
+  "signInWithGoogle": "Sign-in with Google",
+  "signInWithApple": "Sign-in with Apple",
+  "definitionsTraining": "Defs",
+  "reviewNofMWords": "Review {toReview} of {count, plural, =0{no Words} =1{1 Word} other{{count} Words}}",
+  "@reviewNofMWords": {
+    "description": "A plural words",
+    "placeholders": {
+      "toReview": {
+        "type": "num",
+        "example": "1"
+      },
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "todayTrained": "Today Trained: {todayTrained}",
+  "@todayTrained": {
+    "placeholders": {
+      "todayTrained": {
+        "type": "String",
+        "example": "10 !"
+      }
+    }
+  },
+  "nothingIsFound": "Nothing is found",
+  "labelsTitle": "Labels",
+  "sentenceTraining": "Sentence Training",
+  "ok": "OK",
+  "gotAnError": "Got an error.",
+  "pleaseTryAgain": "Please try again.",
+
+  "trainingAwesome": "Awesome! 🚀",
+  "trainingTryAgain": "Try again! 😸",
+  "trainingUntilTheNextTime": "Until the next time 😉",
+  "trainingSynonyms": "Synonyms: {words}",
+  "@trainingSynonyms": {
+    "placeholders": {
+      "words": {
+        "type": "String",
+        "example": "some; words"
+      }
+    }
+  },
+  "trainingAntonyms": "Antonyms: {words}",
+  "@trainingAntonyms": {
+    "placeholders": {
+      "words": {
+        "type": "String",
+        "example": "some; words"
+      }
+    }
+  },
+  "trainingEnterNewWord": "Please enter a new word",
+  "trainingEnterSentence": "Enter a Sentence",
+  "trainingEnterSentenceEllipsis": "Enter a sentence...",
+  "trainingNextTrainingOnDate": "Next train on: {nextTrainDate}",
+  "@trainingNextTrainingOnDate": {
+    "placeholders": {
+      "nextTrainDate": {
+        "type": "String",
+        "example": "2025-12-12"
+      }
+    }
+  },
+  "sortingSelectSortingAndFiltering": "Select Sorting and Filtering",
+  "sortingSortWord": "Sort by word",
+  "sortingSortDate": "Sort by date",
+  "sortingShowNotTrained": "Show not trained",
+  "sortingShowAll": "Show all",
+
+  "editEnterWordHint": "Enter a word...",
+  "editEnterWordLabel": "Word",
+  "editEnterTranslationHint": "Enter a translation...",
+  "editEnterTranslationLabel": "Translation",
+  "editEnterDefinitionHint": "Enter a definition...",
+  "editEnterDefinitionLabel": "Definition",
+  "editEnterContextHint": "Enter a context...",
+  "editEnterContextLabel": "Context",
+  "editEnterSynonymsHint": "Enter a synonyms...",
+  "editEnterSynonymsLabel": "Synonyms",
+  "editEnterAntonymsHint": "Enter a antonyms...",
+  "editEnterAntonymsLabel": "Antonyms",
+  "editEnterLabels": "Labels",
+
+  "pagesTrain": "Train a word",
+  "pagesEnterWord": "Enter a word"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/WordEntryRepository.dart';
@@ -50,7 +51,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     final filtered = filterWords(bloc.state.allWords);
     if (filtered.isEmpty) {
-      return Center(child: Text('Nothing is found'));
+      return Center(child: Text(AppLocalizations.of(context)!.nothingIsFound));
     }
     return WordList(words: filtered);
   }
@@ -59,8 +60,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) => buildResults(context);
 
   List<WordEntry> filterWords(List<WordEntry> data) => data
-      .where((element) =>
-  element.word.contains(query) ||
+      .where((element) => element.word.contains(query) ||
       element.translation.contains(query) ||
       element.definition.contains(query))
       .toList();

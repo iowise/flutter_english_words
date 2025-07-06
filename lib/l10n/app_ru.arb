@@ -1,3 +1,93 @@
 {
-    "helloWorld": "Привет, Мир!"
+  "signIn": "Войти",
+  "logOut": "Выйти",
+  "signInWithGoogle": "Войти с Google",
+  "signInWithApple": "Войти с Apple",
+  "definitionsTraining": "Опр.",
+  "reviewNofMWords": "Тренировать {toReview} из {count, plural, =0{0 Слов} =1{1 Слов} other{{count} Слов}}",
+  "@reviewNofMWords": {
+    "description": "A plural words",
+    "placeholders": {
+      "toReview": {
+        "type": "num",
+        "example": "1"
+      },
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "todayTrained": "Сегодня потренированно: {todayTrained}",
+  "@todayTrained": {
+    "placeholders": {
+      "todayTrained": {
+        "type": "String",
+        "example": "1 !"
+      }
+    }
+  },
+  "nothingIsFound": "Ничего не найдено",
+  "labelsTitle": "Ярлыки",
+  "sentenceTraining": "Тренировка предложений",
+  "ok": "OK",
+  "gotAnError": "Произошла ошибка.",
+  "pleaseTryAgain": "Пожалуйста, повторите ещё раз.",
+
+  "trainingAwesome": "Отлично! 🚀",
+  "trainingTryAgain": "Ещё раз! 😸",
+  "trainingUntilTheNextTime": "Получится в следующий раз 😉",
+
+  "trainingSynonyms": "Синонимы: {words}",
+  "@trainingSynonyms": {
+    "placeholders": {
+      "words": {
+        "type": "String",
+        "example": "some; words"
+      }
+    }
+  },
+  "trainingAntonyms": "Антонимы: {words}",
+  "@trainingAntonyms": {
+    "placeholders": {
+      "words": {
+        "type": "String",
+        "example": "some; words"
+      }
+    }
+  },
+  "trainingEnterNewWord": "Пожалуйста, введите новое слово",
+  "trainingEnterSentence": "Введите предложение",
+  "trainingEnterSentenceEllipsis": "Введите предложение...",
+  "trainingNextTrainingOnDate": "Следующая тренировку: {nextTrainDate}",
+  "@trainingNextTrainingOnDate": {
+    "placeholders": {
+      "nextTrainDate": {
+        "type": "String",
+        "example": "2025-12-12"
+      }
+    }
+  },
+  "sortingSelectSortingAndFiltering": "Выберите Сортировку и Фильтр",
+  "sortingSortWord": "Сортировать по слову",
+  "sortingSortDate": "Сортировать по дате",
+  "sortingShowNotTrained": "Показать не потренированные",
+  "sortingShowAll": "Показать все",
+
+  "editEnterWordHint": "Введите слово...",
+  "editEnterWordLabel": "Слово",
+  "editEnterTranslationHint": "Введите перевод...",
+  "editEnterTranslationLabel": "Перевод",
+  "editEnterDefinitionHint": "Введите определение...",
+  "editEnterDefinitionLabel": "Определение",
+  "editEnterContextHint": "Введите контекст...",
+  "editEnterContextLabel": "Контекст",
+  "editEnterSynonymsHint": "Введите синонимы...",
+  "editEnterSynonymsLabel": "Синонимы",
+  "editEnterAntonymsHint": "Введите антонимы...",
+  "editEnterAntonymsLabel": "Антонимы",
+  "editEnterLabels": "Ярлыки",
+
+  "pagesTrain": "Тренируй слово",
+  "pagesEnterWord": "Ввод слова"
 }

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../components/LabelList.dart';
 import '../components/Search.dart';
 import '../components/ToReviewPanel.dart';
@@ -44,24 +45,25 @@ class _LabelsPageState extends State<LabelsPage> {
 
     return scaffoldWrapper(
       Scaffold(
-          appBar: AppBar(
-            title: Text("Labels"),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            actions: <Widget>[SearchButton()],
-          ),
-          drawer: AppDrawer(),
-          body: Center(child: _buildList()),
-          floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
-            builder: (context, state) {
-              return FloatingActionButton(
-                tooltip: 'Add a word',
-                child: Icon(Icons.add),
-                onPressed: () => Navigator.pushNamed(context, '/word/create',
-                    arguments:
-                        WordDetailsArguments(label: state.selectedLabel)),
-              );
-            },
-          )),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.labelsTitle),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          actions: <Widget>[SearchButton()],
+        ),
+        drawer: AppDrawer(),
+        body: Center(child: _buildList()),
+        floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
+          builder: (context, state) {
+            return FloatingActionButton(
+              tooltip: 'Add a word',
+              child: Icon(Icons.add),
+              onPressed: () => Navigator.pushNamed(context, '/word/create',
+                  arguments:
+                  WordDetailsArguments(label: state.selectedLabel)),
+            );
+          },
+        ),
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 
@@ -41,7 +42,7 @@ class ToReviewPanel extends StatelessWidget {
               ),
             ),
             Text(
-              "Today Trained: ${trainedStatistic(todayTrained)}",
+              AppLocalizations.of(context)!.todayTrained(trainedStatistic(todayTrained)),
               textAlign: TextAlign.left,
               style: Theme.of(context)
                   .textTheme

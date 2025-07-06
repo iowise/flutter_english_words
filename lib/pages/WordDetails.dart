@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
@@ -70,13 +71,13 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
           actions: entryInput.arg == null
               ? []
               : <Widget>[
-                  BlocBuilder<WordEntryCubit, WordEntryListState>(
-                    builder: (context, _) => IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _onDelete(context),
-                    ),
-                  ),
-                ],
+            BlocBuilder<WordEntryCubit, WordEntryListState>(
+              builder: (context, _) => IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _onDelete(context),
+              ),
+            ),
+          ],
         ),
         body: buildBody(),
         floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
@@ -133,22 +134,27 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final nextTrainDate = formatter.format(entryInput.arg!.dueToLearnAfter!);
     return ListTile(
-      title: Text("Next train on: $nextTrainDate",
-          style: Theme.of(context).textTheme.bodyMedium),
+      title: Text(
+        AppLocalizations.of(context)!.trainingNextTrainingOnDate(nextTrainDate),
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
     );
   }
 
   List<Widget> buildTrainLogs(List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
     // if (logs == null) return List<Widget>.empty(growable: false);
-    return logs
-        .map(
-          (e) => ListTile(
-            title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                style: Theme.of(context).textTheme.bodySmall),
-          ),
-        )
-        .toList();
+    return logs.map((e) {
+      return ListTile(
+        title: Text(
+          "${formatterWithTime.format(e.trainedAt)} ${e.score}",
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodySmall,
+        ),
+      );
+    }).toList();
   }
 
   _onSave(BuildContext context) async {
