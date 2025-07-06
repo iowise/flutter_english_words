@@ -27,7 +27,7 @@ class AppDrawer extends StatelessWidget {
                         : SignedInHeader(user: user);
                   },
                 ),
-                onTap: () => signIn(),
+                onTap: () => showSignInMethodsBottomSheet(context),
               ),
             ),
           ),
@@ -38,6 +38,13 @@ class AppDrawer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  showSignInMethodsBottomSheet(BuildContext parentContext) {
+    showModalBottomSheet<void>(
+      context: parentContext,
+      builder: (context) => SignInMethodBottomSheet(parentContext: parentContext),
     );
   }
 }
@@ -57,6 +64,71 @@ class SignedInHeader extends StatelessWidget {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.black),
         )
       ],
+    );
+  }
+}
+
+typedef SignInMethod = ({String name, Function singinFunction});
+const singInMethods = <SignInMethod>[
+  (name: 'Sign-in with Google', singinFunction: signInWithGoogle),
+  (name: 'Sign-in with Apple', singinFunction: signInWithApple),
+];
+
+class SignInMethodBottomSheet extends StatelessWidget {
+  final BuildContext parentContext;
+
+  const SignInMethodBottomSheet({super.key, required this.parentContext});
+
+  @override
+  Widget build(BuildContext context) {
+    final signinButtons = List<Widget>.from(singInMethods.map((record) {
+      return ElevatedButton(
+        child: Text(record.name),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+        onPressed: createSignIn(context, record),
+      );
+    }));
+
+    return Container(
+      height: 200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 10,
+          children: signinButtons,
+        ),
+      ),
+    );
+  }
+
+  createSignIn(BuildContext context, SignInMethod record) {
+    return () async {
+      Navigator.pop(context);
+      try {
+        await record.singinFunction();
+      } catch (e) {
+        _showErrorDialog();
+      }
+    };
+  }
+
+  Future<void> _showErrorDialog() {
+    return showDialog<void>(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Got an error.'),
+          content: const Text('Please try again.'),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
+              child: const Text('OK'),
+              onPressed: () =>Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
     );
   }
 }
