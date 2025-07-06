@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
           primary: Colors.amber,
           secondary: Colors.amberAccent,
         ),
-        // primaryColor: Colors.amber,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme.copyWith(

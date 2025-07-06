@@ -2,20 +2,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-Future<UserCredential> signIn() async {
+Future<UserCredential> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
   final GoogleSignInAuthentication? googleAuth =
       await googleUser?.authentication;
 
-  // Create a new credential
   final OAuthCredential credential = GoogleAuthProvider.credential(
     accessToken: googleAuth?.accessToken,
     idToken: googleAuth?.idToken,
   );
 
-  // Once signed in, return the UserCredential
   return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+
+Future<UserCredential> signInWithApple() async {
+  final appleProvider = AppleAuthProvider();
+  UserCredential userCredential = await FirebaseAuth.instance.signInWithProvider(appleProvider);
+  return userCredential;
 }
 
 Future signOut() {
