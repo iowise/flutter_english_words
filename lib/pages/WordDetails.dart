@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:word_trainer/l10n/app_localizations.dart';
+import '../components/LanguageBottomSheet.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
-import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
+import '../models/tranlsatorsAndDictionaries/aiEnrichment.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
 
 @immutable
 class WordDetailsArguments {
@@ -52,6 +54,8 @@ class WordCreateOrEdit extends StatefulWidget {
 class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   late WordEntryInput entryInput;
 
+  var language = getGlobalLanguage();
+
   @override
   void initState() {
     entryInput = widget.entryInput;
@@ -69,14 +73,19 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         appBar: AppBar(
           title: Text(widget.title),
           actions: entryInput.arg == null
-              ? []
+              ? <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () => showLanguageBottomSheet(context),
+                  ),
+                ]
               : <Widget>[
-            BlocBuilder<WordEntryCubit, WordEntryListState>(
-              builder: (context, _) => IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => _onDelete(context),
-              ),
-            ),
+                  BlocBuilder<WordEntryCubit, WordEntryListState>(
+                    builder: (context, _) => IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => _onDelete(context),
+                    ),
+                  ),
           ],
         ),
         body: buildBody(),
@@ -169,6 +178,20 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     await GetIt.I.get<TrainLogCubit>().deleteLogsForWord(wordId);
     await context.read<WordEntryCubit>().delete(entryInput.arg!);
     Navigator.pop(context);
+  }
+
+  showLanguageBottomSheet(BuildContext parentContext) {
+    showModalBottomSheet<void>(
+      context: parentContext,
+      builder: (context) => LanguageBottomSheet(
+          onChange: (_language) {
+            setState(() {
+              language = _language;
+              setGlobalLanguage(language);
+            });
+          },
+          value: language),
+    );
   }
 }
 

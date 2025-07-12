@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../models/tranlsatorsAndDictionaries/aiEnrichment.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../components/TranslationTextInput.dart';
 import './LabelsInput.dart';
@@ -21,12 +23,14 @@ class WordEntryForm extends StatefulWidget {
 
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController wordController;
   final TextEditingController wordContextController;
   final TextEditingController wordSynonymsController;
   final TextEditingController wordAntonymsController;
 
   _WordEntryFormState(final WordEntryInput entry)
-      : wordContextController = TextEditingController(text: entry.context),
+      : wordController = TextEditingController(text: entry.word),
+        wordContextController = TextEditingController(text: entry.context),
         wordSynonymsController = TextEditingController(text: entry.synonyms),
         wordAntonymsController = TextEditingController(text: entry.antonyms)
   ;
@@ -47,7 +51,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextFormField(
-                  initialValue: widget.entry.word,
+                  controller: wordController,
                   autofocus: true,
                   decoration: InputDecoration(
                     filled: true,
@@ -158,6 +162,10 @@ class _WordEntryFormState extends State<WordEntryForm> {
       entry: widget.entry,
       onUpdateEntry: (newEntry) {
         setState(() {
+          if (widget.entry.word.isEmpty) {
+            wordController.breakSpacesWhenNeeded(newEntry.word);
+            widget.entry.word = newEntry.word;
+          }
           if (widget.entry.translation.isEmpty) {
             widget.entry.translation = newEntry.translation;
           }
@@ -173,13 +181,11 @@ class _WordEntryFormState extends State<WordEntryForm> {
 
           if (widget.entry.synonyms.isEmpty) {
             wordSynonymsController.breakSpacesWhenNeeded(newEntry.synonyms);
-            wordSynonymsController.text = newEntry.synonyms;
             widget.entry.synonyms = newEntry.synonyms;
           }
 
           if (widget.entry.antonyms.isEmpty) {
             wordAntonymsController.breakSpacesWhenNeeded(newEntry.antonyms);
-            wordAntonymsController.text = newEntry.antonyms;
             widget.entry.antonyms = newEntry.antonyms;
           }
         });
@@ -199,6 +205,9 @@ extension BreakSpacesTextEditingController on TextEditingController {
   breakSpacesWhenNeeded(String newText) {
     if (newText.contains(nonBreakSpace)) {
       value = value.copyWith(text: newText.breakSpaces);
+    } else {
+      value = value.copyWith(text: newText);
     }
+    text = value.text;
   }
 }
