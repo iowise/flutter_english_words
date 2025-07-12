@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 
 @immutable
 class Label extends Equatable {
@@ -59,6 +60,7 @@ class _LabelsInputState extends State<LabelsInput> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 4.0),
       child: Column(
@@ -72,7 +74,7 @@ class _LabelsInputState extends State<LabelsInput> {
             ) => TextField(
               focusNode: focusNode,
               controller: controller,
-              decoration: const InputDecoration(filled: true, labelText: 'Labels'),
+              decoration: InputDecoration(filled: true, labelText: localization.editEnterLabels),
             ),
             controller: this._typeAheadController,
             suggestionsCallback: findSuggestions,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import './TrainCard.dart';
 
@@ -57,6 +58,7 @@ class _TrainState extends State<Train> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     final results = widget.isCheck || widget.enteredWordController.attempt > 0
         ? [
             _TrainResult(
@@ -69,7 +71,7 @@ class _TrainState extends State<Train> {
               onTap: () => speak(widget.entry.context),
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: MarkdownBody(
+                child: Markdown(
                   shrinkWrap: false,
                   data: widget.entry.context,
                 ),
@@ -96,7 +98,7 @@ class _TrainState extends State<Train> {
               controller: widget.enteredWordController,
               decoration: InputDecoration(
                 filled: true,
-                hintText: widget.isCheck ? "" : 'Enter a word...',
+                hintText: widget.isCheck ? "" : localization.editEnterWordHint,
               ),
               onFieldSubmitted: (_) {
                 widget.onSubmit();
@@ -165,7 +167,7 @@ class _TrainResult extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Text(
-                  buildFeedbackText(),
+                  buildFeedbackText(context),
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!
@@ -187,12 +189,13 @@ class _TrainResult extends StatelessWidget {
     );
   }
 
-  String buildFeedbackText() {
+  String buildFeedbackText(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (isCorrect) {
-      return "Awesome! 🚀";
+      return localizations.trainingAwesome;
     } else {
-      if (attempt == 1) return "Try again! 😸";
-      return "Until the next time 😉";
+      if (attempt == 1) return localizations.trainingTryAgain;
+      return localizations.trainingUntilTheNextTime;
     }
   }
 }

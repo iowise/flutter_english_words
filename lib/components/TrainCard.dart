@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
 class TrainCard extends StatelessWidget {
@@ -33,7 +34,7 @@ class TrainCard extends StatelessWidget {
   }
 
   List<Widget> buildSynonyms(BuildContext context) {
-    final text = _buildSynonymsAndAntonyms(entry);
+    final text = _buildSynonymsAndAntonyms(context, entry);
     return text.isNotEmpty
         ? [
             Padding(
@@ -49,8 +50,9 @@ class TrainCard extends StatelessWidget {
   }
 }
 
-String _buildSynonymsAndAntonyms(WordEntry entry) {
-  final synonyms = entry.synonyms.isEmpty ? "" : "Synonyms: ${entry.synonyms}";
-  final antonyms = entry.antonyms.isEmpty ? "" : "Antonyms: ${entry.antonyms}";
+String _buildSynonymsAndAntonyms(BuildContext context, WordEntry entry) {
+  final localizations = AppLocalizations.of(context)!;
+  final synonyms = entry.synonyms.isEmpty ? "" : localizations.trainingSynonyms(entry.synonyms);
+  final antonyms = entry.antonyms.isEmpty ? "" : localizations.trainingAntonyms(entry.antonyms);
   return [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
 }

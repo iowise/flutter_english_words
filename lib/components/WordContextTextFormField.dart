@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/tranlsatorsAndDictionaries/reverso.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
@@ -17,13 +18,14 @@ class WordContextTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return TextFormField(
       controller: controller,
       maxLines: null,
       decoration: InputDecoration(
           filled: true,
-          hintText: 'Enter a context...',
-          labelText: 'Context',
+          hintText: localization.editEnterContextHint,
+          labelText: localization.editEnterContextLabel,
           suffixIcon: IconButton(
             icon: Icon(Icons.sync),
             onPressed: () async {

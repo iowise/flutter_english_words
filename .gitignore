@@ -30,6 +30,7 @@
 .pub-cache/
 .pub/
 /build/
+ios/Flutter/ephemeral
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -49,3 +50,6 @@ android/app/google-services.json
 ios/google-services.json
 
 .env
+
+# localization files
+lib/l10n/app_localizations*

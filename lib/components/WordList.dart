@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:word_trainer/l10n/app_localizations.dart';
 import 'package:word_trainer/pages/WordDetails.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
@@ -10,7 +11,7 @@ class WordList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (words.length == 0) {
-      return Center(child: Text("Please enter a new word"));
+      return Center(child: Text(AppLocalizations.of(context)!.trainingEnterNewWord));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),

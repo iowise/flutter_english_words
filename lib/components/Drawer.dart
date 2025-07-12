@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' as provider;
+
+import '../../l10n/app_localizations.dart';
 import '../models/auth.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -23,7 +25,7 @@ class AppDrawer extends StatelessWidget {
                   builder: (context, userChanged, child) {
                     final user = userChanged.user;
                     return user == null
-                        ? Text('Sign in')
+                        ? Text(AppLocalizations.of(context)!.signIn)
                         : SignedInHeader(user: user);
                   },
                 ),
@@ -33,7 +35,7 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.edit),
-            title: Text('Sentence Training'),
+            title: Text(AppLocalizations.of(context)!.sentenceTraining),
             onTap: () => Navigator.pushNamed(context, '/train/sentence'),
           ),
         ],
@@ -59,20 +61,16 @@ class SignedInHeader extends StatelessWidget {
       children: [
         Text(user.email!),
         OutlinedButton(
-          child: Text("LogOut"),
+          child: Text(AppLocalizations.of(context)!.logOut),
           onPressed: () => signOut(),
           style: OutlinedButton.styleFrom(foregroundColor: Colors.black),
-        )
+        ),
       ],
     );
   }
 }
 
 typedef SignInMethod = ({String name, Function singinFunction});
-const singInMethods = <SignInMethod>[
-  (name: 'Sign-in with Google', singinFunction: signInWithGoogle),
-  (name: 'Sign-in with Apple', singinFunction: signInWithApple),
-];
 
 class SignInMethodBottomSheet extends StatelessWidget {
   final BuildContext parentContext;
@@ -81,6 +79,10 @@ class SignInMethodBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final singInMethods = <SignInMethod>[
+      (name: AppLocalizations.of(context)!.signInWithGoogle, singinFunction: signInWithGoogle),
+      (name: AppLocalizations.of(context)!.signInWithApple, singinFunction: signInWithApple),
+    ];
     final signinButtons = List<Widget>.from(singInMethods.map((record) {
       return ElevatedButton(
         child: Text(record.name),
@@ -118,12 +120,12 @@ class SignInMethodBottomSheet extends StatelessWidget {
       context: parentContext,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Got an error.'),
-          content: const Text('Please try again.'),
+          title: Text(AppLocalizations.of(context)!.gotAnError),
+          content: Text(AppLocalizations.of(context)!.pleaseTryAgain),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
-              child: const Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
               onPressed: () =>Navigator.of(context).pop(),
             ),
           ],
