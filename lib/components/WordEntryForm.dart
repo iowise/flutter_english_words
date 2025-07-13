@@ -162,6 +162,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
       entry: widget.entry,
       onUpdateEntry: (newEntry) {
         setState(() {
+          widget.entry.locale = newEntry.locale;
           if (widget.entry.word.isEmpty) {
             wordController.breakSpacesWhenNeeded(newEntry.word);
             widget.entry.word = newEntry.word;

@@ -39,7 +39,7 @@ void main() {
           .pumpWidget(MaterialApp(home: WordDetails(title: "Create a word")));
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
     });
 
     testWidgets('Create with a label', (WidgetTester tester) async {
@@ -50,7 +50,7 @@ void main() {
       );
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
       expect(find.text('testLabel'), findsOneWidget);
     });
 
@@ -78,6 +78,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
           label: "FilteredLabel",
@@ -104,6 +105,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),
@@ -129,6 +131,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: [],
           ),
         ),
@@ -176,6 +179,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),

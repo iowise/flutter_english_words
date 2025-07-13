@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 
 import '../repositories/WordEntryRepository.dart';
@@ -16,6 +15,7 @@ class WordEntryInput extends WordContextInput {
   String definition;
   String synonyms;
   String antonyms;
+  String locale;
   List<String> labels;
 
   WordEntry? arg;
@@ -28,6 +28,7 @@ class WordEntryInput extends WordContextInput {
     required this.synonyms,
     required this.antonyms,
     required this.labels,
+    required this.locale,
     this.arg,
   }) : super(word, context);
 
@@ -41,6 +42,7 @@ class WordEntryInput extends WordContextInput {
         context: context.trim(),
         synonyms: synonyms.trim(),
         antonyms: antonyms.trim(),
+        locale: locale,
         labels: labels,
       );
     }
@@ -52,6 +54,7 @@ class WordEntryInput extends WordContextInput {
       synonyms: synonyms.trim(),
       antonyms: antonyms.trim(),
       labels: labels,
+      locale: locale,
     );
   }
 
@@ -64,6 +67,7 @@ class WordEntryInput extends WordContextInput {
       synonyms: arg.synonyms,
       antonyms: arg.antonyms,
       labels: arg.labels,
+      locale: arg.locale,
       arg: arg,
     );
   }
@@ -76,6 +80,8 @@ class WordEntryInput extends WordContextInput {
       context: "",
       synonyms: "",
       antonyms: "",
+      locale: DEFAULT_LOCALE,
+      // Add implicit locale from label based on the other words inside label
       labels: defaultLabel == null ? [] : [defaultLabel],
     );
   }

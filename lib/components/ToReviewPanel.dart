@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 

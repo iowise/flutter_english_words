@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:word_trainer/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 @immutable
 class Label extends Equatable {

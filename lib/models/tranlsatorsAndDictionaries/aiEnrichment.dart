@@ -1,7 +1,15 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import './input.dart';
 
-enum Language { English, Korean, Japanese }
+enum Language {
+  English(locale: 'en-US'),
+  Korean(locale: 'ko-KR'),
+  Japanese(locale: 'ja-JP');
+
+  const Language({required this.locale});
+
+  final String locale;
+}
 
 var _language = Language.English;
 
@@ -20,12 +28,12 @@ Future<void> openAIOverFirebaseFunction({
       timeout: const Duration(minutes: 2),
     ),
   );
-  final language = getGlobalLanguage().name;
+  final language = getGlobalLanguage();
   try {
     final result = await callable({
       'word': entry.word,
       'translation': entry.translation,
-      'language': language,
+      'language': language.name,
     });
     final response = result.data as Map<String, dynamic>;
 
@@ -37,6 +45,7 @@ Future<void> openAIOverFirebaseFunction({
       synonyms: List<String>.from(response['synonyms']).join('; '),
       antonyms: List<String>.from(response['antonyms']).join('; '),
       labels: entry.labels,
+      locale: language.locale,
     );
     onUpdateEntry(newEntry);
   } on FirebaseFunctionsException catch (e) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/l10n/app_localizations.dart';
-import 'package:word_trainer/pages/WordDetails.dart';
+import '../l10n/app_localizations.dart';
+import '../pages/WordDetails.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {

@@ -12,6 +12,7 @@ void main() {
       context: "",
       synonyms: "",
       antonyms: "",
+      locale: "en-US",
       labels: [],
     );
     word1.id = "1";
@@ -22,6 +23,7 @@ void main() {
       context: "",
       synonyms: "",
       antonyms: "",
+      locale: 'en-US',
       labels: [],
     );
     duplicateWord1.id = "1";
@@ -32,6 +34,7 @@ void main() {
       context: "",
       synonyms: "",
       antonyms: "",
+      locale: 'en-US',
       labels: [],
     );
     word2.id = "2";

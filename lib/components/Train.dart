@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:word_trainer/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import './TrainCard.dart';
 
@@ -63,16 +63,18 @@ class _TrainState extends State<Train> {
         ? [
             _TrainResult(
               word: widget.entry.word,
+              locale: widget.entry.locale,
               extraToSpeak: widget.entry.context,
               isCorrect: widget.enteredWordController.isCorrect,
               attempt: widget.enteredWordController.attempt,
             ),
             InkWell(
-              onTap: () => speak(widget.entry.context),
+              onTap: () => speak(widget.entry.context, widget.entry.locale),
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: Markdown(
+                child: MarkdownBody(
                   shrinkWrap: false,
+                  selectable: false,
                   data: widget.entry.context,
                 ),
               ),
@@ -82,6 +84,8 @@ class _TrainState extends State<Train> {
     return Form(
       key: _formKey,
       child: ListView(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
         children: <Widget>[
           TrainCard(
               entry: widget.entry,
@@ -141,6 +145,7 @@ class _TrainState extends State<Train> {
 
 class _TrainResult extends StatelessWidget {
   final String word;
+  final String locale;
   final String extraToSpeak;
   final bool isCorrect;
   final int attempt;
@@ -151,6 +156,7 @@ class _TrainResult extends StatelessWidget {
     required this.extraToSpeak,
     required this.isCorrect,
     required this.attempt,
+    required this.locale,
   }) : super(key: key);
 
   @override
@@ -158,7 +164,7 @@ class _TrainResult extends StatelessWidget {
     return Card(
       color: isCorrect ? Colors.green : Colors.amber[900],
       child: InkWell(
-        onTap: () => speak(word),
+        onTap: () => speak(word, locale),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
@@ -200,8 +206,9 @@ class _TrainResult extends StatelessWidget {
   }
 }
 
-Future speak(final String word) async {
+Future speak(final String word, final String locale) async {
   FlutterTts flutterTts = FlutterTts();
+  await flutterTts.setLanguage(locale);
   await flutterTts.setIosAudioCategory(
     IosTextToSpeechAudioCategory.playback,
     [
