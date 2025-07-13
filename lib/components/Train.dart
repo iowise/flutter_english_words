@@ -55,7 +55,13 @@ class _TrainState extends State<Train> {
   final _formKey = GlobalKey<FormState>();
 
   late String enteredWord;
+  final ScrollController _scrollController = ScrollController();
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final localization = AppLocalizations.of(context)!;
@@ -81,15 +87,20 @@ class _TrainState extends State<Train> {
             ),
           ]
         : [];
+    if (results.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
+    }
     return Form(
       key: _formKey,
       child: ListView(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
+        controller: _scrollController,
         children: <Widget>[
           TrainCard(
-              entry: widget.entry,
-              text: widget.getInputForTraining(widget.entry)),
+            entry: widget.entry,
+            text: widget.getInputForTraining(widget.entry),
+          ),
           ...(buildDefinitionCard(context, widget.entry)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -116,6 +127,19 @@ class _TrainState extends State<Train> {
         ],
       ),
     );
+  }
+
+  scrollToBottom() {
+    // Scroll after the UI has updated with the new item
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   List<Widget> buildDefinitionCard(BuildContext context, WordEntry entry) {
