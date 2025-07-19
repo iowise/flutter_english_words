@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
 import '../models/tranlsatorsAndDictionaries/reverso.dart';
-import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 
 class WordContextTextFormField extends StatelessWidget {

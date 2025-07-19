@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:word_trainer/components/WordContextTextFormField.dart';
 import 'package:word_trainer/models/CacheOptions.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
 import 'package:word_trainer/models/blocs/TrainLogCubit.dart';
 import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
 import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
@@ -19,11 +20,14 @@ void main() {
   group("Create a word and edit word without logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
+      final labelEntryRepository = FakeLabelEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
+      final cacheOptions = CacheOptions(false);
+      final labelEntryCubit = LabelEntryCubit(labelEntryRepository, cacheOptions);
       final wordEntryCubit =
-          WordEntryCubit(wordEntryRepository, CacheOptions(false));
+          WordEntryCubit(wordEntryRepository, labelEntryCubit, cacheOptions);
       final trainLogCubit =
-          TrainLogCubit(trainLogRepository, CacheOptions(false));
+          TrainLogCubit(trainLogRepository, cacheOptions);
 
       // when(trainLogRepository.getLogs("null"))
       //     .thenAnswer((realInvocation) => Future.value([]));
@@ -39,7 +43,7 @@ void main() {
           .pumpWidget(MaterialApp(home: WordDetails(title: "Create a word")));
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
     });
 
     testWidgets('Create with a label', (WidgetTester tester) async {
@@ -50,7 +54,7 @@ void main() {
       );
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
       expect(find.text('testLabel'), findsOneWidget);
     });
 
@@ -78,6 +82,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
           label: "FilteredLabel",
@@ -104,6 +109,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),
@@ -129,6 +135,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: [],
           ),
         ),
@@ -149,11 +156,14 @@ void main() {
   group("Edit word with logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
+      final labelEntryRepository = FakeLabelEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
+      final cacheOptions = CacheOptions(false);
+      final labelEntryCubit = LabelEntryCubit(labelEntryRepository, cacheOptions);
       final wordEntryCubit =
-          WordEntryCubit(wordEntryRepository, CacheOptions(false));
+      WordEntryCubit(wordEntryRepository, labelEntryCubit, cacheOptions);
       final trainLogCubit =
-          TrainLogCubit(trainLogRepository, CacheOptions(false));
+      TrainLogCubit(trainLogRepository, cacheOptions);
 
       // when(trainLogRepository.getLogs("null"))
       //     .thenAnswer((realInvocation) => Future.value([TrainLog("null", 10)]));
@@ -176,6 +186,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),

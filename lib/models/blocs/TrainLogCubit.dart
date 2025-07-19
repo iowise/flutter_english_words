@@ -64,7 +64,7 @@ class TrainLogCubit extends Cubit<TrainLogState> {
   final mutex = Mutex();
 
   TrainLogCubit(this.repository, this.cacheOptions)
-      : super(new TrainLogState(logs: List<TrainLog>.empty()));
+      : super(new TrainLogState(logs: <TrainLog>[]));
 
   factory TrainLogCubit.setup(
       TrainLogRepository repository, CacheOptions cacheOptions) {
@@ -94,14 +94,12 @@ class TrainLogCubit extends Cubit<TrainLogState> {
   }
 
   Future insert(TrainLog log) async {
-    // Don't wait for storing word on the cloud side.
     await repository.insert(log);
 
     emit(state.copy(logs: [...state.logs, log]));
   }
 
   Future deleteLogsForWord(wordId) async {
-    // Don't wait for storing word on the cloud side.
     await repository.deleteLogsForWord(wordId);
 
     final prunedLogs = state.logs.where((e) => e.wordId != wordId);

@@ -2,24 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-const String WORDS_TABLE = '_word_entry';
+import '../tranlsatorsAndDictionaries/aiEnrichment.dart';
 
-const String _columnId = '_id';
-const String _columnWord = 'word';
-const String _columnTranslation = 'translation';
-const String _columnContext = 'context';
-const String _columnSynonyms = 'synonyms';
-const String _columnAntonyms = 'antonyms';
-const String _columnDefinition = 'definition';
-const String _columnCreatedAt = '_created_at';
-const String _columnTrainedAt = '_trained_at';
-const String columnDueToLearnAfter = '_due_to_learn_after';
-const String _columnLabels = '_labels';
+const WORDS_TABLE = '_word_entry';
+const DEFAULT_LOCALE = 'en-US';
+
+const _columnId = '_id';
+const _columnWord = 'word';
+const _columnTranslation = 'translation';
+const _columnContext = 'context';
+const _columnSynonyms = 'synonyms';
+const _columnAntonyms = 'antonyms';
+const _columnDefinition = 'definition';
+const _columnLocale = '_locale';
+const _columnCreatedAt = '_created_at';
+const _columnTrainedAt = '_trained_at';
+const columnDueToLearnAfter = '_due_to_learn_after';
+const _columnLabels = '_labels';
 
 class WordEntry extends Equatable {
   String? id;
 
   late String word;
+  late String locale;
   late String translation;
   late String definition;
   late String context;
@@ -40,6 +45,7 @@ class WordEntry extends Equatable {
       _columnDefinition: definition,
       _columnSynonyms: synonyms,
       _columnAntonyms: antonyms,
+      _columnLocale: locale,
       _columnCreatedAt: createdAt.toIso8601String(),
       _columnLabels: labels,
     };
@@ -63,6 +69,7 @@ class WordEntry extends Equatable {
     required this.synonyms,
     required this.antonyms,
     required this.labels,
+    required this.locale,
   }) {
     createdAt = DateTime.now();
   }
@@ -75,6 +82,7 @@ class WordEntry extends Equatable {
     required final String context,
     required final String synonyms,
     required final String antonyms,
+    required final String locale,
     required final List<String> labels,
   }) {
     this.id = other.id;
@@ -82,6 +90,7 @@ class WordEntry extends Equatable {
     this.trainedAt = other.trainedAt;
     this.dueToLearnAfter = other.dueToLearnAfter;
 
+    this.locale = locale;
     this.word = word;
     this.translation = translation;
     this.definition = definition;
@@ -103,6 +112,7 @@ class WordEntry extends Equatable {
     labels = map[_columnLabels] != null
         ? new List<String>.from(map[_columnLabels], growable: false)
         : [];
+    locale = map[_columnLocale] ?? DEFAULT_LOCALE;
 
     trainedAt = map[_columnTrainedAt] != null
         ? DateTime.parse(map[_columnTrainedAt])
@@ -137,6 +147,7 @@ class WordEntry extends Equatable {
         trainedAt,
         dueToLearnAfter,
         labels,
+        locale,
       ];
 }
 
@@ -184,20 +195,6 @@ class WordEntryRepository {
         entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
-  }
-
-  Stream<WordEntry> query({
-    required bool Function(WordEntry word) where,
-  }) async* {
-    if (words == null) return;
-
-    final snapshot = await words!.get();
-    for (final doc in snapshot.docs) {
-      final word = WordEntry.fromDocument(doc);
-      if (where(word)) {
-        yield word;
-      }
-    }
   }
 
   Future delete(String id) async {

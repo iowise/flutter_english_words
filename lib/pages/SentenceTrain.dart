@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:word_trainer/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 import '../components/TrainCard.dart';
 import '../models/repositories/WordEntryRepository.dart';
 

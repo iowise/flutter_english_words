@@ -80,7 +80,7 @@ class _TrainWordsState extends State<TrainWords> {
       final trainService = GetIt.I.get<TrainService>();
       trainService.trainWord(
           wordToTrain, trainController.isCorrect, trainController.attempt);
-      speak(wordToTrain.word);
+      speak(wordToTrain.word, wordToTrain.locale);
       setState(() {
         isCheck = true;
       });
