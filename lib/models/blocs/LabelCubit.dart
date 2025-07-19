@@ -32,6 +32,14 @@ class LabelMapState extends Equatable {
     );
   }
 
+  String? guessLocale(List<String> labels) {
+    final firstLabel = labels.firstOrNull;
+    if (firstLabel == null) return null;
+    final existingLabel = labelLocales[firstLabel];
+    if (existingLabel == null) return null;
+    return existingLabel.locale;
+  }
+
   @override
   List<Object?> get props => [isConfigured, labelLocales];
 }
@@ -72,13 +80,5 @@ class LabelEntryCubit extends Cubit<LabelMapState> {
     final labelEntries = await labelRepository.createLocales(labels, locale);
     final newState = state.copy(newLabels: labelEntries);
     emit(newState);
-  }
-
-  String? guessLocale(List<String> labels) {
-    final firstLabel = labels.firstOrNull;
-    if (firstLabel == null) return null;
-    final existingLabel = state.labelLocales[firstLabel];
-    if (existingLabel == null) return null;
-    return existingLabel.locale;
   }
 }

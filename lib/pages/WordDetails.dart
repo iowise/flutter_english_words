@@ -67,15 +67,18 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
       providers: [
         BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
         BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+        BlocProvider.value(value: GetIt.I.get<LabelEntryCubit>()),
       ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
           actions: entryInput.arg == null
               ? <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () => showLanguageBottomSheet(context),
+                  BlocBuilder<LabelEntryCubit, LabelMapState>(
+                    builder: (context, state) => IconButton(
+                      icon: Text(getLocalLanguage(state).icon),
+                      onPressed: () => showLanguageBottomSheet(context),
+                    ),
                   ),
                 ]
               : <Widget>[
@@ -151,7 +154,6 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
 
   List<Widget> buildTrainLogs(List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
-    // if (logs == null) return List<Widget>.empty(growable: false);
     return logs.map((e) {
       return ListTile(
         title: Text(
@@ -178,21 +180,24 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
 
   showLanguageBottomSheet(BuildContext parentContext) {
     final labelCubit = GetIt.I.get<LabelEntryCubit>();
-    final singleLabel = entryInput.labels.singleOrNull;
-    final localeLabel =
-        singleLabel != null ? [singleLabel] : <String>[];
     showModalBottomSheet<void>(
       context: parentContext,
       builder: (context) => LanguageBottomSheet(
         onChange: (_language) {
+          final singleLabel = entryInput.labels.singleOrNull;
           if (singleLabel != null) {
-            labelCubit.save(localeLabel, _language.locale);
+            labelCubit.save([singleLabel], _language.locale);
           }
         },
-        value:
-            findLanguage(labelCubit.guessLocale(localeLabel) ?? DEFAULT_LOCALE),
+        value: getLocalLanguage(labelCubit.state),
       ),
     );
+  }
+
+  Language getLocalLanguage(LabelMapState labelMap) {
+    final singleLabel = entryInput.labels.singleOrNull;
+    final localeLabel = singleLabel != null ? [singleLabel] : <String>[];
+    return findLanguage(labelMap.guessLocale(localeLabel) ?? DEFAULT_LOCALE);
   }
 }
 

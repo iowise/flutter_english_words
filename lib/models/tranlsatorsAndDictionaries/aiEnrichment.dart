@@ -2,13 +2,14 @@ import 'package:cloud_functions/cloud_functions.dart';
 import './input.dart';
 
 enum Language {
-  English(locale: 'en-US'),
-  Korean(locale: 'ko-KR'),
-  Japanese(locale: 'ja-JP');
+  English(locale: 'en-US', icon: '🇬🇧'),
+  Korean(locale: 'ko-KR', icon: '🇰🇷'),
+  Japanese(locale: 'ja-JP', icon: '🇯🇵');
 
-  const Language({required this.locale});
+  const Language({required this.locale, required this.icon});
 
   final String locale;
+  final String icon;
 }
 
 Language findLanguage(String locale) {
