@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
 import '../l10n/app_localizations.dart';
 import '../models/tranlsatorsAndDictionaries/aiEnrichment.dart';
 import '../models/tranlsatorsAndDictionaries/input.dart';
@@ -32,8 +34,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
       : wordController = TextEditingController(text: entry.word),
         wordContextController = TextEditingController(text: entry.context),
         wordSynonymsController = TextEditingController(text: entry.synonyms),
-        wordAntonymsController = TextEditingController(text: entry.antonyms)
-  ;
+        wordAntonymsController = TextEditingController(text: entry.antonyms);
 
   @override
   Widget build(BuildContext context) {
@@ -140,10 +141,17 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     });
                   },
                 ),
-                LabelsInput.fromStrings(
+
+               LabelsInput.fromStrings(
                   initialValue: widget.entry.labels,
                   onChange: (List<String> value) {
                     setState(() {
+                      final labelLocale = GetIt.I
+                          .get<LabelEntryCubit>()
+                          .guessLocale(value);
+                      if (labelLocale != null) {
+                        widget.entry.locale = labelLocale;
+                      }
                       widget.entry.labels = value;
                     });
                   },
@@ -157,9 +165,10 @@ class _WordEntryFormState extends State<WordEntryForm> {
     );
   }
 
-  callOpenAI() {
+  callOpenAI() async {
     openAIOverFirebaseFunction(
       entry: widget.entry,
+      language: findLanguage(widget.entry.locale),
       onUpdateEntry: (newEntry) {
         setState(() {
           widget.entry.locale = newEntry.locale;

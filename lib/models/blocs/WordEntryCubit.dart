@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mutex/mutex.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
 
 import '../CacheOptions.dart';
+import '../repositories/LabelEntryRepository.dart';
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {
@@ -85,19 +87,24 @@ class WordEntryListState extends Equatable {
 
 class WordEntryCubit extends Cubit<WordEntryListState> {
   final WordEntryRepository repository;
+  final LabelEntryCubit labelCubit;
   final CacheOptions cacheOptions;
   final mutex = Mutex();
 
-  WordEntryCubit(this.repository, this.cacheOptions)
+  WordEntryCubit(this.repository, this.labelCubit, this.cacheOptions)
       : super(new WordEntryListState(
           allWords: List<WordEntry>.empty(growable: false),
           selectedLabel: null,
         ));
 
   factory WordEntryCubit.setup(
-      WordEntryRepository repository, CacheOptions cacheOptions) {
+    WordEntryRepository repository,
+    LabelEntryCubit labelCubit,
+    CacheOptions cacheOptions,
+  ) {
     Fluttertoast.showToast(msg: "Start setup words");
-    final cubit = WordEntryCubit(repository, cacheOptions);
+    final cubit =
+        WordEntryCubit(repository, labelCubit, cacheOptions);
     final refreshWords = () async {
       if (cubit.mutex.isLocked) return;
 
@@ -132,6 +139,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
   Future save(WordEntry entry) async {
     if (entry.id == null) {
+      await labelCubit.save(entry.labels, entry.locale);
       return create(entry);
     } else {
       return update(entry);
@@ -139,7 +147,6 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
   }
 
   Future create(WordEntry word) async {
-    // Don't wait for storing word on the cloud side.
     await repository.insert(word);
 
     final newState =
@@ -157,7 +164,6 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
   Future delete(WordEntry word) async {
     final wordId = word.id!;
-    // Don't wait for storing word on the cloud side.
     await this.repository.delete(wordId);
     final words = state.allWords.where((element) => element.id! != wordId);
 

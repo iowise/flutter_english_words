@@ -58,6 +58,7 @@ createController() => TrainController(WordEntry.create(
   synonyms: '',
   antonyms: '',
   definition: '',
+  locale: DEFAULT_LOCALE,
   labels: [],
 ));
 createControllerWithQuotes() => TrainController(WordEntry.create(
@@ -67,5 +68,6 @@ createControllerWithQuotes() => TrainController(WordEntry.create(
   synonyms: '',
   antonyms: '',
   definition: '',
+  locale: DEFAULT_LOCALE,
   labels: [],
 ));

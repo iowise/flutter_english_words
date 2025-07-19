@@ -7,11 +7,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
 
 import './models/CacheOptions.dart';
 import './models/repositories/WordEntryRepository.dart';
-import './models/SpaceRepetitionScheduler.dart';
 import './models/repositories/TrainLogRepository.dart';
+import './models/repositories/LabelEntryRepository.dart';
+import './models/SpaceRepetitionScheduler.dart';
 import './models/Notification.dart';
 import './models/blocs/TrainLogCubit.dart';
 import './models/blocs/WordEntryCubit.dart';
@@ -24,31 +26,43 @@ void setup() {
     await showNotification();
     final app = await Firebase.initializeApp();
     await GoogleSignIn.instance.initialize();
-    FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+    FirebaseFirestore.instance.settings =
+        Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
 
     await setupCrashLytics();
     return app;
   });
   GetIt.I.registerSingletonWithDependencies<CacheOptions>(
-        () => CacheOptions(FirebaseAuth.instance.currentUser != null),
+    () => CacheOptions(FirebaseAuth.instance.currentUser != null),
+    dependsOn: [FirebaseApp],
+  );
+  GetIt.I.registerSingleton<LabelEntryRepository>(LabelEntryRepository());
+  GetIt.I.registerSingletonAsync<LabelEntryCubit>(
+    () async => LabelEntryCubit.setup(
+      GetIt.I.get<LabelEntryRepository>(),
+      GetIt.I.get<CacheOptions>(),
+    ),
     dependsOn: [FirebaseApp],
   );
   GetIt.I.registerSingleton<WordEntryRepository>(WordEntryRepository());
   GetIt.I.registerSingletonAsync<WordEntryCubit>(
-        () async => WordEntryCubit.setup(
-            GetIt.I.get<WordEntryRepository>(), GetIt.I.get<CacheOptions>()),
+    () async => WordEntryCubit.setup(
+      GetIt.I.get<WordEntryRepository>(),
+      await GetIt.I.getAsync<LabelEntryCubit>(),
+      GetIt.I.get<CacheOptions>(),
+    ),
     dependsOn: [FirebaseApp],
   );
 
   GetIt.I.registerSingleton<TrainLogRepository>(TrainLogRepository());
   GetIt.I.registerSingletonAsync<TrainLogCubit>(
-        () async => TrainLogCubit.setup(
+    () async => TrainLogCubit.setup(
         GetIt.I.get<TrainLogRepository>(), GetIt.I.get<CacheOptions>()),
     dependsOn: [FirebaseApp],
   );
 
   GetIt.I.registerSingletonWithDependencies<TrainService>(
-        () => TrainService(
+    () => TrainService(
         GetIt.I.get<WordEntryCubit>(), GetIt.I.get<TrainLogCubit>()),
     dependsOn: [TrainLogCubit, WordEntryCubit, FirebaseApp],
   );

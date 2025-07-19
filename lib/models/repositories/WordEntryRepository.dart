@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../tranlsatorsAndDictionaries/aiEnrichment.dart';
+
 const WORDS_TABLE = '_word_entry';
 const DEFAULT_LOCALE = 'en-US';
 
@@ -193,20 +195,6 @@ class WordEntryRepository {
         entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
-  }
-
-  Stream<WordEntry> query({
-    required bool Function(WordEntry word) where,
-  }) async* {
-    if (words == null) return;
-
-    final snapshot = await words!.get();
-    for (final doc in snapshot.docs) {
-      final word = WordEntry.fromDocument(doc);
-      if (where(word)) {
-        yield word;
-      }
-    }
   }
 
   Future delete(String id) async {

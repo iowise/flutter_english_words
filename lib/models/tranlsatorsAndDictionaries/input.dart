@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 
+import '../blocs/LabelCubit.dart';
 import '../repositories/WordEntryRepository.dart';
 
 abstract class WordContextInput {
@@ -73,6 +75,10 @@ class WordEntryInput extends WordContextInput {
   }
 
   static WordEntryInput empty({String? defaultLabel}) {
+    final defaultLocale = defaultLabel != null ? GetIt.I
+        .get<LabelEntryCubit>()
+        .guessLocale([defaultLabel]) : null;
+
     return WordEntryInput(
       word: "",
       translation: "",
@@ -80,7 +86,7 @@ class WordEntryInput extends WordContextInput {
       context: "",
       synonyms: "",
       antonyms: "",
-      locale: DEFAULT_LOCALE,
+      locale: defaultLocale ?? DEFAULT_LOCALE,
       // Add implicit locale from label based on the other words inside label
       labels: defaultLabel == null ? [] : [defaultLabel],
     );

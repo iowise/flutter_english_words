@@ -11,24 +11,27 @@ enum Language {
   final String locale;
 }
 
-var _language = Language.English;
-
-Language getGlobalLanguage() => _language;
-void setGlobalLanguage(Language language) {
-  _language = language;
+Language findLanguage(String locale) {
+  switch (locale) {
+    case 'ko-KR':
+      return Language.Korean;
+    case 'ja-JP':
+      return Language.Japanese;
+    default:
+      return Language.English;
+  }
 }
 
-Future<void> openAIOverFirebaseFunction({
-  required final WordEntryInput entry,
-  required void Function(WordEntryInput newEntry) onUpdateEntry
-}) async {
+Future<void> openAIOverFirebaseFunction(
+    {required final WordEntryInput entry,
+    required final Language language,
+    required void Function(WordEntryInput newEntry) onUpdateEntry}) async {
   HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
     'enrich_word_entry',
     options: HttpsCallableOptions(
       timeout: const Duration(minutes: 2),
     ),
   );
-  final language = getGlobalLanguage();
   try {
     final result = await callable({
       'word': entry.word,

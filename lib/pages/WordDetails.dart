@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../components/LanguageBottomSheet.dart';
+import '../models/blocs/LabelCubit.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
@@ -54,8 +55,6 @@ class WordCreateOrEdit extends StatefulWidget {
 class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   late WordEntryInput entryInput;
 
-  var language = getGlobalLanguage();
-
   @override
   void initState() {
     entryInput = widget.entryInput;
@@ -86,7 +85,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
                       onPressed: () => _onDelete(context),
                     ),
                   ),
-          ],
+                ],
         ),
         body: buildBody(),
         floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
@@ -157,10 +156,7 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
       return ListTile(
         title: Text(
           "${formatterWithTime.format(e.trainedAt)} ${e.score}",
-          style: Theme
-              .of(context)
-              .textTheme
-              .bodySmall,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       );
     }).toList();
@@ -181,16 +177,21 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
   }
 
   showLanguageBottomSheet(BuildContext parentContext) {
+    final labelCubit = GetIt.I.get<LabelEntryCubit>();
+    final singleLabel = entryInput.labels.singleOrNull;
+    final localeLabel =
+        singleLabel != null ? [singleLabel] : <String>[];
     showModalBottomSheet<void>(
       context: parentContext,
       builder: (context) => LanguageBottomSheet(
-          onChange: (_language) {
-            setState(() {
-              language = _language;
-              setGlobalLanguage(language);
-            });
-          },
-          value: language),
+        onChange: (_language) {
+          if (singleLabel != null) {
+            labelCubit.save(localeLabel, _language.locale);
+          }
+        },
+        value:
+            findLanguage(labelCubit.guessLocale(localeLabel) ?? DEFAULT_LOCALE),
+      ),
     );
   }
 }
