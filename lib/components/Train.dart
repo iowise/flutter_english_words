@@ -65,7 +65,8 @@ class _TrainState extends State<Train> {
   @override
   Widget build(BuildContext context) {
     final localization = AppLocalizations.of(context)!;
-    final results = widget.isCheck || widget.enteredWordController.attempt > 0
+    final isShowingResults = widget.isCheck || widget.enteredWordController.attempt > 0;
+    final results = isShowingResults
         ? [
             _TrainResult(
               word: widget.entry.word,
@@ -87,7 +88,8 @@ class _TrainState extends State<Train> {
             ),
           ]
         : [];
-    if (results.isNotEmpty) {
+    final isFailedCheck = isShowingResults && !widget.enteredWordController.isCorrect;
+    if (isFailedCheck) {
       WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
     }
     return Form(
