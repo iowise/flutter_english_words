@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import '../l10n/app_localizations.dart';
 import '../components/LabelList.dart';
@@ -116,6 +117,11 @@ class _LabelsPageState extends State<LabelsPage> {
     bloc.useLabel(row.label);
     final wordsToReview =
         trainRepository!.getToReviewToday(bloc.state.wordsToReview);
+
+    if (wordsToReview.isEmpty) {
+      Fluttertoast.showToast(msg: "No words to train");
+      return;
+    }
 
     Navigator.pushNamed(
       context,
