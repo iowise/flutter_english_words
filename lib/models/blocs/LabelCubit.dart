@@ -8,7 +8,6 @@ import 'package:mutex/mutex.dart';
 
 import '../CacheOptions.dart';
 import '../repositories/LabelEntryRepository.dart';
-import '../tranlsatorsAndDictionaries/aiEnrichment.dart';
 
 @immutable
 class LabelMapState extends Equatable {
@@ -30,6 +29,14 @@ class LabelMapState extends Equatable {
       labelLocales: newLabelLocales,
       isConfigured: isConfigured ?? this.isConfigured,
     );
+  }
+
+  String? guessLocale(List<String> labels) {
+    final firstLabel = labels.firstOrNull;
+    if (firstLabel == null) return null;
+    final existingLabel = labelLocales[firstLabel];
+    if (existingLabel == null) return null;
+    return existingLabel.locale;
   }
 
   @override
@@ -72,13 +79,5 @@ class LabelEntryCubit extends Cubit<LabelMapState> {
     final labelEntries = await labelRepository.createLocales(labels, locale);
     final newState = state.copy(newLabels: labelEntries);
     emit(newState);
-  }
-
-  String? guessLocale(List<String> labels) {
-    final firstLabel = labels.firstOrNull;
-    if (firstLabel == null) return null;
-    final existingLabel = state.labelLocales[firstLabel];
-    if (existingLabel == null) return null;
-    return existingLabel.locale;
   }
 }

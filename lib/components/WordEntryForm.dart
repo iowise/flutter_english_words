@@ -148,7 +148,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                     setState(() {
                       final labelLocale = GetIt.I
                           .get<LabelEntryCubit>()
-                          .guessLocale(value);
+                          .state.guessLocale(value);
                       if (labelLocale != null) {
                         widget.entry.locale = labelLocale;
                       }

@@ -8,7 +8,6 @@ import 'package:mutex/mutex.dart';
 import 'package:word_trainer/models/blocs/LabelCubit.dart';
 
 import '../CacheOptions.dart';
-import '../repositories/LabelEntryRepository.dart';
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {

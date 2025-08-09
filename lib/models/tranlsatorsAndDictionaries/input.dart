@@ -77,7 +77,7 @@ class WordEntryInput extends WordContextInput {
   static WordEntryInput empty({String? defaultLabel}) {
     final defaultLocale = defaultLabel != null ? GetIt.I
         .get<LabelEntryCubit>()
-        .guessLocale([defaultLabel]) : null;
+        .state.guessLocale([defaultLabel]) : null;
 
     return WordEntryInput(
       word: "",
