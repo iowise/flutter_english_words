@@ -91,19 +91,17 @@ class _LabelsPageState extends State<LabelsPage> {
 
   Widget _buildToReviewPanel() {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) {
-        return BlocBuilder<TrainLogCubit, TrainLogState>(
-            builder: (context, trainState) {
-          final labelsForReviewPanel =
-              generateLabelsForReviewPanel(state.labelsStatistics);
-          return ToReviewPanel(
-            labels: labelsForReviewPanel,
-            startTraining: (label) => _startTraining(label, context),
-            todayTrained: trainState.todayTrained,
-            strikes: trainState.strikes,
-          );
-        });
-      },
+      builder: (context, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
+          builder: (context, trainState) {
+        final labelsForReviewPanel =
+            generateLabelsForReviewPanel(state.labelsStatistics);
+        return ToReviewPanel(
+          labels: labelsForReviewPanel,
+          startTraining: (label) => _startTraining(label, context),
+          todayTrained: trainState.todayTrained,
+          strikes: trainState.strikes,
+        );
+      }),
     );
   }
 

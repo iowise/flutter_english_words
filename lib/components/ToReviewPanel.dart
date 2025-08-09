@@ -42,7 +42,8 @@ class ToReviewPanel extends StatelessWidget {
               ),
             ),
             Text(
-              AppLocalizations.of(context)!.todayTrained(trainedStatistic(todayTrained)),
+              AppLocalizations.of(context)!
+                  .todayTrained(trainedStatistic(todayTrained)),
               textAlign: TextAlign.left,
               style: Theme.of(context)
                   .textTheme
@@ -56,6 +57,7 @@ class ToReviewPanel extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
             child: Row(
+              spacing: 8,
               children: List<Widget>.from(
                 this.labels.map((e) =>
                     ToReviewCard(label: e, startTraining: startTraining)),
@@ -87,16 +89,12 @@ class ToReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 100,
-      height: 100,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5),
-        child: OutlinedButton(
-          child: Text(label.labelText, maxLines: 3),
-          onPressed: () => startTraining(label),
-        ),
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 16),
       ),
+      child: Text(label.labelText, maxLines: 3),
+      onPressed: () => startTraining(label),
     );
   }
 }
