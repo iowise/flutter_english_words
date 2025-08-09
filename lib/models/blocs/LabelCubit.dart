@@ -8,7 +8,6 @@ import 'package:mutex/mutex.dart';
 
 import '../CacheOptions.dart';
 import '../repositories/LabelEntryRepository.dart';
-import '../tranlsatorsAndDictionaries/aiEnrichment.dart';
 
 @immutable
 class LabelMapState extends Equatable {
