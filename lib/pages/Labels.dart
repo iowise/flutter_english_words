@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import '../l10n/app_localizations.dart';
 import '../components/LabelList.dart';
@@ -91,19 +92,17 @@ class _LabelsPageState extends State<LabelsPage> {
 
   Widget _buildToReviewPanel() {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) {
-        return BlocBuilder<TrainLogCubit, TrainLogState>(
-            builder: (context, trainState) {
-          final labelsForReviewPanel =
-              generateLabelsForReviewPanel(state.labelsStatistics);
-          return ToReviewPanel(
-            labels: labelsForReviewPanel,
-            startTraining: (label) => _startTraining(label, context),
-            todayTrained: trainState.todayTrained,
-            strikes: trainState.strikes,
-          );
-        });
-      },
+      builder: (context, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
+          builder: (context, trainState) {
+        final labelsForReviewPanel =
+            generateLabelsForReviewPanel(state.labelsStatistics);
+        return ToReviewPanel(
+          labels: labelsForReviewPanel,
+          startTraining: (label) => _startTraining(label, context),
+          todayTrained: trainState.todayTrained,
+          strikes: trainState.strikes,
+        );
+      }),
     );
   }
 
@@ -118,6 +117,11 @@ class _LabelsPageState extends State<LabelsPage> {
     bloc.useLabel(row.label);
     final wordsToReview =
         trainRepository!.getToReviewToday(bloc.state.wordsToReview);
+
+    if (wordsToReview.isEmpty) {
+      Fluttertoast.showToast(msg: "No words to train");
+      return;
+    }
 
     Navigator.pushNamed(
       context,

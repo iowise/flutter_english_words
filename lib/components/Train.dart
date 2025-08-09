@@ -158,7 +158,7 @@ class _TrainState extends State<Train> {
             children: [
               Text(
                 entry.definition,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ],

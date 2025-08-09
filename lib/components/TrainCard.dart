@@ -35,18 +35,19 @@ class TrainCard extends StatelessWidget {
 
   List<Widget> buildSynonyms(BuildContext context) {
     final text = _buildSynonymsAndAntonyms(context, entry);
-    return text.isNotEmpty
-        ? [
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ]
-        : [];
+    if (text.isEmpty) {
+      return [];
+    }
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ];
   }
 }
 

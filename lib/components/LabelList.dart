@@ -18,13 +18,8 @@ class LabelList extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       shrinkWrap: true,
-      itemBuilder: (context, i) {
-        // if (i.isOdd) return Divider();
-
-        // final index = i ~/ 2;
-        return _buildRow(labelStatisticList[i], context);
-      },
-      itemCount: labelStatistic.length, //* 2 - 1,
+      itemBuilder: (context, i) => _buildRow(labelStatisticList[i], context),
+      itemCount: labelStatistic.length,
     );
   }
 
