@@ -111,8 +111,10 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   onChanged: (value) {
                     setState(() {
                       widget.entry.context = value.breakSpaces;
-                      wordContextController.breakSpacesWhenNeeded(value);
                     });
+                  },
+                  onForceSet: (value) {
+                    wordContextController.breakSpacesWhenNeeded(value);
                   },
                 ),
                 TextFormField(
