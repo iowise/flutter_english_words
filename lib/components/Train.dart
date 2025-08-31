@@ -56,6 +56,7 @@ class _TrainState extends State<Train> {
 
   late String enteredWord;
   final ScrollController _scrollController = ScrollController();
+  final targetWidgetKey = GlobalKey();
 
   @override
   void dispose() {
@@ -107,6 +108,7 @@ class _TrainState extends State<Train> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
+              key: targetWidgetKey,
               autofocus: true,
               textAlign: TextAlign.center,
               enableSuggestions: false,
@@ -132,15 +134,28 @@ class _TrainState extends State<Train> {
   }
 
   scrollToBottom() {
-    // Scroll after the UI has updated with the new item
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 100),
-          curve: Curves.easeOut,
-        );
+      if (!_scrollController.hasClients) {
+        return;
       }
+      final keyContext = targetWidgetKey.currentContext;
+      final box = keyContext?.findRenderObject() as RenderBox?;
+      if (box == null) {
+        return;
+      }
+      final scrollPosition = _scrollController.position;
+      final position = box.localToGlobal(
+        Offset.zero,
+        ancestor: scrollPosition.context.storageContext.findRenderObject(),
+      );
+      final scrollOffset = _scrollController.offset + position.dy;
+      final clampedOffset = scrollOffset.clamp(
+          scrollPosition.minScrollExtent, scrollPosition.maxScrollExtent);
+      _scrollController.animateTo(
+        clampedOffset,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
     });
   }
 
