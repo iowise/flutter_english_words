@@ -54,16 +54,12 @@ class LabelEntryCubit extends Cubit<LabelMapState> {
 
   factory LabelEntryCubit.setup(LabelEntryRepository labelRepository,
       CacheOptions cacheOptions) {
-    Fluttertoast.showToast(msg: "Start setup labels");
     final cubit = LabelEntryCubit(labelRepository, cacheOptions);
     final refreshLabels = () async {
       if (cubit.mutex.isLocked) return;
 
-      Fluttertoast.showToast(msg: "Loading labels");
       final labels = await labelRepository.getAllLabelEntries(cacheOptions.hasCacheConfigured);
-      Fluttertoast.showToast(msg: "Processing labels");
       cubit.emit(cubit.state.copy(newLabels: labels, isConfigured: true));
-      Fluttertoast.showToast(msg: "Loaded labels");
     };
     Firebase.initializeApp().whenComplete(() {
       FirebaseAuth.instance.userChanges().listen((user) {
