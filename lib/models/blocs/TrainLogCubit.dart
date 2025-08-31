@@ -68,16 +68,12 @@ class TrainLogCubit extends Cubit<TrainLogState> {
 
   factory TrainLogCubit.setup(
       TrainLogRepository repository, CacheOptions cacheOptions) {
-    Fluttertoast.showToast(msg: "Start setup logs");
     final cubit = TrainLogCubit(repository, cacheOptions);
     final refreshLogs = ({bool firstRun = true}) async {
       if (!repository.isReady || (!firstRun && cubit.mutex.isLocked)) return;
 
-      Fluttertoast.showToast(msg: "Loading logs");
       final logs = await repository.dumpLogs(cacheOptions.hasCacheConfigured);
-      Fluttertoast.showToast(msg: "Processing logs");
       cubit.emit(TrainLogState(logs: logs, isConfigured: true));
-      Fluttertoast.showToast(msg: "Loaded logs");
     };
 
     Firebase.initializeApp().whenComplete(() {

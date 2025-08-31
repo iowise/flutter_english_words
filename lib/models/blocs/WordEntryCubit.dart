@@ -101,18 +101,14 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
     LabelEntryCubit labelCubit,
     CacheOptions cacheOptions,
   ) {
-    Fluttertoast.showToast(msg: "Start setup words");
     final cubit =
         WordEntryCubit(repository, labelCubit, cacheOptions);
     final refreshWords = () async {
       if (cubit.mutex.isLocked) return;
 
-      Fluttertoast.showToast(msg: "Loading words");
       final words =
           await repository.getAllWordEntries(cacheOptions.hasCacheConfigured);
-      Fluttertoast.showToast(msg: "Processing words");
       cubit.emit(cubit.state.copy(words: words, isConfigured: true));
-      Fluttertoast.showToast(msg: "Loaded words");
     };
     Firebase.initializeApp().whenComplete(() {
       FirebaseAuth.instance.userChanges().listen((user) {
