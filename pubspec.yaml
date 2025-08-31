@@ -3,7 +3,7 @@ description: A Flutter application to learn English word for a Russian user.
 
 publish_to: 'none'
 
-version: 1.4.2+0
+version: 1.4.3+0
 
 environment:
   sdk: ">=3.0.0"
