@@ -41,7 +41,7 @@ class TrainLogState extends Equatable {
     );
     final today = DateTime.now();
     final todayStrike = perDay.containsKey(strikeKey(today)) ? 1 : 0;
-    for (var i = 1; i < 99; i++) {
+    for (var i = 1; i < 999; i++) {
       final rollingDate = today.subtract(Duration(days: i));
       final wasTrainedInDay = perDay.containsKey(strikeKey(rollingDate));
       if (!wasTrainedInDay) {
@@ -49,7 +49,7 @@ class TrainLogState extends Equatable {
         return (strikesBeforeToday + todayStrike).toString();
       }
     }
-    return "99+";
+    return "999+";
   }
 
   @override
