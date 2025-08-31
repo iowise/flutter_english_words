@@ -6,12 +6,14 @@ import '../models/tranlsatorsAndDictionaries/reverso.dart';
 
 class WordContextTextFormField extends StatelessWidget {
   final Function(String) onChanged;
+  final Function(String) onForceSet;
   final WordContextInput entry;
   final TextEditingController controller;
 
   WordContextTextFormField({
     Key? key,
     required this.onChanged,
+    required this.onForceSet,
     required this.entry,
     required this.controller,
   }) : super(key: key);
@@ -33,6 +35,7 @@ class WordContextTextFormField extends StatelessWidget {
               wordContexts.shuffle();
               controller.text = wordContexts[0];
               onChanged(wordContexts[0]);
+              onForceSet(wordContexts[0]);
             },
           ),
       ),
