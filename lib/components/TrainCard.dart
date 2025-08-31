@@ -26,7 +26,6 @@ class TrainCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            ...(buildSynonyms(context)),
           ],
         ),
       ),

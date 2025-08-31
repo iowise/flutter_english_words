@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import './TrainCard.dart';
@@ -100,11 +101,22 @@ class _TrainState extends State<Train> {
         shrinkWrap: true,
         controller: _scrollController,
         children: <Widget>[
-          TrainCard(
-            entry: widget.entry,
-            text: widget.getInputForTraining(widget.entry),
+          CarouselSlider(
+            options: CarouselOptions(
+              // height: 250.0,
+
+              enableInfiniteScroll: false,
+              autoPlay: false,
+            ),
+            items: [
+              TrainCard(
+                entry: widget.entry,
+                text: widget.getInputForTraining(widget.entry),
+              ),
+              ...(buildSynonymsAndAntonymsCard(context, widget.entry)),
+              ...(buildDefinitionCard(context, widget.entry)),
+            ],
           ),
-          ...(buildDefinitionCard(context, widget.entry)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
@@ -157,6 +169,35 @@ class _TrainState extends State<Train> {
         curve: Curves.easeInOut,
       );
     });
+  }
+
+  List<Widget> buildSynonymsAndAntonymsCard(BuildContext context, WordEntry entry) {
+    if (entry.definition.isEmpty) {
+      return [];
+    }
+      final localizations = AppLocalizations.of(context)!;
+      final synonyms = entry.synonyms.isEmpty ? "" : localizations.trainingSynonyms(entry.synonyms);
+      final antonyms = entry.antonyms.isEmpty ? "" : localizations.trainingAntonyms(entry.antonyms);
+      final synonymsAndAntonyms = [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
+
+    return [
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                synonymsAndAntonyms,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      )
+    ];
   }
 
   List<Widget> buildDefinitionCard(BuildContext context, WordEntry entry) {
