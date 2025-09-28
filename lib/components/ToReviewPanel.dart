@@ -10,12 +10,12 @@ class ToReviewPanel extends StatelessWidget {
   final String strikes;
 
   const ToReviewPanel({
-    Key? key,
+    super.key,
     required this.labels,
     required this.strikes,
     required this.startTraining,
     required this.todayTrained,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +82,10 @@ class ToReviewCard extends StatelessWidget {
   final Function(LabelWithStatistic label) startTraining;
 
   const ToReviewCard({
-    Key? key,
+    super.key,
     required this.startTraining,
     required this.label,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -5,10 +5,7 @@ import 'package:get_it/get_it.dart';
 class SplashScreen extends StatelessWidget {
   final Widget Function() builder;
 
-  SplashScreen({
-    Key? key,
-    required this.builder,
-  });
+  SplashScreen({super.key, required this.builder});
 
   Widget build(BuildContext context) {
     return FutureBuilder(

@@ -6,9 +6,11 @@ class LanguageBottomSheet extends StatelessWidget {
   final Language value;
   final void Function(Language) onChange;
 
-  const LanguageBottomSheet(
-      {Key? key, required this.value, required this.onChange})
-      : super(key: key);
+  const LanguageBottomSheet({
+    super.key,
+    required this.value,
+    required this.onChange,
+  });
 
   @override
   Widget build(BuildContext context) {

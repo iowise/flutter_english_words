@@ -23,7 +23,7 @@ class WordDetailsArguments {
 }
 
 class WordDetails extends StatelessWidget {
-  WordDetails({Key? key, required this.title}) : super(key: key);
+  WordDetails({super.key, required this.title});
 
   final String title;
 
@@ -42,8 +42,7 @@ class WordDetails extends StatelessWidget {
 }
 
 class WordCreateOrEdit extends StatefulWidget {
-  WordCreateOrEdit({Key? key, required this.title, required this.entryInput})
-      : super(key: key);
+  WordCreateOrEdit({super.key, required this.title, required this.entryInput});
 
   final String title;
   final WordEntryInput entryInput;

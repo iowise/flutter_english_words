@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import './TrainCard.dart';
+import './YouglishButton.dart';
 
 typedef ResultCallback = void Function();
 
@@ -40,13 +41,13 @@ class Train extends StatefulWidget {
   final String Function(WordEntry) getInputForTraining;
 
   Train({
-    Key? key,
+    super.key,
     required this.entry,
     required this.isCheck,
     required this.onSubmit,
     required this.enteredWordController,
     required this.getInputForTraining,
-  }) : super(key: key);
+  });
 
   @override
   _TrainState createState() => _TrainState();
@@ -88,6 +89,10 @@ class _TrainState extends State<Train> {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.center,
+              child: YouglishButton(entry: widget.entry),
+            ),
           ]
         : [];
     final isFailedCheck = isShowingResults && !widget.enteredWordController.isCorrect;
@@ -103,8 +108,6 @@ class _TrainState extends State<Train> {
         children: <Widget>[
           CarouselSlider(
             options: CarouselOptions(
-              // height: 250.0,
-
               enableInfiniteScroll: false,
               autoPlay: false,
             ),
@@ -233,13 +236,13 @@ class _TrainResult extends StatelessWidget {
   final int attempt;
 
   const _TrainResult({
-    Key? key,
+    super.key,
     required this.word,
     required this.extraToSpeak,
     required this.isCorrect,
     required this.attempt,
     required this.locale,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

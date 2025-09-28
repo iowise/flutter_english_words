@@ -6,7 +6,7 @@ import '../models/repositories/WordEntryRepository.dart';
 class ReviewButton extends StatelessWidget {
   final List<WordEntry> wordsToReview;
 
-  const ReviewButton({Key? key, required this.wordsToReview}) : super(key: key);
+  const ReviewButton({super.key, required this.wordsToReview});
 
   @override
   Widget build(BuildContext context) {

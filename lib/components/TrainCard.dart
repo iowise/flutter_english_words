@@ -7,10 +7,10 @@ class TrainCard extends StatelessWidget {
   final String text;
 
   const TrainCard({
-    Key? key,
+    super.key,
     required this.entry,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
