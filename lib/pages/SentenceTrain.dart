@@ -90,12 +90,12 @@ class TrainSentence extends StatelessWidget {
   final TextEditingController sentenceController;
 
   TrainSentence({
-    Key? key,
+    super.key,
     required this.word,
     required this.isCheck,
     required this.onSubmit,
     required this.sentenceController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -14,10 +14,10 @@ class WordEntryForm extends StatefulWidget {
   final List<String> allLabels;
 
   WordEntryForm({
-    Key? key,
+    super.key,
     required this.entry,
     required this.allLabels,
-  }) : super(key: key);
+  });
 
   @override
   _WordEntryFormState createState() => _WordEntryFormState(this.entry);

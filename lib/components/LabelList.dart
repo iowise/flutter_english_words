@@ -4,8 +4,7 @@ import '../models/blocs/WordEntryCubit.dart';
 class LabelList extends StatelessWidget {
   final void Function(LabelWithStatistic label) showWords;
 
-  LabelList({Key? key, required this.labelStatistic, required this.showWords})
-      : super(key: key);
+  LabelList({super.key, required this.labelStatistic, required this.showWords});
 
   final LabelsStatistic labelStatistic;
 

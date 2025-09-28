@@ -53,7 +53,8 @@ class AppDrawer extends StatelessWidget {
 
 class SignedInHeader extends StatelessWidget {
   final User user;
-  SignedInHeader({Key? key, required this.user}) : super(key: key);
+
+  SignedInHeader({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {

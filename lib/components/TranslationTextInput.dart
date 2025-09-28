@@ -12,20 +12,20 @@ class TranslationTextInput extends StatelessWidget {
   final Future<List<DictionaryItem>> Function(String text) getSuggestions;
   final TextEditingController _typeAheadController;
 
-  TranslationTextInput(
-      {Key? key,
-      required this.word,
-      required this.decoration,
-      required this.initialValue,
-      required this.onChange,
-      required this.onSelectSuggestion,
-      required this.getSuggestions})
-      : _typeAheadController = TextEditingController(text: initialValue),
-        super(key: key) {
+  TranslationTextInput({
+    super.key,
+    required this.word,
+    required this.decoration,
+    required this.initialValue,
+    required this.onChange,
+    required this.onSelectSuggestion,
+    required this.getSuggestions,
+  }) : _typeAheadController = TextEditingController(text: initialValue) {
     _typeAheadController.addListener(() {
       this.onChange(_typeAheadController.text);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<DictionaryItem>(

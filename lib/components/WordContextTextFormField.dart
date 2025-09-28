@@ -11,12 +11,12 @@ class WordContextTextFormField extends StatelessWidget {
   final TextEditingController controller;
 
   WordContextTextFormField({
-    Key? key,
+    super.key,
     required this.onChanged,
     required this.onForceSet,
     required this.entry,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

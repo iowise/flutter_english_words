@@ -22,11 +22,11 @@ class LabelsInput extends StatefulWidget {
   final ValueChanged<List<String>> onChange;
 
   LabelsInput({
-    Key? key,
+    super.key,
     required this.initialValue,
     required this.onChange,
     required this.allLabels,
-  }) : super(key: key);
+  });
 
   factory LabelsInput.fromStrings({
     Key? key,
