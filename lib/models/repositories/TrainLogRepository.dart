@@ -4,10 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'WordEntryRepository.dart';
-
-const String _table = '_train_log';
-
 const String _columnId = '_id';
 const String _columnWordId = 'word_id';
 const String _columnScore = 'score';
@@ -47,7 +43,7 @@ class TrainLog extends Equatable {
   }
 
   factory TrainLog.fromDocument(DocumentSnapshot snapshot) {
-    final log = TrainLog.fromMap(snapshot.data()!);
+    final log = TrainLog.fromMap(snapshot.data() as Map<String, dynamic>);
     log.id = snapshot.reference.id;
     return log;
   }
@@ -64,7 +60,7 @@ class TrainLog extends Equatable {
 class TrainLogRepository extends ChangeNotifier {
   CollectionReference? _logs;
 
-  get logs {
+  CollectionReference? get logs {
     if (FirebaseAuth.instance.currentUser == null) return null;
 
     _logs ??= FirebaseFirestore.instance
@@ -76,25 +72,19 @@ class TrainLogRepository extends ChangeNotifier {
 
   get isReady => logs != null;
 
-  static String get createSqlScript => '''
-create table $_table (
-  $_columnWordId int not null,
-  $_columnScore int not null,
-  $_columnTrainedAt datatime not null,
-  $_columnId integer primary key autoincrement,
-  FOREIGN KEY($_columnWordId) REFERENCES $WORDS_TABLE($_columnId)
-)
-''';
-
   Future<TrainLog> insert(TrainLog log) async {
-    final reference = await logs.add(log.toMap());
+    if (logs == null) return Future.error("User not loaded");
+
+    final reference = await logs!.add(log.toMap());
     log.id = reference.id;
     notifyListeners();
     return log;
   }
 
   Future<List<TrainLog>> getLogs(String wordId) async {
-    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    if (logs == null) return Future.error("User not loaded");
+
+    final snapshot = await logs!.where(_columnWordId, isEqualTo: wordId).get();
     final entries = [
       for (final doc in snapshot.docs) TrainLog.fromDocument(doc)
     ];
@@ -102,15 +92,23 @@ create table $_table (
     return entries;
   }
 
-  Future<List<TrainLog>> dumpLogs() async {
-    final snapshot = await logs.get();
+  Future<List<TrainLog>> dumpLogs(bool fromCache) async {
+    if (logs == null) return Future.error("User not loaded");
+
+    final snapshot = await logs!
+        .get(fromCache ? const GetOptions(source: Source.cache) : null);
+
     return [for (final doc in snapshot.docs) TrainLog.fromDocument(doc)];
   }
 
   Future deleteLogsForWord(String wordId) async {
+    if (logs == null) return Future.error("User not loaded");
+
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    final snapshot = await logs.where(_columnWordId, isEqualTo: wordId).get();
+    final snapshot = await logs!
+        .where(_columnWordId, isEqualTo: wordId)
+        .get(const GetOptions(source: Source.cache));
     for (final element in snapshot.docs) {
       batch.delete(element.reference);
     }

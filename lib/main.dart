@@ -1,18 +1,19 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:word_trainer/components/SplashScreen.dart';
-import 'package:word_trainer/pages/Labels.dart';
-import 'package:word_trainer/pages/SentenceTrain.dart';
+
+import './components/SplashScreen.dart';
+import './pages/Labels.dart';
+import './pages/SentenceTrain.dart';
 import './pages/Words.dart';
 import './pages/WordDetails.dart';
 import './pages/WordTrain.dart';
 import './di.dart';
+import './l10n/app_localizations.dart';
 
 void main() async {
+  // await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-
   setup();
   runApp(MyApp());
 }
@@ -22,37 +23,46 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Word Trainer',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       navigatorKey: GetIt.I.get(instanceName: 'Navigator'),
       theme: ThemeData(
-        primarySwatch: Colors.amber,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.amber,
+          primary: Colors.amber,
+          secondary: Colors.amberAccent,
+        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme.copyWith(
-                headline1: TextStyle(fontSize: 72.0),
-                headline4: TextStyle(fontSize: 36.0),
-                bodyText1: TextStyle(fontSize: 20.0),
-                bodyText2: TextStyle(fontSize: 16.0),
-              ),
+            headlineLarge: TextStyle(fontSize: 72.0),
+            headlineMedium: TextStyle(fontSize: 36.0),
+            headlineSmall: TextStyle(fontSize: 32.0),
+            bodyLarge: TextStyle(fontSize: 20.0),
+            bodyMedium: TextStyle(fontSize: 16.0),
+            bodySmall: TextStyle(fontSize: 14.0),
+          ),
         ),
       ),
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => SplashScreen(builder: () => LabelsPage()),
-        '/train/word/translation/': (BuildContext context) => TrainPage(
-              title: 'Train a word',
-              hintType: HintTypes.translation,
-            ),
+        '/train/word/translation/': (BuildContext context) =>  TrainPage(
+          title: AppLocalizations.of(context)!.pagesTrain,
+          hintType: HintTypes.translation,
+        ),
         '/train/word/definition/': (BuildContext context) => TrainPage(
-              title: 'Train a word',
-              hintType: HintTypes.definition,
-            ),
+          title: AppLocalizations.of(context)!.pagesTrain,
+          hintType: HintTypes.definition,
+        ),
         '/train/sentence': (BuildContext context) => EnterSentenceTrainPage(),
         '/words/': (BuildContext context) => WordsPage(),
         '/labels/': (BuildContext context) => LabelsPage(),
         '/word/create': (BuildContext context) =>
-            WordDetails(title: 'Enter a word'),
+            WordDetails(title: AppLocalizations.of(context)!.pagesEnterWord),
         '/word/edit': (BuildContext context) =>
-            WordDetails(title: 'Edit a word'),
+            WordDetails(title: AppLocalizations.of(context)!.pagesEnterWord),
       },
     );
   }

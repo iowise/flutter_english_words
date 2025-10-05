@@ -48,7 +48,7 @@ class TrainService extends ChangeNotifier {
 /// Based on [a gist](https://gist.github.com/doctorpangloss/13ab29abd087dc1927475e560f876797)
 ///
 int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
-    {a: 6.0, b: -0.8, c: 0.28, d: 0.02, theta: 0.2}) {
+    {a = 6.0, b = -0.8, c = 0.28, d = 0.02, theta = 0.2}) {
   if (recent < 4) {
     return 1;
   }
@@ -58,11 +58,11 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
     return 1;
   }
 
-  // Calculate latest correctness streak
-  var streak = 0;
+  // Calculate latest correctness strike
+  var strike = 0;
   for (var i = 0; i < history.length; i++) {
     if (history[i] > 3) {
-      streak += 1;
+      strike += 1;
     } else {
       break;
     }
@@ -74,12 +74,12 @@ int daysTillNextTestAlgorithm(int recent, Iterable<int> x,
     (prev, val) => prev + (b + (c * val) + (d * val * val)),
   );
 
-  return (a * pow(max(1.3, 2.5 + historySum), theta * streak)).round();
+  return (a * pow(max(1.3, 2.5 + historySum), theta * strike)).round();
 }
 
 const MAX_TO_LEARN = 10;
 
-List<T> makeListToLearn<T>(List<T> list) {
+List<T> makeListToLearn<T>(List<T>? list) {
   final now = DateTime.now().microsecondsSinceEpoch / 1000 /1000;
   final daysSinceEpoch = now ~/ 3600 ~/ 24;
   list = List.from(list == null ? [] : list);

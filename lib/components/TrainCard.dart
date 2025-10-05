@@ -1,16 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
+import '../l10n/app_localizations.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class TrainCard extends StatelessWidget {
   final WordEntry entry;
   final String text;
 
   const TrainCard({
-    Key? key,
+    super.key,
     required this.entry,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +23,9 @@ class TrainCard extends StatelessWidget {
           children: [
             Text(
               text,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            ...(buildSynonyms(context)),
           ],
         ),
       ),
@@ -34,24 +33,26 @@ class TrainCard extends StatelessWidget {
   }
 
   List<Widget> buildSynonyms(BuildContext context) {
-    final text = _buildSynonymsAndAntonyms(entry);
-    return text.isNotEmpty
-        ? [
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.bodyText2,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ]
-        : [];
+    final text = _buildSynonymsAndAntonyms(context, entry);
+    if (text.isEmpty) {
+      return [];
+    }
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ];
   }
 }
 
-String _buildSynonymsAndAntonyms(WordEntry entry) {
-  final synonyms = entry.synonyms.isEmpty ? "" : "Synonyms: ${entry.synonyms}";
-  final antonyms = entry.antonyms.isEmpty ? "" : "Antonyms: ${entry.antonyms}";
+String _buildSynonymsAndAntonyms(BuildContext context, WordEntry entry) {
+  final localizations = AppLocalizations.of(context)!;
+  final synonyms = entry.synonyms.isEmpty ? "" : localizations.trainingSynonyms(entry.synonyms);
+  final antonyms = entry.antonyms.isEmpty ? "" : localizations.trainingAntonyms(entry.antonyms);
   return [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
 }

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import '../l10n/app_localizations.dart';
 
 @immutable
 class Label extends Equatable {
@@ -21,11 +22,11 @@ class LabelsInput extends StatefulWidget {
   final ValueChanged<List<String>> onChange;
 
   LabelsInput({
-    Key? key,
+    super.key,
     required this.initialValue,
     required this.onChange,
     required this.allLabels,
-  }) : super(key: key);
+  });
 
   factory LabelsInput.fromStrings({
     Key? key,
@@ -59,28 +60,33 @@ class _LabelsInputState extends State<LabelsInput> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _LabelChips(selected: selected, onDelete: this.onDelete),
-          TypeAheadFormField<Label>(
-            textFieldConfiguration: TextFieldConfiguration(
-              controller: this._typeAheadController,
+          TypeAheadField<Label>(
+            builder: (
+              BuildContext context,
+              TextEditingController controller,
+              FocusNode focusNode,
+            ) => TextField(
+              focusNode: focusNode,
+              controller: controller,
+              decoration: InputDecoration(filled: true, labelText: localization.editEnterLabels),
             ),
+            controller: this._typeAheadController,
             suggestionsCallback: findSuggestions,
             autoFlipDirection: true,
-            itemBuilder: (context, label) {
-              return ListTile(
+            onSelected: addLabel,
+            itemBuilder: (context, label) =>
+              ListTile(
                 leading: !label.existing ? Icon(Icons.add) : null,
                 title: Text(label.text),
-              );
-            },
-            onSuggestionSelected: (suggestion) {
-              addLabel(suggestion);
-            },
+              ),
           ),
+          _LabelChips(selected: selected, onDelete: this.onDelete),
         ],
       ),
     );

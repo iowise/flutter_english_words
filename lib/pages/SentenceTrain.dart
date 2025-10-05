@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import '../l10n/app_localizations.dart';
 import '../components/TrainCard.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
@@ -14,7 +14,7 @@ class EnterSentenceTrainPage extends StatefulWidget {
 class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   bool isCheck = false;
   var trainIndex = 0;
-  late List<WordEntry> wordsToLearn;
+  late List<WordEntry>? wordsToLearn;
   late TextEditingController sentenceController = TextEditingController();
 
   _EnterSentenceTrainPageState();
@@ -34,8 +34,8 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   }
 
   _checkTheWord() async {
-    if (isCheck) {
-      var isEnd = trainIndex >= wordsToLearn.length - 1;
+    if (isCheck && wordsToLearn != null) {
+      var isEnd = trainIndex >= wordsToLearn!.length - 1;
       if (isEnd) {
         Navigator.pop(context);
         return;
@@ -56,12 +56,13 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Enter a Sentence"),
+        title: Text(AppLocalizations.of(context)!.trainingEnterSentence),
       ),
       body: Center(
-          child: wordsToLearn == null
-              ? CircularProgressIndicator()
-              : buildTraining()),
+        child: wordsToLearn == null
+            ? CircularProgressIndicator()
+            : buildTraining(),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Check',
         child: Icon(isCheck ? Icons.chevron_right : Icons.check),
@@ -72,7 +73,7 @@ class _EnterSentenceTrainPageState extends State<EnterSentenceTrainPage> {
 
   Widget buildTraining() {
     return TrainSentence(
-      word: wordsToLearn[trainIndex],
+      word: wordsToLearn![trainIndex],
       isCheck: isCheck,
       onSubmit: _checkTheWord,
       sentenceController: sentenceController,
@@ -89,12 +90,12 @@ class TrainSentence extends StatelessWidget {
   final TextEditingController sentenceController;
 
   TrainSentence({
-    Key? key,
+    super.key,
     required this.word,
     required this.isCheck,
     required this.onSubmit,
     required this.sentenceController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,10 +110,10 @@ class TrainSentence extends StatelessWidget {
             maxLines: null,
             controller: sentenceController,
             readOnly: isCheck,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
             decoration: InputDecoration(
               filled: true,
-              hintText: isCheck ? "" : 'Enter a sentence...',
+              hintText: isCheck ? "" : AppLocalizations.of(context)!.trainingEnterSentenceEllipsis,
             ),
             onFieldSubmitted: (_) {
               onSubmit();

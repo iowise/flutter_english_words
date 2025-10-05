@@ -2,14 +2,18 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
-import 'package:word_trainer/components/LabelList.dart';
-import 'package:word_trainer/components/ToReviewPanel.dart';
+import '../l10n/app_localizations.dart';
+import '../components/LabelList.dart';
+import '../components/Search.dart';
+import '../components/ToReviewPanel.dart';
+import '../models/blocs/TrainLogCubit.dart';
 import '../components/Drawer.dart';
-import '../models/SharedWords.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
+import './WordDetails.dart';
 
 class LabelsPage extends StatefulWidget {
   @override
@@ -27,25 +31,38 @@ class _LabelsPageState extends State<LabelsPage> {
       setState(() {
         trainRepository = GetIt.I.get<TrainService>();
       });
-      GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final scaffoldWrapper = (w) => BlocProvider.value(
-          value: GetIt.I.get<WordEntryCubit>(),
+    final scaffoldWrapper = (w) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
+            BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+          ],
           child: w,
         );
 
     return scaffoldWrapper(
       Scaffold(
         appBar: AppBar(
-          title: Text("Labels"),
+          title: Text(AppLocalizations.of(context)!.labelsTitle),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          actions: <Widget>[SearchButton()],
         ),
         drawer: AppDrawer(),
-        body: Center(
-          child: _buildList(),
+        body: Center(child: _buildList()),
+        floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
+          builder: (context, state) {
+            return FloatingActionButton(
+              tooltip: 'Add a word',
+              child: Icon(Icons.add),
+              onPressed: () => Navigator.pushNamed(context, '/word/create',
+                  arguments:
+                  WordDetailsArguments(label: state.selectedLabel)),
+            );
+          },
         ),
       ),
     );
@@ -75,13 +92,17 @@ class _LabelsPageState extends State<LabelsPage> {
 
   Widget _buildToReviewPanel() {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) {
+      builder: (context, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
+          builder: (context, trainState) {
         final labelsForReviewPanel =
             generateLabelsForReviewPanel(state.labelsStatistics);
         return ToReviewPanel(
-            labels: labelsForReviewPanel,
-            startTraining: (label) => _startTraining(label, context));
-      },
+          labels: labelsForReviewPanel,
+          startTraining: (label) => _startTraining(label, context),
+          todayTrained: trainState.todayTrained,
+          strikes: trainState.strikes,
+        );
+      }),
     );
   }
 
@@ -96,6 +117,11 @@ class _LabelsPageState extends State<LabelsPage> {
     bloc.useLabel(row.label);
     final wordsToReview =
         trainRepository!.getToReviewToday(bloc.state.wordsToReview);
+
+    if (wordsToReview.isEmpty) {
+      Fluttertoast.showToast(msg: "No words to train");
+      return;
+    }
 
     Navigator.pushNamed(
       context,

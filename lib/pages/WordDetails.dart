@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
+import '../components/LanguageBottomSheet.dart';
+import '../models/blocs/LabelCubit.dart';
 import '../models/blocs/TrainLogCubit.dart';
 import '../models/blocs/WordEntryCubit.dart';
 import '../models/repositories/TrainLogRepository.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../components/WordEntryForm.dart';
+import '../models/tranlsatorsAndDictionaries/aiEnrichment.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
 
 @immutable
 class WordDetailsArguments {
@@ -18,14 +23,14 @@ class WordDetailsArguments {
 }
 
 class WordDetails extends StatelessWidget {
-  WordDetails({Key? key, required this.title}) : super(key: key);
+  WordDetails({super.key, required this.title});
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
     final Object? argObj = ModalRoute.of(context)?.settings.arguments;
-    final WordDetailsArguments? arg = argObj as WordDetailsArguments;
+    final WordDetailsArguments? arg = argObj as WordDetailsArguments?;
     final entryInput = arg?.entry == null
         ? WordEntryInput.empty(defaultLabel: arg?.label)
         : WordEntryInput.fromWordEntry(arg!.entry!);
@@ -37,8 +42,7 @@ class WordDetails extends StatelessWidget {
 }
 
 class WordCreateOrEdit extends StatefulWidget {
-  WordCreateOrEdit({Key? key, required this.title, required this.entryInput})
-      : super(key: key);
+  WordCreateOrEdit({super.key, required this.title, required this.entryInput});
 
   final String title;
   final WordEntryInput entryInput;
@@ -62,12 +66,20 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
       providers: [
         BlocProvider.value(value: GetIt.I.get<WordEntryCubit>()),
         BlocProvider.value(value: GetIt.I.get<TrainLogCubit>()),
+        BlocProvider.value(value: GetIt.I.get<LabelEntryCubit>()),
       ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
           actions: entryInput.arg == null
-              ? []
+              ? <Widget>[
+                  BlocBuilder<LabelEntryCubit, LabelMapState>(
+                    builder: (context, state) => IconButton(
+                      icon: Text(getLocalLanguage(state).icon),
+                      onPressed: () => showLanguageBottomSheet(context),
+                    ),
+                  ),
+                ]
               : <Widget>[
                   BlocBuilder<WordEntryCubit, WordEntryListState>(
                     builder: (context, _) => IconButton(
@@ -105,13 +117,14 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (_, state) => BlocBuilder<TrainLogCubit, TrainLogState>(
         builder: (_, trainLogState) {
-          List details;
-          if (entryInput.arg?.dueToLearnAfter == null) {
-            details = [];
-          } else {
+          List details = [];
+          if (entryInput.arg?.dueToLearnAfter != null) {
+            final logs = (entryInput.arg?.id == null)
+                ? List<TrainLog>.empty(growable: false)
+                : trainLogState.getLogs(entryInput.arg!.id!);
             details = [
               buildWordDetails(context),
-              ...buildTrainLogs(trainLogState.logs),
+              ...buildTrainLogs(logs),
             ];
           }
           final allLabels = state.labelsStatistics.labels;
@@ -127,33 +140,27 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     );
   }
 
-  Future<LogsAndLabels> getLogs(
-    TrainLogRepository trainLog,
-  ) async {
-    final logsFuture = trainLog.getLogs(entryInput.arg!.id!);
-    return LogsAndLabels(await logsFuture, []);
-  }
-
   Widget buildWordDetails(BuildContext context) {
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final nextTrainDate = formatter.format(entryInput.arg!.dueToLearnAfter!);
     return ListTile(
-      title: Text("Next train on: $nextTrainDate",
-          style: Theme.of(context).textTheme.bodyText1),
+      title: Text(
+        AppLocalizations.of(context)!.trainingNextTrainingOnDate(nextTrainDate),
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
     );
   }
 
   List<Widget> buildTrainLogs(List<TrainLog> logs) {
     final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
-    // if (logs == null) return List<Widget>.empty(growable: false);
-    return logs
-        .map(
-          (e) => ListTile(
-            title: Text("${formatterWithTime.format(e.trainedAt)} ${e.score}",
-                style: Theme.of(context).textTheme.bodyText2),
-          ),
-        )
-        .toList();
+    return logs.map((e) {
+      return ListTile(
+        title: Text(
+          "${formatterWithTime.format(e.trainedAt)} ${e.score}",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    }).toList();
   }
 
   _onSave(BuildContext context) async {
@@ -168,6 +175,28 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
     await GetIt.I.get<TrainLogCubit>().deleteLogsForWord(wordId);
     await context.read<WordEntryCubit>().delete(entryInput.arg!);
     Navigator.pop(context);
+  }
+
+  showLanguageBottomSheet(BuildContext parentContext) {
+    final labelCubit = GetIt.I.get<LabelEntryCubit>();
+    showModalBottomSheet<void>(
+      context: parentContext,
+      builder: (context) => LanguageBottomSheet(
+        onChange: (_language) {
+          final singleLabel = entryInput.labels.singleOrNull;
+          if (singleLabel != null) {
+            labelCubit.save([singleLabel], _language.locale);
+          }
+        },
+        value: getLocalLanguage(labelCubit.state),
+      ),
+    );
+  }
+
+  Language getLocalLanguage(LabelMapState labelMap) {
+    final singleLabel = entryInput.labels.singleOrNull;
+    final localeLabel = singleLabel != null ? [singleLabel] : <String>[];
+    return findLanguage(labelMap.guessLocale(localeLabel) ?? DEFAULT_LOCALE);
   }
 }
 

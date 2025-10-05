@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
+import '../models/blocs/WordEntryCubit.dart';
 
 class LabelList extends StatelessWidget {
   final void Function(LabelWithStatistic label) showWords;
 
-  LabelList({Key? key, required this.labelStatistic, required this.showWords})
-      : super(key: key);
+  LabelList({super.key, required this.labelStatistic, required this.showWords});
 
   final LabelsStatistic labelStatistic;
 
@@ -18,13 +17,8 @@ class LabelList extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       shrinkWrap: true,
-      itemBuilder: (context, i) {
-        // if (i.isOdd) return Divider();
-
-        // final index = i ~/ 2;
-        return _buildRow(labelStatisticList[i], context);
-      },
-      itemCount: labelStatistic.length, //* 2 - 1,
+      itemBuilder: (context, i) => _buildRow(labelStatisticList[i], context),
+      itemCount: labelStatistic.length,
     );
   }
 

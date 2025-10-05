@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mockito/mockito.dart';
+import 'package:word_trainer/components/WordContextTextFormField.dart';
+import 'package:word_trainer/models/CacheOptions.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
+import 'package:word_trainer/models/blocs/TrainLogCubit.dart';
+import 'package:word_trainer/models/blocs/WordEntryCubit.dart';
 import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
 import 'package:word_trainer/models/repositories/WordEntryRepository.dart';
-
 import 'package:word_trainer/pages/WordDetails.dart';
 
 import 'fakes.dart';
@@ -17,12 +20,22 @@ void main() {
   group("Create a word and edit word without logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
+      final labelEntryRepository = FakeLabelEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
-      when(trainLogRepository.getLogs("null"))
-          .thenAnswer((realInvocation) => Future.value([]));
+      final cacheOptions = CacheOptions(false);
+      final labelEntryCubit = LabelEntryCubit(labelEntryRepository, cacheOptions);
+      final wordEntryCubit =
+          WordEntryCubit(wordEntryRepository, labelEntryCubit, cacheOptions);
+      final trainLogCubit =
+          TrainLogCubit(trainLogRepository, cacheOptions);
+
+      // when(trainLogRepository.getLogs("null"))
+      //     .thenAnswer((realInvocation) => Future.value([]));
 
       GetIt.I.registerSingleton<WordEntryRepository>(wordEntryRepository);
       GetIt.I.registerSingleton<TrainLogRepository>(trainLogRepository);
+      GetIt.I.registerSingleton<WordEntryCubit>(wordEntryCubit);
+      GetIt.I.registerSingleton<TrainLogCubit>(trainLogCubit);
     });
 
     testWidgets('Create no label', (WidgetTester tester) async {
@@ -30,7 +43,7 @@ void main() {
           .pumpWidget(MaterialApp(home: WordDetails(title: "Create a word")));
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
     });
 
     testWidgets('Create with a label', (WidgetTester tester) async {
@@ -41,7 +54,7 @@ void main() {
       );
 
       expect(find.text('Create a word'), findsOneWidget);
-      expect(find.text('Enter a synonyms...'), findsOneWidget);
+      expect(find.text('Enter synonyms...'), findsOneWidget);
       expect(find.text('testLabel'), findsOneWidget);
     });
 
@@ -69,6 +82,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
           label: "FilteredLabel",
@@ -95,6 +109,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),
@@ -105,17 +120,58 @@ void main() {
       expect(find.text('testLabel'), findsOneWidget);
       expect(find.text('FilteredLabel'), findsNothing);
     });
+
+    testWidgets("Replace nonbreaking space", (WidgetTester tester) async {
+      const text =
+          "Are you sure that I can follow this diet without detriment to my health?";
+      await pumpArgumentWidget(
+        tester,
+        child: WordDetails(title: "Create a word"),
+        args: WordDetailsArguments(
+          entry: WordEntry.create(
+            word: "null",
+            translation: "null",
+            definition: "null",
+            context: "null",
+            synonyms: "null",
+            antonyms: "null",
+            locale: 'en-US',
+            labels: [],
+          ),
+        ),
+      );
+      var editContext = find.text('Enter a context...');
+      expect(editContext, findsOneWidget);
+
+      await tester.enterText(find.byType(WordContextTextFormField), text);
+      await tester.pump(Duration(milliseconds: 400));
+
+      expect(
+          find.text(
+              "Are you sure that I can follow this diet without detriment to my health?"),
+          findsOneWidget);
+    });
   });
 
   group("Edit word with logs", () {
     setUp(() {
       final wordEntryRepository = FakeWordEntryRepository();
+      final labelEntryRepository = FakeLabelEntryRepository();
       final trainLogRepository = FakeTrainLogRepository();
-      when(trainLogRepository.getLogs("null"))
-          .thenAnswer((realInvocation) => Future.value([TrainLog("null", 10)]));
+      final cacheOptions = CacheOptions(false);
+      final labelEntryCubit = LabelEntryCubit(labelEntryRepository, cacheOptions);
+      final wordEntryCubit =
+      WordEntryCubit(wordEntryRepository, labelEntryCubit, cacheOptions);
+      final trainLogCubit =
+      TrainLogCubit(trainLogRepository, cacheOptions);
+
+      // when(trainLogRepository.getLogs("null"))
+      //     .thenAnswer((realInvocation) => Future.value([TrainLog("null", 10)]));
 
       GetIt.I.registerSingleton<WordEntryRepository>(wordEntryRepository);
       GetIt.I.registerSingleton<TrainLogRepository>(trainLogRepository);
+      GetIt.I.registerSingleton<WordEntryCubit>(wordEntryCubit);
+      GetIt.I.registerSingleton<TrainLogCubit>(trainLogCubit);
     });
 
     testWidgets('Edit with with logs', (WidgetTester tester) async {
@@ -130,6 +186,7 @@ void main() {
             context: "null",
             synonyms: "null",
             antonyms: "null",
+            locale: 'en-US',
             labels: ["testLabel"],
           ),
         ),

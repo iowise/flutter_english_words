@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 33
 
 
   sourceSets {
@@ -41,7 +41,7 @@ android {
   defaultConfig {
     applicationId "com.iowise.app.wordtrainer"
     minSdkVersion 21
-    targetSdkVersion 28
+    targetSdkVersion 31
     versionCode flutterVersionCode.toInteger()
     versionName flutterVersionName
   }

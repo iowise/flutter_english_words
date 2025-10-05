@@ -1,8 +1,13 @@
 import 'package:equatable/equatable.dart';
+import "package:collection/collection.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:word_trainer/models/repositories/TrainLogRepository.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mutex/mutex.dart';
+
+import '../CacheOptions.dart';
+import '../repositories/TrainLogRepository.dart';
 
 class TrainLogState extends Equatable {
   final List<TrainLog> logs;
@@ -22,31 +27,65 @@ class TrainLogState extends Equatable {
   List<TrainLog> getLogs(String wordId) =>
       logs.where((e) => e.wordId == wordId).toList(growable: false);
 
+  List<TrainLog> get todayTrained {
+    final today = DateTime.now();
+    return logs
+        .where((e) => dateEquals(e.trainedAt, today))
+        .toList(growable: false);
+  }
+
+  String get strikes {
+    final perDay = groupBy<TrainLog, String>(
+      logs,
+      (element) => strikeKey(element.trainedAt),
+    );
+    final today = DateTime.now();
+    final todayStrike = perDay.containsKey(strikeKey(today)) ? 1 : 0;
+    for (var i = 1; i < 999; i++) {
+      final rollingDate = today.subtract(Duration(days: i));
+      final wasTrainedInDay = perDay.containsKey(strikeKey(rollingDate));
+      if (!wasTrainedInDay) {
+        final strikesBeforeToday = i - 1;
+        return (strikesBeforeToday + todayStrike).toString();
+      }
+    }
+    return "999+";
+  }
+
   @override
   List<Object?> get props => [logs];
 }
 
+String strikeKey(DateTime date) => "${date.year}-${date.month}-${date.day}";
+
 class TrainLogCubit extends Cubit<TrainLogState> {
   final TrainLogRepository repository;
+  final CacheOptions cacheOptions;
+  final mutex = Mutex();
 
-  TrainLogCubit(this.repository)
-      : super(new TrainLogState(logs: List<TrainLog>.empty()));
+  TrainLogCubit(this.repository, this.cacheOptions)
+      : super(new TrainLogState(logs: <TrainLog>[]));
 
-  factory TrainLogCubit.setup(TrainLogRepository repository) {
-    final cubit = TrainLogCubit(repository);
+  factory TrainLogCubit.setup(
+      TrainLogRepository repository, CacheOptions cacheOptions) {
+    final cubit = TrainLogCubit(repository, cacheOptions);
+    final refreshLogs = ({bool firstRun = true}) async {
+      if (!repository.isReady || (!firstRun && cubit.mutex.isLocked)) return;
 
-    final refreshWords = () async {
-      if (!repository.isReady) return;
-
-      final logs = await repository.dumpLogs();
+      final logs = await repository.dumpLogs(cacheOptions.hasCacheConfigured);
       cubit.emit(TrainLogState(logs: logs, isConfigured: true));
     };
 
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance.userChanges().listen((_) => refreshWords());
+      FirebaseAuth.instance
+          .userChanges()
+          .listen((_) => refreshLogs(firstRun: false));
     });
 
-    if (repository.isReady) refreshWords();
+    if (repository.isReady) {
+      cubit.mutex.protect(refreshLogs);
+    }
+
     return cubit;
   }
 
@@ -62,4 +101,10 @@ class TrainLogCubit extends Cubit<TrainLogState> {
     final prunedLogs = state.logs.where((e) => e.wordId != wordId);
     emit(state.copy(logs: prunedLogs.toList(growable: false)));
   }
+}
+
+bool dateEquals(DateTime date, DateTime today) {
+  return date.day == today.day &&
+      date.month == today.month &&
+      date.year == today.year;
 }

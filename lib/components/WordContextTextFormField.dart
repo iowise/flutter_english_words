@@ -1,35 +1,33 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/tranlsatorsAndDictionaries/reverso.dart';
+import '../l10n/app_localizations.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
+import '../models/tranlsatorsAndDictionaries/reverso.dart';
 
-abstract class WordContextInput {
-  String word;
-  String context;
-
-  WordContextInput(this.word, this.context);
-}
 
 class WordContextTextFormField extends StatelessWidget {
   final Function(String) onChanged;
+  final Function(String) onForceSet;
   final WordContextInput entry;
   final TextEditingController controller;
 
   WordContextTextFormField({
-    Key? key,
+    super.key,
     required this.onChanged,
+    required this.onForceSet,
     required this.entry,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return TextFormField(
       controller: controller,
       maxLines: null,
       decoration: InputDecoration(
           filled: true,
-          hintText: 'Enter a context...',
-          labelText: 'Context',
+          hintText: localization.editEnterContextHint,
+          labelText: localization.editEnterContextLabel,
           suffixIcon: IconButton(
             icon: Icon(Icons.sync),
             onPressed: () async {
@@ -37,8 +35,10 @@ class WordContextTextFormField extends StatelessWidget {
               wordContexts.shuffle();
               controller.text = wordContexts[0];
               onChanged(wordContexts[0]);
+              onForceSet(wordContexts[0]);
             },
-          )),
+          ),
+      ),
       onChanged: onChanged,
     );
   }

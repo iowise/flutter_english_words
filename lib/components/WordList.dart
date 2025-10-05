@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/pages/WordDetails.dart';
+import '../l10n/app_localizations.dart';
+import '../pages/WordDetails.dart';
 import '../models/repositories/WordEntryRepository.dart';
 
 class WordList extends StatelessWidget {
-  WordList({Key? key, required this.words}) : super(key: key);
+  WordList({super.key, required this.words});
 
   final List<WordEntry> words;
-
-  Widget _buildRow(WordEntry row, BuildContext context) {
-    return ListTile(
-      title: Text(row.word),
-      subtitle: Text(row.translation),
-      onTap: () => this._showDetails(row, context),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     if (words.length == 0) {
-      return Center(child: Text("Please enter a new word"));
+      return Center(child: Text(AppLocalizations.of(context)!.trainingEnterNewWord));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
@@ -30,6 +23,14 @@ class WordList extends StatelessWidget {
         return _buildRow(words[index], context);
       },
       itemCount: words.length * 2 - 1,
+    );
+  }
+
+  Widget _buildRow(WordEntry row, BuildContext context) {
+    return ListTile(
+      title: Text(row.word),
+      subtitle: Text(row.translation),
+      onTap: () => this._showDetails(row, context),
     );
   }
 

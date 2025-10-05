@@ -2,24 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-const String WORDS_TABLE = '_word_entry';
+const WORDS_TABLE = '_word_entry';
+const DEFAULT_LOCALE = 'en-US';
 
-const String _columnId = '_id';
-const String _columnWord = 'word';
-const String _columnTranslation = 'translation';
-const String _columnContext = 'context';
-const String _columnSynonyms = 'synonyms';
-const String _columnAntonyms = 'antonyms';
-const String _columnDefinition = 'definition';
-const String _columnCreatedAt = '_created_at';
-const String _columnTrainedAt = '_trained_at';
-const String columnDueToLearnAfter = '_due_to_learn_after';
-const String _columnLabels = '_labels';
+const _columnId = '_id';
+const _columnWord = 'word';
+const _columnTranslation = 'translation';
+const _columnContext = 'context';
+const _columnSynonyms = 'synonyms';
+const _columnAntonyms = 'antonyms';
+const _columnDefinition = 'definition';
+const _columnLocale = '_locale';
+const _columnCreatedAt = '_created_at';
+const _columnTrainedAt = '_trained_at';
+const columnDueToLearnAfter = '_due_to_learn_after';
+const _columnLabels = '_labels';
 
 class WordEntry extends Equatable {
   String? id;
 
   late String word;
+  late String locale;
   late String translation;
   late String definition;
   late String context;
@@ -40,6 +43,7 @@ class WordEntry extends Equatable {
       _columnDefinition: definition,
       _columnSynonyms: synonyms,
       _columnAntonyms: antonyms,
+      _columnLocale: locale,
       _columnCreatedAt: createdAt.toIso8601String(),
       _columnLabels: labels,
     };
@@ -63,6 +67,7 @@ class WordEntry extends Equatable {
     required this.synonyms,
     required this.antonyms,
     required this.labels,
+    required this.locale,
   }) {
     createdAt = DateTime.now();
   }
@@ -75,6 +80,7 @@ class WordEntry extends Equatable {
     required final String context,
     required final String synonyms,
     required final String antonyms,
+    required final String locale,
     required final List<String> labels,
   }) {
     this.id = other.id;
@@ -82,6 +88,7 @@ class WordEntry extends Equatable {
     this.trainedAt = other.trainedAt;
     this.dueToLearnAfter = other.dueToLearnAfter;
 
+    this.locale = locale;
     this.word = word;
     this.translation = translation;
     this.definition = definition;
@@ -103,6 +110,7 @@ class WordEntry extends Equatable {
     labels = map[_columnLabels] != null
         ? new List<String>.from(map[_columnLabels], growable: false)
         : [];
+    locale = map[_columnLocale] ?? DEFAULT_LOCALE;
 
     trainedAt = map[_columnTrainedAt] != null
         ? DateTime.parse(map[_columnTrainedAt])
@@ -113,7 +121,7 @@ class WordEntry extends Equatable {
   }
 
   factory WordEntry.fromDocument(DocumentSnapshot snapshot) {
-    final entry = WordEntry.fromMap(snapshot.data()!);
+    final entry = WordEntry.fromMap(snapshot.data() as Map<String, dynamic>);
     entry.id = snapshot.reference.id;
     return entry;
   }
@@ -121,7 +129,8 @@ class WordEntry extends Equatable {
   bool hasLabel(String? label) =>
       label == null ? labels.isEmpty : labels.contains(label);
 
-  bool isForLearn(DateTime now) => dueToLearnAfter == null || dueToLearnAfter!.isBefore(now);
+  bool isForLearn(DateTime now) =>
+      dueToLearnAfter == null || dueToLearnAfter!.isBefore(now);
 
   @override
   List<Object?> get props => [
@@ -136,13 +145,14 @@ class WordEntry extends Equatable {
         trainedAt,
         dueToLearnAfter,
         labels,
+        locale,
       ];
 }
 
 class WordEntryRepository {
   CollectionReference? _words;
 
-  get words {
+  CollectionReference? get words {
     if (FirebaseAuth.instance.currentUser == null) return null;
 
     _words ??= FirebaseFirestore.instance
@@ -152,50 +162,47 @@ class WordEntryRepository {
     return _words;
   }
 
-  get isReady => words != null;
+  get isReady => FirebaseAuth.instance.currentUser == null;
 
   Future<WordEntry> insert(WordEntry entry) async {
-    final reference = await words.add(entry.toMap());
+    if (words == null) return Future.error("User not loaded");
+
+    final reference = await words!.add(entry.toMap());
     entry.id = reference.id;
     return entry;
   }
 
   Future<WordEntry?> getWordEntry(String id) async {
-    final snapshot = await words.doc(id).get();
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!.doc(id).get();
     return snapshot.exists ? WordEntry.fromDocument(snapshot) : null;
   }
 
-  Future<List<WordEntry>> getAllWordEntries() async {
-    final snapshot = await words.get();
+  Future<List<WordEntry>> getAllWordEntries(bool fromCache) async {
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!
+        .get(fromCache ? const GetOptions(source: Source.cache) : null);
     return [for (final doc in snapshot.docs) WordEntry.fromDocument(doc)];
   }
 
   Future<List<WordEntry>> getWordEntries({final String? label}) async {
-    final entries = await getAllWordEntries();
+    final entries = await getAllWordEntries(true);
     final filtered =
         entries.where((word) => word.hasLabel(label)).toList(growable: false);
     filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return filtered;
   }
 
-  Stream<WordEntry> query({
-    required bool Function(WordEntry word) where,
-  }) async* {
-    final snapshot = await words.get();
-    for (final doc in snapshot.docs) {
-      final word = WordEntry.fromDocument(doc);
-      if (where(word)) {
-        yield word;
-      }
-    }
-  }
-
   Future delete(String id) async {
-    await words.doc(id).delete();
+    if (words == null) return;
+    await words!.doc(id).delete();
   }
 
   Future update(WordEntry entry) async {
-    await words.doc(entry.id).update(entry.toMap());
+    if (words == null) return;
+    await words!.doc(entry.id).update(entry.toMap());
   }
 
   Future save(WordEntry entry) {
@@ -207,7 +214,9 @@ class WordEntryRepository {
   }
 
   Future<WordEntry?> findCopy(String word) async {
-    final snapshot = await words.where(_columnWord, isEqualTo: word).get();
+    if (words == null) return Future.error("User not loaded");
+
+    final snapshot = await words!.where(_columnWord, isEqualTo: word).get();
 
     return snapshot.docs.isNotEmpty
         ? WordEntry.fromDocument(snapshot.docs[0])

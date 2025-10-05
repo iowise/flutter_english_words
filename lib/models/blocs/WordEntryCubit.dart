@@ -3,6 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mutex/mutex.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
+
+import '../CacheOptions.dart';
 import '../repositories/WordEntryRepository.dart';
 
 enum Sorting {
@@ -56,12 +61,14 @@ class WordEntryListState extends Equatable {
     List<WordEntry>? words,
     bool? isConfigured,
   }) {
+    final uniqueIds = words?.map((i) => i.id).toSet() ?? {};
+    final uniqueWords =
+        words?.where((i) => uniqueIds.remove(i.id)).toList(growable: false);
     return WordEntryListState(
       sorting: sorting ?? this.sorting,
       filtering: filtering ?? this.filtering,
-      selectedLabel:
-          selectedLabel ?? this.selectedLabel,
-      allWords: words ?? allWords,
+      selectedLabel: selectedLabel ?? this.selectedLabel,
+      allWords: uniqueWords ?? allWords,
       isConfigured: isConfigured ?? this.isConfigured,
     );
   }
@@ -79,26 +86,37 @@ class WordEntryListState extends Equatable {
 
 class WordEntryCubit extends Cubit<WordEntryListState> {
   final WordEntryRepository repository;
+  final LabelEntryCubit labelCubit;
+  final CacheOptions cacheOptions;
+  final mutex = Mutex();
 
-  WordEntryCubit(this.repository)
+  WordEntryCubit(this.repository, this.labelCubit, this.cacheOptions)
       : super(new WordEntryListState(
           allWords: List<WordEntry>.empty(growable: false),
           selectedLabel: null,
         ));
 
-  factory WordEntryCubit.setup(WordEntryRepository repository) {
-    final cubit = WordEntryCubit(repository);
+  factory WordEntryCubit.setup(
+    WordEntryRepository repository,
+    LabelEntryCubit labelCubit,
+    CacheOptions cacheOptions,
+  ) {
+    final cubit =
+        WordEntryCubit(repository, labelCubit, cacheOptions);
     final refreshWords = () async {
-      if (!repository.isReady) return;
+      if (cubit.mutex.isLocked) return;
 
-      final words = await repository.getAllWordEntries();
+      final words =
+          await repository.getAllWordEntries(cacheOptions.hasCacheConfigured);
       cubit.emit(cubit.state.copy(words: words, isConfigured: true));
     };
     Firebase.initializeApp().whenComplete(() {
-      FirebaseAuth.instance.userChanges().listen((_) => refreshWords());
+      FirebaseAuth.instance.userChanges().listen((user) {
+        if (user != null) refreshWords();
+      });
     });
 
-    if (repository.isReady) refreshWords();
+    if (repository.isReady) cubit.mutex.protect(refreshWords);
     return cubit;
   }
 
@@ -116,6 +134,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
   Future save(WordEntry entry) async {
     if (entry.id == null) {
+      await labelCubit.save(entry.labels, entry.locale);
       return create(entry);
     } else {
       return update(entry);
@@ -127,6 +146,7 @@ class WordEntryCubit extends Cubit<WordEntryListState> {
 
     final newState =
         state.copy(words: [...state.allWords, word].toList(growable: false));
+    // print("new state ${newState.allWords.map((i)=> i.word)}");
     emit(newState);
   }
 
@@ -173,13 +193,14 @@ class LabelWithStatistic extends Equatable {
 @immutable
 class LabelsStatistic extends Iterable<LabelWithStatistic> {
   final List<LabelWithStatistic> _list;
+  List<String>? _labels;
 
   LabelsStatistic(this._list);
 
-  List<String>? _labels;
-
-  List<String> get labels =>
-      _labels ??= _list.where((e) => e.label != '').map((e) => e.label).toList(growable: true);
+  List<String> get labels => _labels ??= _list
+      .where((e) => e.label != '')
+      .map((e) => e.label)
+      .toList(growable: true);
 
   @override
   Iterator<LabelWithStatistic> get iterator => _list.iterator;

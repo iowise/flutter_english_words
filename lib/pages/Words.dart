@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import '../models/SharedWords.dart';
+import '../l10n/app_localizations.dart';
+import '../components/Search.dart';
 import '../models/SpaceRepetitionScheduler.dart';
 import '../models/repositories/WordEntryRepository.dart';
 import '../models/blocs/WordEntryCubit.dart';
@@ -32,7 +33,6 @@ class _WordsPageState extends State<WordsPage> {
       setState(() {
         trainRepository = GetIt.I.get<TrainService>();
       });
-      GetIt.I.getAsync<SharedWordsService>().then((value) => value.init());
     });
   }
 
@@ -45,9 +45,9 @@ class _WordsPageState extends State<WordsPage> {
   @override
   Widget build(BuildContext context) {
     final scaffoldWrapper = (w) => BlocProvider.value(
-          value: GetIt.I.get<WordEntryCubit>(),
-          child: w,
-        );
+      value: GetIt.I.get<WordEntryCubit>(),
+      child: w,
+    );
 
     return scaffoldWrapper(
       Scaffold(
@@ -55,54 +55,32 @@ class _WordsPageState extends State<WordsPage> {
             title: buildTitle(),
             actions: <Widget>[
               BlocBuilder<WordEntryCubit, WordEntryListState>(
-                  builder: (context, _) {
-                return IconButton(
+                builder: (context, _) => IconButton(
                   icon: Icon(Icons.sort),
                   onPressed: () {
-                    if (repository == null) return;
                     _showSortingAndFilter(
                         context.read<WordEntryCubit>(), context);
                   },
-                );
-              }),
-              BlocBuilder<WordEntryCubit, WordEntryListState>(
-                  builder: (context, _) {
-                return IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    if (repository == null) return;
-                    showSearch(
-                      context: context,
-                      delegate:
-                          CustomSearchDelegate(context.read<WordEntryCubit>()),
-                    );
-                  },
-                );
-              })
+                ),
+              ),
+              SearchButton(),
             ],
           ),
-          body: Center(
-            child: _buildList(),
-          ),
+          body: Center(child: _buildList()),
           floatingActionButton: BlocBuilder<WordEntryCubit, WordEntryListState>(
-              builder: (context, state) {
-            return FloatingActionButton(
+            builder: (context, state) => FloatingActionButton(
               tooltip: 'Add a word',
               child: Icon(Icons.add),
               onPressed: () => Navigator.pushNamed(context, '/word/create',
                   arguments: WordDetailsArguments(label: state.selectedLabel)),
-            );
-          })),
+            ),
+          )),
     );
   }
 
   Widget buildTitle() {
-    if (repository == null) return Text("Words");
-
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
-      builder: (context, state) {
-        return Text(state.selectedLabel ?? 'Inbox');
-      },
+      builder: (context, state) => Text(state.selectedLabel ?? 'Inbox'),
     );
   }
 
@@ -127,7 +105,7 @@ class _WordsPageState extends State<WordsPage> {
     return BlocBuilder<WordEntryCubit, WordEntryListState>(
       builder: (_, state) {
         final wordsToReview =
-            trainRepository!.getToReviewToday(state.wordsToReview);
+        trainRepository!.getToReviewToday(state.wordsToReview);
         return ReviewButton(wordsToReview: wordsToReview);
       },
     );
@@ -136,99 +114,50 @@ class _WordsPageState extends State<WordsPage> {
   void _showSortingAndFilter(WordEntryCubit bloc, BuildContext context) {
     final selectedStyle = Theme.of(context)
         .textTheme
-        .bodyText2!
-        .copyWith(color: Theme.of(context).accentColor);
+        .bodyMedium!
+        .copyWith(color: Theme.of(context).colorScheme.secondary);
     final selectedOrNull =
         (value, option) => (value == option ? selectedStyle : null);
     final makeOption = ({text, option, current}) => SimpleDialogOption(
-          child: Text(text, style: selectedOrNull(current, option)),
-          onPressed: () {
-            Navigator.pop(context);
-            if (option.runtimeType == Filtering) {
-              bloc.setFiltering(option);
-            } else {
-              bloc.setSorting(option);
-            }
-          },
-        );
-    final state = bloc.state;
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Select Sorting and Filtering'),
-            children: <Widget>[
-              makeOption(
-                text: 'Sort by word',
-                option: Sorting.byWord,
-                current: state.sorting,
-              ),
-              makeOption(
-                text: 'Sort by date',
-                option: Sorting.byDate,
-                current: state.sorting,
-              ),
-              makeOption(
-                text: 'Show not trained',
-                option: Filtering.unTrained,
-                current: state.filtering,
-              ),
-              makeOption(
-                text: 'Show all',
-                option: Filtering.all,
-                current: state.filtering,
-              ),
-            ],
-          );
-        });
-  }
-}
-
-class CustomSearchDelegate extends SearchDelegate {
-  final WordEntryCubit bloc;
-
-  CustomSearchDelegate(this.bloc);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
+      child: Text(text, style: selectedOrNull(current, option)),
       onPressed: () {
-        close(context, null);
+        Navigator.pop(context);
+        if (option.runtimeType == Filtering) {
+          bloc.setFiltering(option);
+        } else {
+          bloc.setSorting(option);
+        }
       },
     );
+    final state = bloc.state;
+    final localization = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: Text(localization.sortingSelectSortingAndFiltering),
+        children: <Widget>[
+          makeOption(
+            text: localization.sortingSortWord,
+            option: Sorting.byWord,
+            current: state.sorting,
+          ),
+          makeOption(
+            text: localization.sortingSortDate,
+            option: Sorting.byDate,
+            current: state.sorting,
+          ),
+          makeOption(
+            text: localization.sortingShowNotTrained,
+            option: Filtering.unTrained,
+            current: state.filtering,
+          ),
+          makeOption(
+            text: localization.sortingShowAll,
+            option: Filtering.all,
+            current: state.filtering,
+          ),
+        ],
+      ),
+    );
   }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final filtered = filterWords(bloc.state.allWords);
-    if (filtered.isEmpty) {
-      return Center(child: Text('Nothing is found'));
-    }
-    return WordList(words: filtered);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return buildResults(context);
-  }
-
-  List<WordEntry> filterWords(List<WordEntry> data) => data
-      .where((element) =>
-          element.word.contains(query) ||
-          element.translation.contains(query) ||
-          element.definition.contains(query))
-      .toList();
 }

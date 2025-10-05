@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:word_trainer/models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
-import '../models/repositories/WordEntryRepository.dart';
+import 'package:get_it/get_it.dart';
+import 'package:word_trainer/models/blocs/LabelCubit.dart';
+import '../l10n/app_localizations.dart';
+import '../models/tranlsatorsAndDictionaries/aiEnrichment.dart';
+import '../models/tranlsatorsAndDictionaries/input.dart';
+import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 import '../components/TranslationTextInput.dart';
-import 'LabelsInput.dart';
-import 'WordContextTextFormField.dart';
+import './LabelsInput.dart';
+import './WordContextTextFormField.dart';
 
 class WordEntryForm extends StatefulWidget {
   final WordEntryInput entry;
-  List<String> allLabels;
+  final List<String> allLabels;
 
   WordEntryForm({
-    Key? key,
+    super.key,
     required this.entry,
     required this.allLabels,
-  }) : super(key: key);
+  });
 
   @override
   _WordEntryFormState createState() => _WordEntryFormState(this.entry);
@@ -21,13 +25,20 @@ class WordEntryForm extends StatefulWidget {
 
 class _WordEntryFormState extends State<WordEntryForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController wordController;
   final TextEditingController wordContextController;
+  final TextEditingController wordSynonymsController;
+  final TextEditingController wordAntonymsController;
 
   _WordEntryFormState(final WordEntryInput entry)
-      : wordContextController = TextEditingController(text: entry.context);
+      : wordController = TextEditingController(text: entry.word),
+        wordContextController = TextEditingController(text: entry.context),
+        wordSynonymsController = TextEditingController(text: entry.synonyms),
+        wordAntonymsController = TextEditingController(text: entry.antonyms);
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: Align(
@@ -41,16 +52,20 @@ class _WordEntryFormState extends State<WordEntryForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextFormField(
-                  initialValue: widget.entry.word,
+                  controller: wordController,
                   autofocus: true,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a word...',
-                    labelText: 'Word',
+                    hintText: localization.editEnterWordHint,
+                    labelText: localization.editEnterWordLabel,
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.rocket_launch),
+                      onPressed: () => callOpenAI(),
+                    ),
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.word = value;
+                      widget.entry.word = value.breakSpaces;
                     });
                   },
                 ),
@@ -59,11 +74,16 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   word: widget.entry.word,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a translation...',
-                    labelText: 'Translation',
+                    hintText: localization.editEnterTranslationHint,
+                    labelText: localization.editEnterTranslationLabel,
                   ),
                   onChange: (value) {
-                    widget.entry.translation = value;
+                    widget.entry.translation = value.breakSpaces;
+                  },
+                  onSelectSuggestion: (value) {
+                    setState(() {
+                      widget.entry.translation = value.breakSpaces;
+                    });
                   },
                   getSuggestions: getTranslations,
                 ),
@@ -72,11 +92,16 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   word: widget.entry.word,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a definition...',
-                    labelText: 'Definition',
+                    hintText: localization.editEnterDefinitionHint,
+                    labelText: localization.editEnterDefinitionLabel,
                   ),
                   onChange: (value) {
-                    widget.entry.definition = value;
+                    widget.entry.definition = value.breakSpaces;
+                  },
+                  onSelectSuggestion: (value) {
+                    setState(() {
+                      widget.entry.definition = value.breakSpaces;
+                    });
                   },
                   getSuggestions: getDefinitions,
                 ),
@@ -85,40 +110,52 @@ class _WordEntryFormState extends State<WordEntryForm> {
                   controller: wordContextController,
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.context = value;
+                      widget.entry.context = value.breakSpaces;
+                    });
+                  },
+                  onForceSet: (value) {
+                    wordContextController.breakSpacesWhenNeeded(value);
+                  },
+                ),
+                TextFormField(
+                  controller: wordSynonymsController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: localization.editEnterSynonymsHint,
+                    labelText: localization.editEnterSynonymsLabel,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      widget.entry.synonyms = value.breakSpaces;
                     });
                   },
                 ),
                 TextFormField(
-                  initialValue: widget.entry.synonyms,
+                  controller: wordAntonymsController,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: 'Enter a synonyms...',
-                    labelText: 'Synonyms',
+                    hintText: localization.editEnterAntonymsHint,
+                    labelText: localization.editEnterAntonymsLabel,
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.entry.synonyms = value;
+                      widget.entry.antonyms = value.breakSpaces;
                     });
                   },
                 ),
-                TextFormField(
-                  initialValue: widget.entry.antonyms,
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Enter a antonyms...',
-                    labelText: 'Antonyms',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      widget.entry.antonyms = value;
-                    });
-                  },
-                ),
-                LabelsInput.fromStrings(
+
+               LabelsInput.fromStrings(
                   initialValue: widget.entry.labels,
                   onChange: (List<String> value) {
-                    widget.entry.labels = value;
+                    setState(() {
+                      final labelLocale = GetIt.I
+                          .get<LabelEntryCubit>()
+                          .state.guessLocale(value);
+                      if (labelLocale != null) {
+                        widget.entry.locale = labelLocale;
+                      }
+                      widget.entry.labels = value;
+                    });
                   },
                   allLabels: widget.allLabels,
                 ),
@@ -129,75 +166,60 @@ class _WordEntryFormState extends State<WordEntryForm> {
       ),
     );
   }
+
+  callOpenAI() async {
+    openAIOverFirebaseFunction(
+      entry: widget.entry,
+      language: findLanguage(widget.entry.locale),
+      onUpdateEntry: (newEntry) {
+        setState(() {
+          widget.entry.locale = newEntry.locale;
+          if (widget.entry.word.isEmpty) {
+            wordController.breakSpacesWhenNeeded(newEntry.word);
+            widget.entry.word = newEntry.word;
+          }
+          if (widget.entry.translation.isEmpty) {
+            widget.entry.translation = newEntry.translation;
+          }
+          if (widget.entry.definition.isEmpty) {
+            widget.entry.definition = newEntry.definition;
+          }
+
+          if (widget.entry.context.isEmpty) {
+            wordContextController.breakSpacesWhenNeeded(newEntry.context);
+            wordContextController.text = newEntry.context;
+            widget.entry.context = newEntry.context;
+          }
+
+          if (widget.entry.synonyms.isEmpty) {
+            wordSynonymsController.breakSpacesWhenNeeded(newEntry.synonyms);
+            widget.entry.synonyms = newEntry.synonyms;
+          }
+
+          if (widget.entry.antonyms.isEmpty) {
+            wordAntonymsController.breakSpacesWhenNeeded(newEntry.antonyms);
+            widget.entry.antonyms = newEntry.antonyms;
+          }
+        });
+      },
+    );
+  }
 }
 
-class WordEntryInput extends WordContextInput {
-  int? id;
-  String translation;
-  String definition;
-  String synonyms;
-  String antonyms;
-  List<String> labels;
+const $nbsp = 0x00A0;
+var nonBreakSpace = String.fromCharCode($nbsp);
 
-  WordEntry? arg;
+extension StringExtension on String {
+  String get breakSpaces => replaceAll(nonBreakSpace, ' ');
+}
 
-  WordEntryInput({
-    @required word,
-    @required context,
-    required this.translation,
-    required this.definition,
-    required this.synonyms,
-    required this.antonyms,
-    required this.labels,
-    this.arg,
-  }) : super(word, context);
-
-  toEntry() {
-    if (arg != null) {
-      return WordEntry.copy(
-        arg!,
-        word: word.trim(),
-        translation: translation.trim(),
-        definition: definition.trim(),
-        context: context.trim(),
-        synonyms: synonyms.trim(),
-        antonyms: antonyms.trim(),
-        labels: labels,
-      );
+extension BreakSpacesTextEditingController on TextEditingController {
+  breakSpacesWhenNeeded(String newText) {
+    if (newText.contains(nonBreakSpace)) {
+      value = value.copyWith(text: newText.breakSpaces);
+    } else {
+      value = value.copyWith(text: newText);
     }
-    return WordEntry.create(
-      word: word.trim(),
-      translation: translation.trim(),
-      definition: definition.trim(),
-      context: context.trim(),
-      synonyms: synonyms.trim(),
-      antonyms: antonyms.trim(),
-      labels: labels,
-    );
-  }
-
-  static WordEntryInput fromWordEntry(WordEntry arg) {
-    return WordEntryInput(
-      word: arg.word,
-      translation: arg.translation,
-      definition: arg.definition,
-      context: arg.context,
-      synonyms: arg.synonyms,
-      antonyms: arg.antonyms,
-      labels: arg.labels,
-      arg: arg,
-    );
-  }
-
-  static WordEntryInput empty({String? defaultLabel}) {
-    return WordEntryInput(
-      word: "",
-      translation: "",
-      definition: "",
-      context: "",
-      synonyms: "",
-      antonyms: "",
-      labels: defaultLabel == null ? [] : [defaultLabel],
-    );
+    text = value.text;
   }
 }
