@@ -3,7 +3,6 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../models/tranlsatorsAndDictionaries/translatorsAndDictionaries.dart';
 
 class TranslationTextInput extends StatelessWidget {
-
   final ValueChanged<String> onChange;
   final ValueChanged<String> onSelectSuggestion;
   final String word;
@@ -33,17 +32,19 @@ class TranslationTextInput extends StatelessWidget {
         BuildContext context,
         TextEditingController controller,
         FocusNode focusNode,
-      ) =>
-          TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        decoration: this.decoration.copyWith(
-              suffixIcon: IconButton(
-                icon: Icon(Icons.clear),
-                onPressed: () => onClear(),
+      ) {
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          maxLines: null,
+          decoration: this.decoration.copyWith(
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () => onClear(),
+                ),
               ),
-            ),
-      ),
+        );
+      },
       controller: this._typeAheadController,
       suggestionsCallback: (_pattern) => getSuggestions(word),
       itemBuilder: (context, suggestion) {

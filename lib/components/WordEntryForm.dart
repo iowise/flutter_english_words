@@ -54,6 +54,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                 TextFormField(
                   controller: wordController,
                   autofocus: true,
+                  maxLines: null,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: localization.editEnterWordHint,
@@ -119,6 +120,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                 ),
                 TextFormField(
                   controller: wordSynonymsController,
+                  maxLines: null,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: localization.editEnterSynonymsHint,
@@ -132,6 +134,7 @@ class _WordEntryFormState extends State<WordEntryForm> {
                 ),
                 TextFormField(
                   controller: wordAntonymsController,
+                  maxLines: null,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: localization.editEnterAntonymsHint,

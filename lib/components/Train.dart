@@ -129,6 +129,7 @@ class _TrainState extends State<Train> {
               key: targetWidgetKey,
               autofocus: true,
               textAlign: TextAlign.center,
+              maxLines: null,
               enableSuggestions: false,
               readOnly: widget.isCheck,
               style: Theme.of(context).textTheme.bodyLarge,
