@@ -23,7 +23,7 @@ class TrainCard extends StatelessWidget {
           children: [
             Text(
               text,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
           ],
