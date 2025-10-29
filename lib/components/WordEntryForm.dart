@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:word_trainer/models/blocs/LabelCubit.dart';
@@ -35,6 +36,13 @@ class _WordEntryFormState extends State<WordEntryForm> {
         wordContextController = TextEditingController(text: entry.context),
         wordSynonymsController = TextEditingController(text: entry.synonyms),
         wordAntonymsController = TextEditingController(text: entry.antonyms);
+
+  @override
+  void initState() {
+    super.initState();
+    // warm up firebase sdk
+    FirebaseAuth.instance.currentUser?.getIdToken();
+  }
 
   @override
   Widget build(BuildContext context) {
