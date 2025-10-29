@@ -65,10 +65,12 @@ class _TrainState extends State<Train> {
     _scrollController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final localization = AppLocalizations.of(context)!;
-    final isShowingResults = widget.isCheck || widget.enteredWordController.attempt > 0;
+    final isShowingResults =
+        widget.isCheck || widget.enteredWordController.attempt > 0;
     final results = isShowingResults
         ? [
             _TrainResult(
@@ -95,7 +97,8 @@ class _TrainState extends State<Train> {
             ),
           ]
         : [];
-    final isFailedCheck = isShowingResults && !widget.enteredWordController.isCorrect;
+    final isFailedCheck =
+        isShowingResults && !widget.enteredWordController.isCorrect;
     if (isFailedCheck) {
       WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
     }
@@ -126,9 +129,10 @@ class _TrainState extends State<Train> {
               key: targetWidgetKey,
               autofocus: true,
               textAlign: TextAlign.center,
+              maxLines: null,
               enableSuggestions: false,
               readOnly: widget.isCheck,
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.bodyLarge,
               controller: widget.enteredWordController,
               decoration: InputDecoration(
                 filled: true,
@@ -174,14 +178,20 @@ class _TrainState extends State<Train> {
     });
   }
 
-  List<Widget> buildSynonymsAndAntonymsCard(BuildContext context, WordEntry entry) {
-    if (entry.definition.isEmpty) {
+  List<Widget> buildSynonymsAndAntonymsCard(
+      BuildContext context, WordEntry entry) {
+    final localizations = AppLocalizations.of(context)!;
+    if (entry.synonyms.isEmpty && entry.antonyms.isEmpty) {
       return [];
     }
-      final localizations = AppLocalizations.of(context)!;
-      final synonyms = entry.synonyms.isEmpty ? "" : localizations.trainingSynonyms(entry.synonyms);
-      final antonyms = entry.antonyms.isEmpty ? "" : localizations.trainingAntonyms(entry.antonyms);
-      final synonymsAndAntonyms = [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
+    final synonyms = entry.synonyms.isEmpty
+        ? ""
+        : localizations.trainingSynonyms(entry.synonyms);
+    final antonyms = entry.antonyms.isEmpty
+        ? ""
+        : localizations.trainingAntonyms(entry.antonyms);
+    final synonymsAndAntonyms =
+        [synonyms, antonyms].where((element) => element.isNotEmpty).join("\n");
 
     return [
       Card(
@@ -193,7 +203,10 @@ class _TrainState extends State<Train> {
             children: [
               Text(
                 synonymsAndAntonyms,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -217,7 +230,10 @@ class _TrainState extends State<Train> {
             children: [
               Text(
                 entry.definition,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ],

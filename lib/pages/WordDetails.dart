@@ -148,17 +148,21 @@ class _WordCreateOrEditState extends State<WordCreateOrEdit> {
         AppLocalizations.of(context)!.trainingNextTrainingOnDate(nextTrainDate),
         style: Theme.of(context).textTheme.bodyMedium,
       ),
+      dense: true,
+      visualDensity: VisualDensity.compact,
     );
   }
 
   List<Widget> buildTrainLogs(List<TrainLog> logs) {
-    final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd H:m');
+    final DateFormat formatterWithTime = DateFormat('yyyy-MM-dd HH:mm');
     return logs.map((e) {
       return ListTile(
         title: Text(
-          "${formatterWithTime.format(e.trainedAt)} ${e.score}",
+          "${formatterWithTime.format(e.trainedAt)}: Score ${e.score}",
           style: Theme.of(context).textTheme.bodySmall,
         ),
+        dense: true,
+        visualDensity: VisualDensity.compact,
       );
     }).toList();
   }
