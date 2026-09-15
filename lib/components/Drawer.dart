@@ -4,6 +4,12 @@ import 'package:provider/provider.dart' as provider;
 
 import '../../l10n/app_localizations.dart';
 import '../models/auth.dart';
+import '../models/DB.dart';
+import 'package:get_it/get_it.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../models/repositories/TrainLogRepository.dart';
+import '../models/repositories/WordEntryRepository.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -32,6 +38,19 @@ class AppDrawer extends StatelessWidget {
                 onTap: () => showSignInMethodsBottomSheet(context),
               ),
             ),
+          ),
+          ListTile(
+            leading: Icon(Icons.share),
+            title: Text('Share DB'),
+            onTap: () async {
+              final wordRepo = GetIt.I.get<WordEntryRepository>();
+              final logRepo = GetIt.I.get<TrainLogRepository>();
+              final filePath = await exportDB(wordRepo, logRepo);
+              await SharePlus.instance.share(new ShareParams(
+                title: "Export DB",
+                files: [XFile(filePath)],
+              ));
+            },
           ),
           ListTile(
             leading: Icon(Icons.edit),
